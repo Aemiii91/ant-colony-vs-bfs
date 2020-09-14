@@ -1,4 +1,5 @@
 cpp/cmake_install.cmake
+cpp/CTestTestfile.cmake
 cpp/CMakeFiles
 cpp/bin
 cpp/Makefile
