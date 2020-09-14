@@ -5,3 +5,4 @@ cpp/Makefile
 cpp/CMakeCache.txt
 .vscode
 build/
+cpp/*.sln
