@@ -3,5 +3,5 @@ cpp/CMakeFiles
 cpp/bin
 cpp/Makefile
 cpp/CMakeCache.txt
-cpp/.vscode
+.vscode
 build/
