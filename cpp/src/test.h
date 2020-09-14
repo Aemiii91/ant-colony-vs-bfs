@@ -1,5 +1,6 @@
 #include <iostream>
 
 class Test {
-    void PrintSomething(); 
+public:
+    void PrintSomething();
 };

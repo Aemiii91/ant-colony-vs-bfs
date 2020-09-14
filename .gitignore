@@ -7,3 +7,5 @@ cpp/CMakeCache.txt
 .vscode
 build/
 cpp/*.sln
+cpp/P5.cbp
+cpp/.idea

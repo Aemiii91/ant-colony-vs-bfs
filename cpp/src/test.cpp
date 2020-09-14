@@ -1,6 +1,6 @@
 #include "test.h"
 
 
-void PrintSomething() {
+void Test::PrintSomething() {
     std::cout << "keklmaolmao \n";
 }
