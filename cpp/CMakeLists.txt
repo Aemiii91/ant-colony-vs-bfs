@@ -11,8 +11,8 @@ message("${SOURCES}")
 list(REMOVE_ITEM SOURCES "${CMAKE_SOURCE_DIR}/src/main.cpp")
 file(GLOB TEST_SOURCES "tests/*.cpp")
 
-include_directories($(CMAKE_RUNTIME_OUTPUT_DIRECTORY))
-include_directories("${PROJECT_SOURCE_DIR}/src")
+include_directories(${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+include_directories("/src")
 include_directories("tests/*.cpp")
 
 set(CMAKE_CXX_STANDARD 17)

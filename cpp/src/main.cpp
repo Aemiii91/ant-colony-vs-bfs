@@ -1,9 +1,22 @@
 #include <iostream>
 #include "test.h"
+#include "poi.h"
 
-int main () {
-    std::cout << "keklmao \n";
-    Test testkek;
-    testkek.PrintSomething();
+using namespace std;
+
+int main (int argc, char **argv) {
+    std::cout << "testing opening of filestream" << std::endl;
+    PoiImport import;
+    fstream fileStream;
+    string filepath = argv[argc-1];
+    fileStream.open(filepath);
+    if(fileStream.is_open()) {
+        std::cout << "filestream is good, importing dataset" << std::endl;
+        import.ImportPoi(&fileStream);
+        std::cout << "imported poi count: " << import.importedPoi.size() << std::endl;
+    }
+    else {
+        std::cout << "Something went wrong with opening the file" << std::endl;
+    }
     return 0;
 }
