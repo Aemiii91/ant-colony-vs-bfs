@@ -5,3 +5,4 @@ Denne er opsat til at blive compilet sammen med projektet, men den ligger ikke p
 For at hente Gtest skrives der i terminalen i mappen til vores repo
 `git submodule update --init --recursive`
 
+GTest dokumentationen kan finde [her](https://github.com/google/googletest/blob/master/googletest/docs/primer.md "Gtest Dokumentation")
