@@ -7,7 +7,7 @@ using namespace std;
 // furthermore, this has only been tested on https://www.kaggle.com/ehallmar/points-of-interest-poi-database
 void PoiImport::ImportPoi(fstream *fileStream) {
     poi tempPoi;
-    std::string::size_type sz;
+    string::size_type sz;
     string line;
     string ignore;
     // retrieves headers first and then dumps them
@@ -17,11 +17,11 @@ void PoiImport::ImportPoi(fstream *fileStream) {
         int i = 0;
         string stringarr[7];
         stringstream ss(line);
-        while (ss >> std::ws) {
+        while (ss >> ws) {
             string csvElement;
 
             if (ss.peek() == '"') {
-                ss >> std::quoted(csvElement);
+                ss >> quoted(csvElement);
                 string discard;
                 getline(ss, discard, ',');
             } else {
