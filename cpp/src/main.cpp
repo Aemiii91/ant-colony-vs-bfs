@@ -7,7 +7,7 @@ using namespace std;
 int main (int argc, char **argv) {
     std::cout << "testing opening of filestream" << std::endl;
     
-    PoiImport import;
+    PoiImport imp;
     fstream fileStream;
     string filepath = argv[argc-1];
 
@@ -15,8 +15,8 @@ int main (int argc, char **argv) {
     
     if(fileStream.is_open()) {
         std::cout << "filestream is good, importing dataset" << std::endl;
-        import.ImportPoi(&fileStream);
-        std::cout << "imported poi count: " << import.importedPoi.size() << std::endl;
+        imp.ImportPoi(&fileStream);
+        std::cout << "imported poi count: " << imp.importedPoi.size() << std::endl;
     }
     else {
         std::cout << "Something went wrong with opening the file" << std::endl;
