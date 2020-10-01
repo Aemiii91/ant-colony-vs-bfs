@@ -6,3 +6,11 @@ For at hente Gtest skrives der i terminalen i mappen til vores repo
 `git submodule init`
 
 GTest dokumentationen kan finde [her](https://github.com/google/googletest/blob/master/googletest/docs/primer.md "Gtest Dokumentation")
+
+Projektet her bruger også et par biblioteker.
+Det første er libcurl. Der kan dokumentationen findes [her](https://curl.haxx.se/libcurl/c/)
+
+Projektet bruger også rapidJson til json ting.
+Dokumentationen kan findes [her](https://rapidjson.org/).
+Et eksempel på brugen af dette bibliotek udover dokumentationen og dens identiske eksempel kan finde i `/cpp/tests/rapidjson.cpp`
+
