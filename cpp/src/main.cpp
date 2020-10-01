@@ -24,9 +24,6 @@ int main (int argc, char **argv) {
     else {
         std::cout << "Something went wrong with opening the file" << std::endl;
     }
-
-    std::cout << "the next text is rapidJson" << std::endl;
-
     
     return 0;
 }
