@@ -17,13 +17,13 @@ include_directories("tests/*.cpp")
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(CMAKE_CXX_FLAGS "-pthread")
+set(CMAKE_CXX_FLAGS "-pthread -lcurl")
 
-
-add_executable(p5
+add_executable(routeplanner
         "src/main.cpp"
         ${SOURCES}
         )
+
 
 enable_testing()
 find_package(GTest REQUIRED)
