@@ -10,3 +10,4 @@ cpp/*.sln
 cpp/P5.cbp
 cpp/.idea
 cpp/datasets
+cpp/compile_commands.json
