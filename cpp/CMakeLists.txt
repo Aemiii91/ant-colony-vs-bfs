@@ -24,7 +24,7 @@ add_executable(routeplanner
         ${SOURCES}
         )
 
-
+include(CTest)
 enable_testing()
 find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
@@ -35,5 +35,5 @@ add_executable(tests
         )
 target_link_libraries(tests ${GTEST_BOTH_LIBRARIES})
 
-
+gtest_discover_tests(tests)
 
