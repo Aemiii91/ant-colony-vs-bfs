@@ -14,3 +14,5 @@ cpp/compile_commands.json
 cpp/.clangd
 cpp/DartConfiguration.tcl
 cpp/tests*.cmake
+
+__pycache__
