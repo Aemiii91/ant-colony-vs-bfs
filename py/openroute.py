@@ -2,7 +2,7 @@ import requests
 
 
 def importMatrix():
-  url = "https://api.openrouteservice.org/v2/matrix/driving-car"
+  url = "https://api.openrouteservice.org/v2/matrix/foot-walking"
 
   payload = "{\"locations\":[[9.70093,48.477473],[9.207916,49.153868],[37.573242,55.801281],[115.663757,38.106467]]}"
   headers = {
