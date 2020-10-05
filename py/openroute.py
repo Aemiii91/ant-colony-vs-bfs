@@ -1,8 +1,9 @@
 import requests
+import json
 
-
+# returns a dictionary containing all the jsonData
 def importMatrix():
-  url = "https://api.openrouteservice.org/v2/matrix/foot-walking"
+  url = "https://api.openrouteservice.org/v2/matrix/driving-car"
 
   payload = "{\"locations\":[[9.70093,48.477473],[9.207916,49.153868],[37.573242,55.801281],[115.663757,38.106467]]}"
   headers = {
@@ -11,6 +12,6 @@ def importMatrix():
   }
 
   response = requests.request("POST", url, headers=headers, data = payload)
+  jsonObj = json.loads(response.text.encode('utf8'))
 
-  print(response.text.encode('utf8'))
-
+  return jsonObj
