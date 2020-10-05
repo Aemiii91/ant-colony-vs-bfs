@@ -24,12 +24,6 @@ add_executable(routeplanner
         ${SOURCES}
         )
 
-# link curl
-set(CURL_LIBRARY "-lcurl") 
-find_package(CURL REQUIRED) 
-include_directories(${CURL_INCLUDE_DIR})
-target_link_libraries(routeplanner ${CURL_LIBRARIES})
-
 # testing
 include(CTest)
 enable_testing()
