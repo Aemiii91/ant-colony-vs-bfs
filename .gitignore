@@ -12,3 +12,5 @@ cpp/.idea
 cpp/datasets
 cpp/compile_commands.json
 cpp/.clangd
+cpp/DartConfiguration.tcl
+cpp/tests*.cmake
