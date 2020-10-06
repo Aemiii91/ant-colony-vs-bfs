@@ -16,3 +16,4 @@ cpp/DartConfiguration.tcl
 cpp/tests*.cmake
 
 __pycache__
+*.json
