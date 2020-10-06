@@ -19,12 +19,14 @@ class GeocacheApi:
       self.__password = self.__PASSWORD
     self.__session = requests.Session()
 
+  # Search for geocaches near a point
   def search(self, latitude: float, longitude: float, count: int = 1000):
     if not self.__userdata:
       if not self.__request_verification_token() or not self.__signin():
         return None
     return self.__get_results(latitude, longitude, count)
 
+  # A token is needed for signin
   def __request_verification_token(self):
     print(f":: Getting token...")
     response = self.__session.get("https://www.geocaching.com/account/signin")
@@ -36,6 +38,7 @@ class GeocacheApi:
     print("Failed getting token")
     return False
 
+  # Sign in to geocaching.com
   def __signin(self):
     print(f":: Signing in as {self.__username}...")
     response = self.__session.post("https://www.geocaching.com/account/signin", data = {
@@ -51,6 +54,7 @@ class GeocacheApi:
     print("Login failed")
     return False
 
+  # Query geocaching.com api for geocaches
   def __get_results(self, longitude: float, latitude: float, count: int):
     print(f":: Getting geocaches near [{longitude}, {latitude}]...")
     response = self.__session.get(f"https://www.geocaching.com/api/proxy/web/search/v2?sort=distance&take={count}&origin={longitude},{latitude}")
@@ -58,14 +62,17 @@ class GeocacheApi:
       return response.text
     return None
 
+  # Log out of geocaching.com (currently not in use)
   def __logout(self):
     self.__session.post("https://www.geocaching.com/account/logout")
     self.__userdata = None
     self.__token = None
     self.__session = requests.Session()
 
+# Export an instance for immediate use
 geocaching = GeocacheApi()
 
+# Handle execution through commandline
 def __main__():
   parser = argparse.ArgumentParser(description="Get a list (json) of geocaches near a point.")
   parser.add_argument('-y', '--latitude', default=57.011817, type=float)
@@ -97,6 +104,5 @@ def __main__():
   else:
     print("No results")
 
-# If this is run as a script
 if __name__ == "__main__":
   __main__()
