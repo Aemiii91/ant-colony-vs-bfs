@@ -1,3 +1,6 @@
+"""
+Context file for testing. Make sure to import needed submodules.
+"""
 import sys
 import os
 from contextlib import contextmanager
@@ -11,6 +14,10 @@ from apicaller import GeocacheApi
 
 @contextmanager
 def captured_output():
+    """
+    Context manager for redirecting stdout and stderr.
+    Usage: `with captured_output() as (out, err):`
+    """
     new_out, new_err = StringIO(), StringIO()
     old_out, old_err = sys.stdout, sys.stderr
     try:

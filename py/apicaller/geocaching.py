@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+"""
+A wrapper for the geocaching.com api. Enables signin and search.
+"""
 import argparse
 import re
 import json
@@ -6,6 +9,9 @@ import requests
 
 
 class GeocacheApi:
+    """
+    A wrapper for the geocaching.com api. Enables signin and search.
+    """
     __USERNAME = "mholdg16"
     __PASSWORD = "mholdg16"
     __token_re = re.compile(
@@ -20,6 +26,9 @@ class GeocacheApi:
             self.signin(username, password)
 
     def signin(self, username: str = None, password: str = None):
+        """
+        Start new session and sign in to geocaching.com, and return a bool indicating success.
+        """
         username = username or self.__USERNAME
         password = password or self.__PASSWORD
         if self.__userdata:
@@ -44,8 +53,10 @@ class GeocacheApi:
         print("Login failed")
         return False
 
-    # Search for geocaches near a point
     def search(self, latitude: float = 57.011817, longitude: float = 9.993127, count: int = 1000):
+        """
+        Search for geocaches near a point, and return results as str
+        """
         if not self.__userdata:
             print("Not signed in")
             return None
@@ -60,13 +71,14 @@ class GeocacheApi:
             return response.text
         return None
 
-    # Close the session
     def close(self):
+        """
+        Close the session
+        """
         self.__session.close()
         self.__session = None
         self.__userdata = None
 
-    # A token is needed for signin
     def __request_verification_token(self):
         print(":: Getting token...")
         response = self.__session.get(
