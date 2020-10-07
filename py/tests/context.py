@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 
 # pylint: disable=unused-import,wrong-import-position
-from apicaller import GeocacheApi
+from apicaller.geocaching import GeocacheApi
 
 
 @contextmanager

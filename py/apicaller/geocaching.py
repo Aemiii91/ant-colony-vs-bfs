@@ -110,25 +110,25 @@ def __main__(args):
     api.signin(args.username, args.password)
     json_data = api.search(args.latitude, args.longitude, args.count)
     api.close()
-    if json_data:
-        if args.output:
-            outputfile = open(args.output, "w")
-            outputfile.write(json_data)
-            outputfile.close()
-            print(f"Results saved in '{args.output}'")
-        else:
-            data = json.loads(json_data)
-            if "results" in data:
-                results = data["results"]
-                print(f"Found {len(results)} geocaches")
-            elif "errorMessage" in data:
-                lines = json.loads(json.loads(data["errorMessage"])["message"])
-                print(f":: Error: {data['statusMessage']}")
-                for line in lines:
-                    if len(line) > 0:
-                        print(line[0])
-    else:
+    if not json_data:
         print("No results")
+        sys.exit()
+    if args.output:
+        outputfile = open(args.output, "w")
+        outputfile.write(json_data)
+        outputfile.close()
+        print(f"Results saved in '{args.output}'")
+    else:
+        data = json.loads(json_data)
+        if "results" in data:
+            results = data["results"]
+            print(f"Found {len(results)} geocaches")
+        elif "errorMessage" in data:
+            lines = json.loads(json.loads(data["errorMessage"])["message"])
+            print(f":: Error: {data['statusMessage']}")
+            for line in lines:
+                if len(line) > 0:
+                    print(line[0])
 
 
 if __name__ == '__main__':
