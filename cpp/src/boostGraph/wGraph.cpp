@@ -30,6 +30,5 @@ void wGraph::populateGraph(){
     for (edgeData edge : edgeList){
         SE e = boost::add_edge(edge.dist.first, edge.dist.second, {edge.weight}, g).first;
     }
-    printGraph();
 };
 
