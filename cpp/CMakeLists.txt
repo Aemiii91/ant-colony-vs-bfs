@@ -6,14 +6,14 @@ set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
-file(GLOB SOURCES "src/*.cpp" "src/graph/*")
+file(GLOB SOURCES "src/*.cpp" "src/boostGraph/*")
 message("${SOURCES}")
 list(REMOVE_ITEM SOURCES "${CMAKE_SOURCE_DIR}/src/main.cpp" )
 file(GLOB TEST_SOURCES "tests/*.cpp")
 
 include_directories(${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 include_directories("/src")
-include_directories(graph)
+include_directories(boostGraph)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
