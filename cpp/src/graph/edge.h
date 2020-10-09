@@ -4,7 +4,8 @@
 using namespace std;
 class Edge {
  public:
-  Edge(double w, int dt) : weight(w), dist(dt) {}
+  Edge(int s, int d, double w) : scr(s), dist(d) {}
+  int scr;        // Used as the ID and the source node
   double weight;  // Used as weight
   int dist;       // The destination of the edge
 

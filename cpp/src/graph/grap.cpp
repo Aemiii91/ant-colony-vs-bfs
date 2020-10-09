@@ -23,7 +23,7 @@ void Graph::ImFastLetMeShowYou() {
     Node n(i);
     addNode(n);
     for (int k = 0; k < 5; k++) {
-      Edge e(1.2, (rand() % 10));
+      Edge e(n.ID, (rand() % 10), 1.2);
       direcAddEdge(n, e);
     }
   }
