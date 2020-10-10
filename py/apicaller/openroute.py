@@ -32,9 +32,9 @@ class OpenrouteApi:
             GeoCoordinates["geoPoints"].append({'id': each["id"], 'longtitude': each["longtitude"], 'latitude': each['latitude']})
             index += 1
           else:
-            locations += ",[" + str(each["longtitude"]) + "," + str(each["latitude"]) + "]" 
+            locations += ",[" + str(each["longtitude"]) + "," + str(each["latitude"]) + "]"
             GeoCoordinates["geoPoints"].append({'id': each["id"], 'longtitude': each["longtitude"], 'latitude': each['latitude']})
-        
+
         headers = {
         'Authorization': '5b3ce3597851110001cf624865c2d3b02c2c4f43b9d877849d66b13c',
         'Content-Type': 'application/json'
@@ -51,7 +51,7 @@ class OpenrouteApi:
             jsonObj["geoPoints"] = each
             res.append(jsonObj)
             print("progress: " + str(count+1) + " of: " + str(len(GeoCoordinates["geoPoints"])))
-        
+
         return res
 
     def getCoordinates(self, inputFile):
