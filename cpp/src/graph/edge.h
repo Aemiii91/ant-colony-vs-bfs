@@ -4,16 +4,15 @@
 using namespace std;
 class Edge {
  public:
-  Edge(int s, int d, double w) : scr(s), dist(d) {}
+  Edge(int s, int d, double w) : scr(s), dist(d), weight(w) {}
   int scr;        // Used as the ID and the source node
-  double weight;  // Used as weight
   int dist;       // The destination of the edge
+  double weight;  // Used as weight
 
  private:
   // This is used to print the object in a nice way
   friend ostream &operator<<(ostream &out, const Edge &e) {
-    cout << "----> " << setw(2) << e.dist << setw(2) << "  Cost: " << e.weight;
-
+    out << "----> " << setw(1) << e.dist << setw(1) << "  Cost: " << e.weight;
     return out;
   }
 };

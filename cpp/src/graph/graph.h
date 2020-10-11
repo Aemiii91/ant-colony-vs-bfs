@@ -6,9 +6,8 @@ using namespace std;
 class Graph {
  public:
   vector<Node> nodelist;
+  vector<Edge> edgeList;
   void addNode(Node n);
-  void biAddEdge(Node n, Edge e, Node dist);
-  void direcAddEdge(Node n, Edge e);
   void ImFastLetMeShowYou();
   void print();
 };
