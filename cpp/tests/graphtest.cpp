@@ -20,17 +20,23 @@ TEST(GraphTest, addNode) {
 
   ASSERT_EQ(n.ID, graph.nodelist.front().ID);
 }
-TEST(GraphTest, addEdge) {
-  // set up
-  Graph graph;
+TEST(GraphTest, getEdgeListSize) {
   Node n(0);
-  Node n2(1);
-  graph.addNode(n);
-  graph.addNode(n2);
+  Node n1(1);
+  Edge e(n1.ID, n.ID, 1.2);
+  n1.addEdge(e);
 
-  Edge e(n.ID, n2.ID, 1.2);
+  ASSERT_EQ(1, n1.getEdgeListSize());
+}
 
-  ASSERT_EQ(n.ID, graph.nodelist.at(n2.ID).edgeList.front().scr);
-  ASSERT_EQ(1.2, graph.nodelist.at(n2.ID).edgeList.front().weight);
-  ASSERT_EQ(n2.ID, graph.nodelist.at(n2.ID).edgeList.front().dist);
+TEST(GraphTest, addEdge) {
+  Node n(0);
+  Node n1(1);
+  Edge e(n1.ID, n.ID, 1.2);
+  n1.addEdge(e);
+  double weight = n1.getEdge(0).weight;
+
+  ASSERT_EQ(e.scr, n1.getEdge(0).scr);
+  ASSERT_EQ(e.weight, weight);
+  ASSERT_EQ(e.dist, n1.getEdge(0).dist);
 }
