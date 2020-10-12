@@ -24,7 +24,6 @@ find_package(Boost COMPONENTS system filesystem REQUIRED)
 add_executable(p5
         "src/main.cpp"
         ${SOURCES}
-        ${Boost_LIBRARY}
         )
 
 enable_testing()
