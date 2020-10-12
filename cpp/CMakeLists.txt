@@ -19,10 +19,14 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_CXX_FLAGS "-pthread -lcurl")
 
+find_package(PythonLibs REQUIRED)
+include_directories(${PYTHON_INCLUDE_DIRS})
+
 add_executable(routeplanner
         "src/main.cpp"
         ${SOURCES}
         )
+target_link_libraries(routeplanner ${PYTHON_LIBRARIES})
 
 # testing
 include(CTest)
@@ -35,6 +39,7 @@ add_executable(tests
         ${SOURCES}
         )
 target_link_libraries(tests ${GTEST_BOTH_LIBRARIES})
+target_link_libraries(tests ${PYTHON_LIBRARIES})
 
 gtest_discover_tests(tests)
 
