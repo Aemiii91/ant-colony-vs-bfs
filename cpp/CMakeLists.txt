@@ -18,7 +18,6 @@ include_directories(graph)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_CXX_FLAGS "-pthread")
-find_package(Boost COMPONENTS system filesystem REQUIRED)
 
 
 add_executable(p5
