@@ -32,7 +32,7 @@ class OpencachingApi:
             }),
             "retr_method": "services/caches/geocaches",
             "retr_params": json.dumps({
-                "fields": "name|location|type|url"
+                "fields": "code|location"
             }),
             "wrap": "true",
             "consumer_key": self.consumer_key
@@ -43,10 +43,27 @@ class OpencachingApi:
             "services/caches/shortcuts/search_and_retrieve?" +
             urllib.parse.urlencode(args)
         )
-        if len(response.text) > 0:
-            return response.text
-        return None
+        if len(response.text) == 0:
+            return None
+        data = json.loads(response.text)
+        if not "results" in data:
+            if "error" in data:
+                print(f":: Error: {data['error']['developer_message']}")
+            return None
+        results = data["results"]
+        formatted = list(map(lambda cache_code: format_result(results[cache_code]), results))
+        return formatted
 
+def format_result(item: dict):
+    """
+    Formats result item to { code: str, latitude: float, longitude: float }
+    """
+    location = item["location"].split("|")
+    return {
+        "code": item["code"],
+        "latitude": float(location[0]),
+        "longitude": float(location[1])
+    }
 
 def __main__(args):
     parser = argparse.ArgumentParser(
@@ -59,23 +76,17 @@ def __main__(args):
                         help="Specify a file path to save the result")
     args = parser.parse_args(args)
     api = OpencachingApi()
-    json_data = api.search(args.latitude, args.longitude, args.count)
-    if not json_data:
+    results = api.search(args.latitude, args.longitude, args.count)
+    if not results:
         print("No results")
         sys.exit()
     if args.output:
         outputfile = open(args.output, "w")
-        outputfile.write(json_data)
+        outputfile.write(json.dumps({ "results": results }))
         outputfile.close()
         print(f"Results saved in '{args.output}'")
     else:
-        data = json.loads(json_data)
-        if "results" in data:
-            results = data["results"]
-            print(f"Found {len(results)} geocaches")
-        elif "error" in data:
-            error = data["error"]
-            print(f":: Error: {error['developer_message']}")
+        print(f"Found {len(results)} geocaches")
 
 
 if __name__ == '__main__':
