@@ -22,11 +22,13 @@ set(CMAKE_CXX_FLAGS "-pthread -lcurl")
 find_package(PythonLibs REQUIRED)
 include_directories(${PYTHON_INCLUDE_DIRS})
 
+add_subdirectory(src/apicaller)
+
 add_executable(routeplanner
         "src/main.cpp"
         ${SOURCES}
         )
-target_link_libraries(routeplanner ${PYTHON_LIBRARIES})
+target_link_libraries(routeplanner ${PYTHON_LIBRARIES} apicaller)
 
 # testing
 include(CTest)
@@ -39,7 +41,7 @@ add_executable(tests
         ${SOURCES}
         )
 target_link_libraries(tests ${GTEST_BOTH_LIBRARIES})
-target_link_libraries(tests ${PYTHON_LIBRARIES})
+target_link_libraries(tests ${PYTHON_LIBRARIES} apicaller)
 
 gtest_discover_tests(tests)
 

@@ -2,11 +2,11 @@
 #include <stdexcept>
 #include <string>
 #include <regex>
-#include "../src/apicaller.h"
+#include "../src/apicaller/opencaching.hpp"
 
 using namespace std;
 
-class ApiCallerTest : public ::testing::Test
+class ApicallerTest : public ::testing::Test
 {
 protected:
     void SetUp() override {}
@@ -14,11 +14,9 @@ protected:
     void TearDown() override {}
 };
 
-TEST_F(ApiCallerTest, OpenCachingTest)
+TEST_F(ApicallerTest, OpencachingTest)
 {
-    ApiCaller apiCaller;
-
-    apiCaller.openCaching();
+    string json_data = apicaller::opencaching(52.518848, 13.399411);
 
     bool result = true;
     bool expected = true;
