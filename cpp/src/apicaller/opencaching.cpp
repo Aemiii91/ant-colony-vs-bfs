@@ -21,10 +21,7 @@ string apicaller::opencaching(double latitude, double longitude, int count = 100
         return "";
     }
 
-    cout << "<cpp> Calling OpenCaching api..." << endl;
     CPyObject pResults = PyObject_CallFunction(pOpencaching_search, "(d,d,i)", latitude, longitude, count);
 
-    string json_data = utils::wchar_to_str(PyUnicode_AsWideCharString(pResults, NULL));
-
-    return json_data;
+    return utils::wchar_to_str(PyUnicode_AsWideCharString(pResults, NULL));
 }
