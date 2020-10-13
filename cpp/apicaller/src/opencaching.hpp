@@ -8,5 +8,5 @@
 using namespace std;
 
 namespace apicaller {
-    string opencaching(void);
+    string opencaching(double latitude, double longitude, int count = 100);
 }

@@ -3,7 +3,7 @@
 using namespace std;
 using namespace apicaller;
 
-string apicaller::opencaching(double latitude, double longitude, int count = 100)
+string apicaller::opencaching(double latitude, double longitude, int count)
 {
     CPyInstance pInstance;
 

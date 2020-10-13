@@ -22,7 +22,7 @@ set(CMAKE_CXX_FLAGS "-pthread -lcurl")
 find_package(PythonLibs REQUIRED)
 include_directories(${PYTHON_INCLUDE_DIRS})
 
-add_subdirectory(src/apicaller)
+add_subdirectory(apicaller)
 
 add_executable(routeplanner
         "src/main.cpp"
