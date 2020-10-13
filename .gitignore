@@ -1,9 +1,9 @@
-cpp/cmake_install.cmake
-cpp/CTestTestfile.cmake
-cpp/CMakeFiles
+cpp/**/cmake_install.cmake
+cpp/**/CTestTestfile.cmake
+cpp/**/CMakeFiles/
 cpp/bin
-cpp/Makefile
-cpp/CMakeCache.txt
+cpp/**/Makefile
+cpp/**/CMakeCache.txt
 .vscode
 build/
 cpp/*.sln
@@ -12,7 +12,7 @@ cpp/.idea
 cpp/datasets
 cpp/compile_commands.json
 cpp/.clangd
-cpp/DartConfiguration.tcl
+cpp/**/DartConfiguration.tcl
 cpp/tests*.cmake
 
 __pycache__
