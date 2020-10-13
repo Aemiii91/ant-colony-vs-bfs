@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 # pylint: disable=unused-import,wrong-import-position
 from apicaller import GeocacheApi
 from apicaller import OpenrouteApi
-from apicaller.opencaching import OpencachingApi
+from apicaller import opencaching
 
 
 @contextmanager

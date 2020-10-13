@@ -8,51 +8,48 @@ import json
 import requests
 
 
-class OpencachingApi:
-    """
-    A wrapper for OKAPI. Enables search.
-    """
-    BASE_URL = "https://www.opencaching.de/okapi/"
-    consumer_key = "ya8Hd2vV4PLX22h28t4z"
+BASE_URL = "https://www.opencaching.de/okapi/"
+CONSUMER_KEY = "ya8Hd2vV4PLX22h28t4z"
 
-    def __init__(self, consumer_key: str = None):
-        if consumer_key:
-            self.consumer_key = consumer_key
 
-    def search(self, latitude: float = 52.518848, longitude: float = 13.399411, count: int = 100):
-        """
-        Search for geocaches near a point, and return results as str
-        """
-        args = {
-            "search_method": "services/caches/search/nearest",
-            "search_params": json.dumps({
-                "center": f"{latitude}|{longitude}",
-                "status": "Available",
-                "limit": count
-            }),
-            "retr_method": "services/caches/geocaches",
-            "retr_params": json.dumps({
-                "fields": "code|location"
-            }),
-            "wrap": "true",
-            "consumer_key": self.consumer_key
-        }
-        print(f":: Getting geocaches near [{latitude}, {longitude}]...")
-        response = requests.get(
-            self.BASE_URL +
-            "services/caches/shortcuts/search_and_retrieve?" +
-            urllib.parse.urlencode(args)
-        )
-        if len(response.text) == 0:
-            return None
-        data = json.loads(response.text)
-        if not "results" in data:
-            if "error" in data:
-                print(f":: Error: {data['error']['developer_message']}")
-            return None
-        results = data["results"]
-        formatted = list(map(lambda cache_code: format_result(results[cache_code]), results))
-        return formatted
+def search(latitude: float = 52.518848, longitude: float = 13.399411, count: int = 100):
+    """
+    Search for geocaches near a point, and return results as str
+    """
+    args = {
+        "search_method": "services/caches/search/nearest",
+        "search_params": json.dumps({
+            "center": f"{latitude}|{longitude}",
+            "status": "Available",
+            "limit": count
+        }),
+        "retr_method": "services/caches/geocaches",
+        "retr_params": json.dumps({
+            "fields": "code|location"
+        }),
+        "wrap": "true",
+        "consumer_key": CONSUMER_KEY
+    }
+    print(f":: Getting geocaches near [{latitude}, {longitude}]...")
+    response = requests.get(
+        BASE_URL +
+        "services/caches/shortcuts/search_and_retrieve?" +
+        urllib.parse.urlencode(args)
+    )
+    return response.text
+
+
+def parse_results(json_data: str):
+    data = json.loads(json_data)
+    if not "results" in data:
+        if "error" in data:
+            print(f":: Error: {data['error']['developer_message']}")
+        return None
+    results = data["results"]
+    formatted = list(
+        map(lambda cache_code: format_result(results[cache_code]), results))
+    return formatted
+
 
 def format_result(item: dict):
     """
@@ -65,6 +62,7 @@ def format_result(item: dict):
         "longitude": float(location[1])
     }
 
+
 def __main__(args):
     parser = argparse.ArgumentParser(
         description="Get a list (json) of geocaches near a point.")
@@ -75,18 +73,19 @@ def __main__(args):
     parser.add_argument('-o', '--output', default=None, metavar="OUTPUT_FILE_PATH",
                         help="Specify a file path to save the result")
     args = parser.parse_args(args)
-    api = OpencachingApi()
-    results = api.search(args.latitude, args.longitude, args.count)
-    if not results:
+    json_data = search(args.latitude, args.longitude, args.count)
+    if not json_data or len(json_data) == 0:
         print("No results")
         sys.exit()
     if args.output:
         outputfile = open(args.output, "w")
-        outputfile.write(json.dumps({ "results": results }))
+        outputfile.write(json_data)
         outputfile.close()
         print(f"Results saved in '{args.output}'")
     else:
-        print(f"Found {len(results)} geocaches")
+        results = parse_results(json_data)
+        if results:
+            print(f"Found {len(results)} geocaches")
 
 
 if __name__ == '__main__':

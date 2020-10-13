@@ -4,7 +4,7 @@ Test suite for the OpenCaching submodule.
 """
 import unittest
 
-from tests.context import OpencachingApi, captured_output
+from tests.context import opencaching, captured_output
 
 
 class TestOpenCaching(unittest.TestCase):
@@ -19,8 +19,8 @@ class TestOpenCaching(unittest.TestCase):
         Test whether search returned the right amount of geocaches.
         """
         with captured_output() as (_out, _err):
-            api = OpencachingApi()
-            results = api.search(latitude=52.518848, longitude=13.399411, count=50)
+            json_data = opencaching.search(latitude=52.518848, longitude=13.399411, count=50)
+            results = opencaching.parse_results(json_data)
         expected = 50
         self.assertEqual(expected, len(results))
 
