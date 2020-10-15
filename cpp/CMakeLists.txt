@@ -17,14 +17,21 @@ include_directories(graph)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(CMAKE_CXX_FLAGS "-pthread")
+set(CMAKE_CXX_FLAGS "-pthread -lcurl")
 
+find_package(PythonLibs REQUIRED)
+include_directories(${PYTHON_INCLUDE_DIRS})
 
-add_executable(p5
+add_subdirectory(apicaller)
+
+add_executable(routeplanner
         "src/main.cpp"
         ${SOURCES}
         )
+target_link_libraries(routeplanner ${PYTHON_LIBRARIES} apicaller)
 
+# testing
+include(CTest)
 enable_testing()
 find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
@@ -34,6 +41,7 @@ add_executable(tests
         ${SOURCES}
         )
 target_link_libraries(tests ${GTEST_BOTH_LIBRARIES})
+target_link_libraries(tests ${PYTHON_LIBRARIES} apicaller)
 
-
+gtest_discover_tests(tests)
 

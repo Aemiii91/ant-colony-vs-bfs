@@ -7,5 +7,8 @@ For at hente Gtest skrives der i terminalen i mappen til vores repo
 
 GTest dokumentationen kan finde [her](https://github.com/google/googletest/blob/master/googletest/docs/primer.md "Gtest Dokumentation")
 
-To be able to compile the code the boost library must be install:
-arch arch linux`sudo pacman -Sy boost` 
+
+Projektet bruger også rapidJson til json ting.
+Dokumentationen kan findes [her](https://rapidjson.org/).
+Et eksempel på brugen af dette bibliotek udover dokumentationen og dens identiske eksempel kan finde i `/cpp/tests/rapidjson.cpp`
+
