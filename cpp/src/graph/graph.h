@@ -4,7 +4,7 @@
 #include "node.h"
 using namespace std;
 class Graph {
- public:
+public:
   vector<Node> nodelist;
   vector<Edge> edgeList;
   void addNode(Node n);
