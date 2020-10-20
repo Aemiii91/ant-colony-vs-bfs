@@ -11,6 +11,7 @@ COPY CMakeLists.txt /routeplanning/
 COPY src /routeplanning/src/
 COPY include /routeplanning/include
 COPY apicaller /routeplanning/apicaller
+COPY data /routeplanning/data/
 RUN mkdir tests
 COPY tests/* /routeplanning/tests/
 
