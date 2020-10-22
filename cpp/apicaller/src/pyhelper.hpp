@@ -1,6 +1,4 @@
-/*
-Source: https://www.codeproject.com/Articles/820116/Embedding-Python-program-in-a-C-Cplusplus-code
-*/
+// Based on: https://www.codeproject.com/Articles/820116/Embedding-Python-program-in-a-C-Cplusplus-code
 #ifndef PYHELPER_HPP
 #define PYHELPER_HPP
 #pragma once
@@ -9,36 +7,24 @@ Source: https://www.codeproject.com/Articles/820116/Embedding-Python-program-in-
 #include <string>
 #include <Python.h>
 
-class CPyInstance
-{
-public:
-    CPyInstance()
-    {
-        Py_Initialize();
-        std::filesystem::path cwd = std::filesystem::current_path();
-        std::string pycode = "import sys; sys.path.append('" + cwd.string() + "/../../py')";
-        PyRun_SimpleString(pycode.c_str());
-    }
-
-    ~CPyInstance()
-    {
-        Py_Finalize();
-    }
-};
-
+/**
+ * Helper class to encapsulate a PyObject*.
+ * 
+ * Once the class goes out of scope, the object is automatically dereferenced.
+ * Also, the NULL object is automatically taken care of, and can also be
+ * automatically type casted to PyObject*. To increase the reference pointer,
+ * call the AddReff(), method of the CPyObject class.
+ */
 class CPyObject
 {
 private:
     PyObject *p;
 
 public:
-    CPyObject() : p(NULL)
-    {
-    }
+    CPyObject() : p(NULL) {}
 
-    CPyObject(PyObject *_p) : p(_p)
-    {
-    }
+    /// @param _p The PyObject to encapsulate.
+    CPyObject(PyObject *_p) : p(_p) {}
 
     ~CPyObject()
     {
@@ -98,6 +84,53 @@ public:
     operator bool()
     {
         return p ? true : false;
+    }
+};
+
+/**
+ * Used to automatically initialize a Python instance.
+ * When this object goes out of scope, the Python environment is destroyed.
+ */
+class CPyInstance
+{
+public:
+    CPyInstance()
+    {
+        Py_Initialize();
+        std::filesystem::path cwd = std::filesystem::current_path();
+        std::string pycode = "import sys; sys.path.append('" + cwd.string() + "/../../py/src')";
+        PyRun_SimpleString(pycode.c_str());
+    }
+
+    ~CPyInstance()
+    {
+        Py_Finalize();
+    }
+
+    /**
+     * Helper for getting a specific function contained in a python module.
+     * 
+     * @param module The name of the python module.
+     * @param function The name of the desired function.
+     * @return Reference to the python function.
+     */
+    CPyObject getFunction(const char *module, const char *function)
+    {
+        CPyObject pModule = PyImport_Import(PyUnicode_DecodeFSDefault(module));
+
+        if (!pModule) {
+            std::cout << "<cpp> Error: Couldn't load module '" << module << "'." << std::endl;
+            return CPyObject(NULL).AddRef();
+        }
+
+        CPyObject pFunc = PyObject_GetAttrString(pModule, function);
+
+        if (!pFunc || !PyCallable_Check(pFunc)) {
+            std::cout << "<cpp> Error: Couldn't get function '" << function << "'." << std::endl;
+            return CPyObject(NULL).AddRef();
+        }
+
+        return pFunc.AddRef();
     }
 };
 

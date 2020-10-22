@@ -5,13 +5,12 @@ import sys
 import os
 from contextlib import contextmanager
 from io import StringIO
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 
 
-# pylint: disable=unused-import,wrong-import-position
-from apicaller import GeocacheApi
-from apicaller import OpenrouteApi
-from apicaller import opencaching
+# pylint: disable=unused-import,wrong-import-position, import-error
+import openroute
+import opencaching
 
 
 @contextmanager

@@ -1,27 +1,17 @@
 #include "opencaching.hpp"
 
-using namespace std;
-using namespace apicaller;
+using namespace apicaller::utils;
 
-string apicaller::opencaching(double latitude, double longitude, int count)
+std::string apicaller::opencaching::search(double latitude, double longitude, int count)
 {
     CPyInstance pInstance;
+    CPyObject pFunc, pResults;
 
-    CPyObject pOpencaching = PyImport_Import(PyUnicode_DecodeFSDefault("apicaller.opencaching"));
-
-    if (!pOpencaching) {
-        cout << "<cpp> Error: Module not imported" << endl;
+    if (!(pFunc = pInstance.getFunction("opencaching", "search")))
         return "";
-    }
 
-    CPyObject pOpencaching_search = PyObject_GetAttrString(pOpencaching, "search");
+    // python: opencaching.search(latitude: float, longitude: float, count: int)
+    pResults = PyObject_CallFunction(pFunc, "(d,d,i)", latitude, longitude, count);
 
-    if (!pOpencaching_search || !PyCallable_Check(pOpencaching_search)) {
-        cout << "<cpp> Error: Couldn't find 'search' function." << endl;
-        return "";
-    }
-
-    CPyObject pResults = PyObject_CallFunction(pOpencaching_search, "(d,d,i)", latitude, longitude, count);
-
-    return utils::wchar_to_str(PyUnicode_AsWideCharString(pResults, NULL));
+    return wchar_to_str(PyUnicode_AsWideCharString(pResults, NULL));
 }
