@@ -1,11 +1,11 @@
 #include "node.h"
-void Node::addEdge(Edge e) {
+void Node::AddEdge(Edge e) {
   edgeList.emplace_back(e);
 }
 // Makes sure that people use .at() for bound check (this is slower bu safer)
-Edge Node::getEdge(int ID) {
+Edge Node::GetEdge(int ID) {
   return edgeList.at(ID);
 }
-size_t Node::getEdgeListSize() {
+size_t Node::GetEdgeListSize() {
   return edgeList.size();
 }

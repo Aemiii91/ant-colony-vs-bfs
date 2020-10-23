@@ -2,12 +2,29 @@
 #include <vector>
 
 #include "node.h"
-using namespace std;
 class Graph {
 public:
-  vector<Node> nodelist;
-  vector<Edge> edgeList;
-  void addNode(Node n);
+  std::vector<Node> nodelist;
+  std::vector<Edge> edgeList;
+  /**
+   * As obvious as the name is: get size of graph
+   *
+   * @return number of elements in graph
+   */
+  int GetGraphSize();
+  /**
+   * Obvious, adds a node to the graph
+   *
+   * When this method is used the graph's respective edges are also added to the
+   * graph's edgeList
+   */
+  void AddNode(Node n);
+  /**
+   * Test method for initialized a graph, mostly for fun
+   */
   void ImFastLetMeShowYou();
-  void print();
+  /**
+   * Prints the graph in a human-readable way
+   */
+  void Print();
 };

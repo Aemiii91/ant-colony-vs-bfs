@@ -26,11 +26,11 @@ Graph JsonParser::ParseData(string json) {
 		// Add edge from current node, to the index of the loop and add duration
 		// as the cost.
 		Edge e(node.ID, j, duration);
-		node.addEdge(e);
+		node.AddEdge(e);
 	  }
 	}
 
-	graph.addNode(node);
+	graph.AddNode(node);
   }
 
   return graph;

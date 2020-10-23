@@ -3,5 +3,5 @@ IndentWidth: '2'
 TabWidth: '4'
 UseTab: ForContinuationAndIndentation
 AllowShortFunctionsOnASingleLine: Empty
-
+ColumnLimit: 80
 ...

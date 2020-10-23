@@ -4,6 +4,7 @@
 using namespace std;
 class Edge {
 public:
+  Edge() {}
   Edge(int s, int d, double w) : scr(s), dist(d), weight(w) {}
   int scr;       // Used as the ID and the source node
   int dist;      // The destination of the edge

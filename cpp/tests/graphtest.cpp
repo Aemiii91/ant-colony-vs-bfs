@@ -13,30 +13,30 @@ class GraphTest : public ::testing::Test {
   void TearDown() override {}
 };
 
-TEST(GraphTest, addNode) {
+TEST_F(GraphTest, AddNodeTest) {
   Graph graph;
   Node n(0);
-  graph.addNode(n);
+  graph.AddNode(n);
 
   ASSERT_EQ(n.ID, graph.nodelist.front().ID);
 }
-TEST(GraphTest, getEdgeListSize) {
+TEST_F(GraphTest, GetEdgeListSizeTest) {
   Node n(0);
   Node n1(1);
   Edge e(n1.ID, n.ID, 1.2);
-  n1.addEdge(e);
+  n1.AddEdge(e);
 
-  ASSERT_EQ(1, n1.getEdgeListSize());
+  ASSERT_EQ(1, n1.GetEdgeListSize());
 }
 
-TEST(GraphTest, addEdge) {
+TEST_F(GraphTest, AddEdgeTest) {
   Node n(0);
   Node n1(1);
   Edge e(n1.ID, n.ID, 1.2);
-  n1.addEdge(e);
-  double weight = n1.getEdge(0).weight;
+  n1.AddEdge(e);
+  double weight = n1.GetEdge(0).weight;
 
-  ASSERT_EQ(e.scr, n1.getEdge(0).scr);
+  ASSERT_EQ(e.scr, n1.GetEdge(0).scr);
   ASSERT_EQ(e.weight, weight);
-  ASSERT_EQ(e.dist, n1.getEdge(0).dist);
+  ASSERT_EQ(e.dist, n1.GetEdge(0).dist);
 }
