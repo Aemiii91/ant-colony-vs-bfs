@@ -28,7 +28,6 @@ def search(latitude: float = 52.518848, longitude: float = 13.399411, count: int
         "wrap": "true",
         "consumer_key": CONSUMER_KEY
     }
-    print(f":: Getting geocaches near [{latitude}, {longitude}]...")
     response = requests.get(
         BASE_URL +
         "services/caches/shortcuts/search_and_retrieve?" +

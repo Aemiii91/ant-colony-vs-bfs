@@ -1,20 +1,58 @@
 #!/usr/bin/env python3
 """
-Test suite for the OpenRoute submodule.
+Test suite for the openroute submodule.
 """
 import unittest
-import json
 
-from tests.context import openroute, captured_output
+from tests.context import openroute, matrix_utils, captured_output
 
 
 class TestOpenRoute(unittest.TestCase):
     """
-    Test suite for the OpenRoute submodule.
+    Test suite for the openroute submodule.
     """
     def setUp(self):
-        self.locations = "[[9.70093,48.477473],[9.207916,49.153868],[37.573242,55.801281],[115.663757,38.106467]]"
-        self.location_count = 4
+        self.locations = [
+            [13.401833,52.518417],
+            [13.401833,52.518417],
+            [13.40085,52.516317],
+            [13.400967,52.514017],
+            [13.407133,52.521467],
+            [13.39,52.5171],
+            [13.4033,52.524817],
+            [13.4042,52.512683],
+            [13.39855,52.525967],
+            [13.410583,52.521833]
+        ]
+        self.location_count = 10
+
+        if not openroute.check_status():
+            openroute.api.toggle_online()
+
+
+    def test_check_status(self):
+        """
+        Test whether the openroute service is ready
+        """
+        initial_online = openroute.api.is_online()
+
+        openroute.api.go_offline()
+        local_ready = openroute.check_status()
+        print("[{}] localhost".format(' OK ' if local_ready else 'FAIL'))
+
+        openroute.api.go_online()
+        azure_ready = openroute.check_status()
+        print("[{}] azure".format(' OK ' if azure_ready else 'FAIL'))
+
+        if not initial_online:
+            openroute.api.go_offline()
+
+        print('Using: {}'.format('azure' if openroute.api.is_online() else 'localhost'))
+
+        result = local_ready or azure_ready
+        expected = True
+        self.assertEqual(expected, result)
+
 
     def test_matrix(self):
         """
@@ -23,17 +61,14 @@ class TestOpenRoute(unittest.TestCase):
         count = self.location_count
 
         with captured_output() as (out, _err):
-            json_data = openroute.matrix(self.locations)
+            data = openroute.matrix(None, data=self.locations, return_string=False)
 
-        if len(json_data) == 0:
+        if len(data) == 0:
             print(out)
 
-        (durations, distances) = parse_data(json_data)
+        (durations, distances) = parse_data(data)
 
-        result = (durations["cols"] == count and
-                  durations["rows"] == count and
-                  distances["cols"] == count and
-                  distances["rows"] == count)
+        result = durations == (count, count) and distances == (count, count)
         expected = True
         self.assertEqual(expected, result)
 
@@ -45,17 +80,14 @@ class TestOpenRoute(unittest.TestCase):
         count = self.location_count
 
         with captured_output() as (out, _err):
-            json_data = openroute.matrix_otm(self.locations, 0)
+            data = openroute.matrix_otm(None, 0, data=self.locations, return_string=False)
 
-        if len(json_data) == 0:
+        if len(data) == 0:
             print(out)
 
-        (durations, distances) = parse_data(json_data)
+        (durations, distances) = parse_data(data)
 
-        result = (durations["cols"] == 1 and
-                  durations["rows"] == count and
-                  distances["cols"] == 1 and
-                  distances["rows"] == count)
+        result = durations == (1, count) and distances == (1, count)
         expected = True
         self.assertEqual(expected, result)
 
@@ -67,35 +99,29 @@ class TestOpenRoute(unittest.TestCase):
         count = self.location_count
 
         with captured_output() as (out, _err):
-            json_data = openroute.matrix_mto(self.locations, count - 1)
+            data = openroute.matrix_mto(None, count-1, data=self.locations, return_string=False)
 
-        if len(json_data) == 0:
+        if len(data) == 0:
             print(out)
 
-        (durations, distances) = parse_data(json_data)
+        (durations, distances) = parse_data(data)
 
-        result = (durations["cols"] == count and
-                  durations["rows"] == 1 and
-                  distances["cols"] == count and
-                  distances["rows"] == 1)
+        result = durations == (count, 1) and distances == (count, 1)
         expected = True
         self.assertEqual(expected, result)
 
 
-def parse_data(json_data):
+def parse_data(data) -> (int, int):
     """
     Common data parser, returns the dimensions of the matrices.
     """
-    data = json.loads(json_data)
-    durations = { "cols": 0, "rows": 0 }
-    distances = { "cols": 0, "rows": 0 }
+    durations = (0, 0)
+    distances = (0, 0)
 
     if "durations" in data:
-        durations["cols"] = len(data["durations"])
-        durations["rows"] = len(data["durations"][0]) if durations["cols"] > 0 else 0
+        durations = matrix_utils.get_matrix_dimensions(data['durations'])
     if "distances" in data:
-        distances["cols"] = len(data["distances"])
-        distances["rows"] = len(data["distances"][0]) if distances["cols"] > 0 else 0
+        distances = matrix_utils.get_matrix_dimensions(data['distances'])
 
     return (durations, distances)
 

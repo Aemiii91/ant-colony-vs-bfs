@@ -11,6 +11,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../s
 # pylint: disable=unused-import,wrong-import-position, import-error
 import openroute
 import opencaching
+import utils.matrix as matrix_utils
 
 
 @contextmanager
