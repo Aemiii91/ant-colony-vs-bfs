@@ -3,10 +3,10 @@
 using namespace rapidjson;
 using namespace std;
 
-Graph JsonParser::ParseData(string json) {
+Graph JsonParser::ParseData(string jsonFilePath) {
   Document document;
   Graph graph;
-  std::ifstream jsonData(json);
+  std::ifstream jsonData(jsonFilePath);
   stringstream buffer;
   buffer << jsonData.rdbuf();
 
