@@ -6,7 +6,10 @@ set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
-file(GLOB SOURCES "src/*.cpp" "src/graph/*")
+file(GLOB SOURCES
+    "src/*.cpp"
+    "src/graph/*.cpp"
+    "src/ownAlgorithm/*.cpp")
 message("${SOURCES}")
 list(REMOVE_ITEM SOURCES "${CMAKE_SOURCE_DIR}/src/main.cpp" )
 file(GLOB TEST_SOURCES "tests/*.cpp")
