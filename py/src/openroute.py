@@ -14,7 +14,6 @@ api = ApiRequests(
     localhost_url='http://localhost:8080/ors/v2/',
     headers={
         'Accept': 'application/json, application/geo+json; charset=utf-8',
-        'Authorization': '5b3ce3597851110001cf624865c2d3b02c2c4f43b9d877849d66b13c',
         'Content-Type': 'application/json'
     }
 )
@@ -30,6 +29,15 @@ def check_status() -> bool:
         return health['status'] == 'ready'
 
     return False
+
+
+def request_directions(data: dict, format_out: str = '',
+                       profile: str = 'foot-walking', nocache: bool = False) -> dict:
+    """
+    API handle for the `directions` endpoint.
+    """
+    return json.loads(api.post(f'directions/{profile}{format_out}', data,
+                               nocache=nocache) or "{}")
 
 
 def request_matrix(data: dict, profile: str = 'foot-walking', nocache: bool = False) -> dict:
@@ -107,6 +115,7 @@ def matrix_builder(data: list, increments: int = 1,
         "distances": [],
         "durations": [],
         "destinations": None,
+        "sources": [],
         "metadata": None
     }
 
@@ -123,6 +132,14 @@ def matrix_builder(data: list, increments: int = 1,
             snapped_locations = [dest['location'] for dest in response['destinations']]
         _merge_matrix_response(collected_response, response)
 
+    metadata = dict(collected_response['metadata'] or {})
+
+    if 'sources' in metadata:
+        collected_response['metadata'].pop('sources')
+
+    metadata['service'] = "matrix-builder"
+    collected_response['metadata'] = metadata
+
     if not nocache:
         caching.save_cache(json.dumps(collected_response), payload=data)
 
@@ -134,10 +151,12 @@ def _merge_matrix_response(target: dict, response: dict):
         target['distances'].extend(response['distances'])
     if 'durations' in response:
         target['durations'].extend(response['durations'])
-    if not target['metadata']:
-        target['metadata'] = response['metadata']
+    if 'sources' in response:
+        target['sources'].extend(response['sources'])
     if not target['destinations']:
         target['destinations'] = response['destinations']
+    if not target['metadata']:
+        target['metadata'] = response['metadata']
 
 
 def _validate_return(data: str, as_string: bool):
