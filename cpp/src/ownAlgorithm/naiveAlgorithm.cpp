@@ -36,12 +36,17 @@ void NaiveAlgorithm::BackTrackGraph() {
 	double travelTimeHome = 0;
 	Node tempLast;
 	for (auto node : this->_path) {
-		travelTimeHome = TravelTime(&this->_path.front(), &this->_path.back());
+		travelTimeHome = TravelTime(&this->_path.back(), &this->_path.front());
 		if (travelTimeHome + this->_timeSpent > this->_timeInterval) {
 			tempLast = this->_path.back();
 			this->_path.pop_back();
 			this->_timeSpent -= TravelTime(&tempLast, &this->_path.back());
 		}
 	}
+	this->_timeSpent += TravelTime(&this->_path.back(), &this->_path.front());
+	std::cout << "cost of hometravel: "
+			  << TravelTime(&this->_path.back(), &this->_path.front())
+			  << std::endl;
 	this->_path.push_back(this->_path.front());
+	std::cout << "actual time spent: " << this->_timeSpent << std::endl;
 }
