@@ -66,9 +66,9 @@ std::vector<Ant> Colony::_initAnts() {
     Ant ant(
       this->startVertix,
       this->allVertices,
-      this->costMatrix,
-      this->_pheromoneMatrix,
-      this->_heuristicMatrix,
+      &this->costMatrix,
+      &this->_pheromoneMatrix,
+      &this->_heuristicMatrix,
       this->alpha,
       this->beta);
     ants.push_back(ant);
@@ -82,35 +82,39 @@ bool Colony::_isBetterSolution(Solution newSolution, Solution currentSolution) {
 }
 
 std::vector<Solution> Colony::_pickBestAntSolutions(std::vector<Ant> *ants, int solutionCount) {
-  std::vector<Solution> bestSolutions;
+  std::vector<Solution> solutions;
 
   for (Ant &ant : *ants) {
     Solution newSolution = ant.getSolution();
 
-    if (bestSolutions.size() >= solutionCount) {
-      int worstSolutionIndex = this->_findWorstSolution(bestSolutions);
+    // check if solution limit is reached
+    if (solutions.size() >= solutionCount) {
+      int worstIndex = this->_findWorstSolution(solutions);
 
-      if (this->_isBetterSolution(newSolution, bestSolutions[worstSolutionIndex])) {
-        bestSolutions.erase(bestSolutions.begin() + worstSolutionIndex);
+      if (this->_isBetterSolution(newSolution, solutions[worstIndex])) {
+        // remove the worst solution - to make room for the new better solution
+        solutions.erase(solutions.begin() + worstIndex);
       }
     }
     
-    if (bestSolutions.size() < solutionCount) {
-      bestSolutions.push_back(newSolution);
+    if (solutions.size() < solutionCount) {
+      solutions.push_back(newSolution);
     }
   }
 
-  return bestSolutions;
+  return solutions;
 }
 
 int Colony::_findWorstSolution(std::vector<Solution> solutions) {
   int worstIndex = 0;
 
-  if (solutions.size() >= 2) {
-    for (int i = 1; i < solutions.size(); i++) {
-      if (!this->_isBetterSolution(solutions[i], solutions[worstIndex])) {
-        worstIndex = i;
-      }
+  if (solutions.size() == 1) {
+    return 0;
+  }
+
+  for (int i = 1; i < solutions.size(); i++) {
+    if (!this->_isBetterSolution(solutions[i], solutions[worstIndex])) {
+      worstIndex = i;
     }
   }
 

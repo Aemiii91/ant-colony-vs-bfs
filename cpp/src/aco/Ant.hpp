@@ -11,9 +11,9 @@ namespace aco {
     public:
       VertixList route;
       VertixList possibleVertices;
-      MatrixDouble costMatrix;
-      MatrixDouble pheromoneMatrix;
-      MatrixDouble heuristicMatrix;
+      MatrixDouble *costMatrix;
+      MatrixDouble *pheromoneMatrix;
+      MatrixDouble *heuristicMatrix;
       double alpha;
       double beta;
       double tourCost = 0.0;
@@ -26,9 +26,9 @@ namespace aco {
        */
       Ant(int initVertix,
           VertixList allVertices,
-          MatrixDouble costMatrix,
-          MatrixDouble pheromoneMatrix,
-          MatrixDouble heuristicMatrix,
+          MatrixDouble *costMatrix,
+          MatrixDouble *pheromoneMatrix,
+          MatrixDouble *heuristicMatrix,
           double alpha, double beta) :
         route(VertixList { initVertix }),
         initVertix(initVertix),

@@ -55,7 +55,7 @@ void Ant::_traverse(int fromIndex, int toIndex) {
   this->route.push_back(toIndex);
   this->_removeFromVertixList(&(this->possibleVertices), toIndex);
 
-  this->tourCost += this->costMatrix[fromIndex][toIndex];
+  this->tourCost += (*this->costMatrix)[fromIndex][toIndex];
 }
 
 void Ant::_removeFromVertixList(VertixList *vert, int value) {
@@ -63,8 +63,8 @@ void Ant::_removeFromVertixList(VertixList *vert, int value) {
 }
 
 double Ant::_calculateEdgeProbability(int fromIndex, int toIndex) {
-  return std::pow(this->pheromoneMatrix[fromIndex][toIndex], this->alpha) *
-         std::pow(this->heuristicMatrix[fromIndex][toIndex], this->beta);
+  return std::pow((*this->pheromoneMatrix)[fromIndex][toIndex], this->alpha) *
+         std::pow((*this->heuristicMatrix)[fromIndex][toIndex], this->beta);
 }
 
 double Ant::_calculateMoveProbability(int fromIndex, int toIndex, double norm) {
