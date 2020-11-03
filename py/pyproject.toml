@@ -9,6 +9,7 @@ license = "MIT"
 python = "^3.8"
 requests = "^2.24.0"
 tqdm = "^4.50.2"
+ACO-Pants = "^0.5.2"
 
 [tool.poetry.dev-dependencies]
 

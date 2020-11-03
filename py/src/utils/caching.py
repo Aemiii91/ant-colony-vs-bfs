@@ -43,7 +43,7 @@ def save_cache(content: str, payload: dict = None,
     cache_file_path = _cache_file_path(cache_dir, payload)
 
     with open(cache_file_path, 'w+') as outfile:
-        outfile.write(content)
+        outfile.write(content or "")
 
 
 def _make_cache_dir(cache_dir) -> bool:

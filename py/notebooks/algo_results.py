@@ -111,6 +111,28 @@ def create_legend(location: list, html: str):
             }}
             .marker-description span.start:before {{ border-color: #41a6b5; background-color: #41a6b57F; }}
             .marker-description span.last:before {{ border-color: #9d7cd8; background-color: #9d7cd87F; }}
+            .color-palette {{
+                width: 100%;
+                height: 8px;
+                margin: 8px 0;
+            }}
+            .color-palette td {{
+                font-size: 0px;
+                background-color: currentColor;
+            }}
+            .color-palette div {{
+                position: relative;
+            }}
+            .color-palette td:not(:last-child) div:after {{
+                content: "";
+                position: absolute;
+                height: 0;
+                width: 0;
+                left: 100%;
+                top: -4px;
+                border: 4px solid transparent;
+                border-left: 4px solid currentColor;
+            }}
             </style>
             <div class="legend">
                 {html}
