@@ -19,14 +19,19 @@ namespace aco {
       double alpha = 0.5;
       double beta = 1.2;
       double evaporation = 0.4;
-      double pheromoneConstant = 1000.0;
+      double pheromoneConstant = 100.0;
+      double costConstraint = 0;
       int startVertix = 0;
       int antCount = 50;
+      int iterations = 80;
+      bool returnHome = false;
 
       Colony(std::vector<int> allVertices, MatrixDouble costMatrix) :
         allVertices(allVertices), costMatrix(costMatrix) { };
 
-      Solution Solve(int iterations = 80);
+      Solution Solve();
+      Solution SolveMultiple(int colonies = 80);
+      bool IsBetterSolution(Solution newSolution, Solution currentSolution);
 
     private:
       MatrixDouble _pheromoneMatrix;
@@ -34,8 +39,8 @@ namespace aco {
       MatrixDouble _initPheromoneMatrix();
       MatrixDouble _initHeuristicMatrix();
       std::vector<Ant> _initAnts();
-      bool _isBetterSolution(Solution newSolution, Solution currentSolution);
-      std::vector<Solution> _pickBestAntSolutions(std::vector<Ant> *ants, int solutionCount = 10);
+      double _calculateSolutionScore(Solution solution);
+      std::vector<Solution> _pickBestAntSolutions(std::vector<Ant> *ants, int solutionCount = 1);
       int _findWorstSolution(std::vector<Solution> bestSolutions);
       void _updatePheromoneMatrix(Solution bestAntSolution);
       void _evaporatePheromoneMatrix();
