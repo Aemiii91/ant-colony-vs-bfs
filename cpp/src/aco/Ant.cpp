@@ -3,23 +3,22 @@
 using namespace aco;
 
 void Ant::Reset(VertixList allVertices) {
-  this->route = VertixList { this->initVertix };
+  this->route = VertixList{this->initVertix};
   this->possibleVertices = allVertices;
   this->_removeFromVertixList(&(this->possibleVertices), this->initVertix);
+  this->runComplete = false;
 }
 
 void Ant::Run() {
-  this->runComplete = false;
-
   while (this->possibleVertices.size()) {
     int currentVertix = this->route[this->route.size() - 1];
     int nextVertix = this->_pickNextVertix(currentVertix);
-    
+
     this->_traverse(currentVertix, nextVertix);
   }
 
   if (this->possibleVertices.size() == 0) {
-    this->runComplete = true;
+	  this->runComplete = true;
   }
 }
 
@@ -28,11 +27,10 @@ int Ant::_pickNextVertix(int currentVertix) {
   double highestProbability = 0.0;
   int vertixHighestProbability = 0;
 
-  for (VertixList::iterator nextVertix = 
-       this->possibleVertices.begin();
-       nextVertix != this->possibleVertices.end();
-       nextVertix++) {
-    double probability = this->_calculateMoveProbability(currentVertix, *nextVertix, norm);
+  for (VertixList::iterator nextVertix = this->possibleVertices.begin();
+	     nextVertix != this->possibleVertices.end(); nextVertix++) {
+    double probability =
+      this->_calculateMoveProbability(currentVertix, *nextVertix, norm);
     double randomToss = (rand() / (RAND_MAX + 1.0));
 
     // choose next vertix based on probability
@@ -64,7 +62,7 @@ void Ant::_removeFromVertixList(VertixList *vert, int value) {
 
 double Ant::_calculateEdgeProbability(int fromIndex, int toIndex) {
   return std::pow((*this->pheromoneMatrix)[fromIndex][toIndex], this->alpha) *
-         std::pow((*this->heuristicMatrix)[fromIndex][toIndex], this->beta);
+		     std::pow((*this->heuristicMatrix)[fromIndex][toIndex], this->beta);
 }
 
 double Ant::_calculateMoveProbability(int fromIndex, int toIndex, double norm) {
@@ -74,8 +72,9 @@ double Ant::_calculateMoveProbability(int fromIndex, int toIndex, double norm) {
 double Ant::_calculateProbabilityNorm(int currentVertix) {
   int size = possibleVertices.size();
   double norm = 0.0;
-  for (auto nextVertix = possibleVertices.begin(); nextVertix != possibleVertices.end(); nextVertix++) {
-    norm += _calculateEdgeProbability(currentVertix, *nextVertix);
+  for (auto nextVertix = possibleVertices.begin();
+	     nextVertix != possibleVertices.end(); nextVertix++) {
+	  norm += _calculateEdgeProbability(currentVertix, *nextVertix);
   }
   return norm;
 }
