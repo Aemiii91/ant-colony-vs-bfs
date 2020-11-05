@@ -18,8 +18,9 @@ void aco::run(Graph *graph, utils::ArgumentParser *args) {
     colony.antCount = args->Get<int>("--ants", colony.antCount);
     colony.iterations = args->Get<int>("--iterations", colony.iterations);
     colony.bestAntLimit = args->Get<int>("--best_ant_limit", colony.bestAntLimit);
-    colony.returnHome = args->Exists("-op");
+    colony.returnHome = !args->Exists("--noreturn");
 
+    printf("Solving with %d ants doing %d iterations...", colony.antCount, colony.iterations);
     Solution best = colony.Solve();
 
     colony.PrintSolution(best);

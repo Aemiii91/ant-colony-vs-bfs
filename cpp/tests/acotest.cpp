@@ -50,14 +50,11 @@ TEST_F(ACOTest, ColonySolveTest) {
 	printf("Instantiating colony...\n");
 	Colony colony(this->allVertices, this->costMatrix);
 
-	int colonies = 1;
+	int colonies = 80;
 	colony.antCount = 50;
 	colony.iterations = 80;
-	// colony.alpha = 1.0;
-	// colony.beta = 0.5;
-	// colony.evaporation = 0.98;
-	// colony.costConstraint = 4000.0;
-	// colony.returnHome = true;
+	colony.costConstraint = 4000.0;
+	colony.returnHome = true;
 
 	printf("Solving with %d colonies of %d ants doing %d iterations...\n",
 		   colonies, colony.antCount, colony.iterations);
