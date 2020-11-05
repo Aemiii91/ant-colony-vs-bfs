@@ -11,7 +11,7 @@ void Ant::Reset(VertixList allVertices) {
 	this->runComplete = false;
 }
 
-void Ant::Run() {
+void Ant::_walk(){
 	int currentVertix;
 	int nextVertix;
 
@@ -39,8 +39,13 @@ void Ant::Run() {
 	}
 
 	this->runComplete = true;
-}
 
+
+	}
+std::thread Ant::Run() {  
+   std::thread t(&Ant::_walk, this);
+   return t;
+}
 bool Ant::_checkConstraint(double lookahead) {
 	return this->costConstraint == 0 ||
 		   (this->tourCost + lookahead) < this->costConstraint;
