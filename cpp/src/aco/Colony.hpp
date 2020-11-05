@@ -25,6 +25,7 @@ namespace aco {
         int startVertix = 0;
         int antCount = 50;
         int iterations = 80;
+        int bestAntLimit = 1;
         bool returnHome = false;
 
         Colony(std::vector<int> allVertices, MatrixDouble costMatrix)
@@ -43,8 +44,7 @@ namespace aco {
         MatrixDouble _initHeuristicMatrix();
         std::vector<Ant> _initAnts();
         double _calculateSolutionScore(Solution solution);
-        std::vector<Solution> _pickBestAntSolutions(std::vector<Ant> *ants,
-                                                    int solutionCount = 1);
+        std::vector<Solution> _pickBestAntSolutions(std::vector<Ant> *ants);
         int _findWorstSolution(std::vector<Solution> bestSolutions);
         void _updatePheromoneMatrix(Solution bestAntSolution);
         void _evaporatePheromoneMatrix();

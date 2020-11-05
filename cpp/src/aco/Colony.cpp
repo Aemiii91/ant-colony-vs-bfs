@@ -29,18 +29,6 @@ Colony::Colony(Graph *graph) {
 
         this->costMatrix[i][i] = 0.0;
 	}
-
-    // for (int i = 0; i < this->allVertices.size(); i++) {
-    //     printf("%d: %d, ", i, this->allVertices[i]);
-    // }
-    // printf("\n");
-
-    // for (std::vector<double> &row : this->costMatrix) {
-    //     for (double cost : row) {
-    //         printf("%10.2lf", cost);
-    //     }
-    //     printf("\n");
-    // }
 }
 
 Solution Colony::Solve() {
@@ -52,8 +40,10 @@ Solution Colony::Solve() {
 
 	std::vector<Ant> ants = this->_initAnts();
 
+	printf("\n");
+
 	for (int iteration = 0; iteration < this->iterations; iteration++) {
-        printf("%3.2f% : ", ((double)iteration)/this->iterations*100);
+        printf("\r%3.2f% : ", ((double)iteration)/this->iterations*100);
 
 		for (Ant &ant : ants) {
 			ant.Run();
@@ -75,8 +65,6 @@ Solution Colony::Solve() {
 		for (Ant &ant : ants) {
 			ant.Reset(this->allVertices);
 		}
-
-        printf("\n");
 	}
 
 	return currentSolution;
@@ -167,15 +155,14 @@ double Colony::_calculateSolutionScore(Solution solution) {
 	return solution.second.size();
 }
 
-std::vector<Solution> Colony::_pickBestAntSolutions(std::vector<Ant> *ants,
-													int solutionCount) {
+std::vector<Solution> Colony::_pickBestAntSolutions(std::vector<Ant> *ants) {
 	std::vector<Solution> solutions;
 
 	for (Ant &ant : *ants) {
 		Solution newSolution = ant.getSolution();
 
 		// check if solution limit is reached
-		if (solutions.size() >= solutionCount) {
+		if (solutions.size() >= this->bestAntLimit) {
 			int worstIndex = this->_findWorstSolution(solutions);
 
 			if (this->IsBetterSolution(newSolution, solutions[worstIndex])) {
@@ -185,7 +172,7 @@ std::vector<Solution> Colony::_pickBestAntSolutions(std::vector<Ant> *ants,
 			}
 		}
 
-		if (solutions.size() < solutionCount) {
+		if (solutions.size() < this->bestAntLimit) {
 			solutions.push_back(newSolution);
 		}
 	}
