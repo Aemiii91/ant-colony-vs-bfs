@@ -1,5 +1,5 @@
 ﻿---
-IndentWidth: '2'
+IndentWidth: '4'
 TabWidth: '4'
 UseTab: ForContinuationAndIndentation
 AllowShortFunctionsOnASingleLine: Empty
