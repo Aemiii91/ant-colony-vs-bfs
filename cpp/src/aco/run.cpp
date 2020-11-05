@@ -1,5 +1,6 @@
 #include "run.hpp"
 
+using namespace aco;
 
 void aco::run(Graph *graph, utils::ArgumentParser *args) {
 	time_t t;
