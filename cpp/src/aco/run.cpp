@@ -1,8 +1,7 @@
 #include "run.hpp"
 
-using namespace aco;
 
-void run(Graph *graph, utils::ArgumentParser *args) {
+void aco::run(Graph *graph, utils::ArgumentParser *args) {
 	time_t t;
 	srand(time(&t));
 
