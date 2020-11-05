@@ -9,6 +9,8 @@ void aco::run(Graph *graph, utils::ArgumentParser *args) {
     std::cout << "Spawning colony..." << std::endl;
     Colony colony(graph);
 
+    int colonies = args->Get<int>("--colonies", 80);
+
     colony.alpha = args->Get<double>("--alpha", colony.alpha);
     colony.beta = args->Get<double>("--beta", colony.beta);
     colony.evaporation = args->Get<double>("--evaporation", colony.evaporation);
@@ -20,8 +22,11 @@ void aco::run(Graph *graph, utils::ArgumentParser *args) {
     colony.bestAntLimit = args->Get<int>("--best_ant_limit", colony.bestAntLimit);
     colony.returnHome = !args->Exists("--noreturn");
 
-    printf("Solving with %d ants doing %d iterations...", colony.antCount, colony.iterations);
-    Solution best = colony.Solve();
+    printf("Solving with %d colonies of %d ants doing %d iterations...\n",
+		   colonies, colony.antCount, colony.iterations);
+    printf("= %'d cycles\n", colonies * colony.antCount * colony.iterations);
+    Solution best = colony.SolveMultiple(colonies);
 
+    printf("Best solution: ");
     colony.PrintSolution(best);
 }

@@ -21,11 +21,11 @@ namespace aco {
         double alpha = 1;
         double beta = 20;
         double evaporation = 0.04;
-        double pheromoneConstant = 1000.0;
+        double pheromoneConstant = 100.0;
         double costConstraint = 30000;
         int startVertix = 0;
-        int antCount = 200;
-        int iterations = 100;
+        int antCount = 50;
+        int iterations = 80;
         int bestAntLimit = 1;
         bool returnHome = true;
 

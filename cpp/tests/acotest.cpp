@@ -51,6 +51,8 @@ TEST_F(ACOTest, ColonySolveTest) {
 	Colony colony(this->allVertices, this->costMatrix);
 
 	int colonies = 80;
+	colony.alpha = 0.5;
+	colony.beta = 1.2;
 	colony.antCount = 50;
 	colony.iterations = 80;
 	colony.costConstraint = 4000.0;
