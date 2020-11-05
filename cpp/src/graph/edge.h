@@ -10,6 +10,11 @@ class Edge {
 	int dist;      // The destination of the edge
 	double weight; // Used as weight
 
+	// Operator override for comparing equal edges
+	bool operator==(const Edge &foo);
+	// Operator override for comparing not equal edges
+	bool operator!=(const Edge &foo);
+
   private:
 	// This is used to print the object in a nice way
 	friend ostream &operator<<(ostream &out, const Edge &e) {

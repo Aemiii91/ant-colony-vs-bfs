@@ -18,6 +18,9 @@ class Node {
 	size_t GetEdgeListSize();
 	std::vector<Edge> edgeList;
 
+	// Used to compare edgelists of nodes
+	bool EdgeListCompare(const Node &foo);
+
   private:
 	// This is used to print the object in a nice way
 	friend ostream &operator<<(ostream &out, const Node &n) {

@@ -23,3 +23,14 @@ TEST(JsonParserTest, ParseData) {
 
 	ASSERT_EQ(expected, result);
 }
+
+TEST(JsonParserTest, ConnectNodes) {
+	JsonParser parser;
+	Graph graph;
+
+	graph = parser.ParseData("../data/jsontest_mockup");
+	double expected = 0.00000000000001;
+	double result = graph.nodelist.at(0).GetEdge(2).weight;
+
+	ASSERT_EQ(expected, result);
+}
