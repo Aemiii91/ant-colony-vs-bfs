@@ -3,32 +3,30 @@
 #include <iostream>
 #include <random>
 
-#include "aco/Colony.hpp"
+#include "utils/ArgumentParser.hpp"
+#include "aco/run.hpp"
 #include "jsonparser.h"
 
-using namespace std;
 int main(int argc, char **argv) {
-	time_t t;
-	srand(time(&t));
+	utils::ArgumentParser args(argc, argv);
 
 	JsonParser parser;
+	Graph graph = parser.ParseData(args.Get<std::string>("--data",
+		"../data/matrix500.json"));
 
-	std::cout << "Loading graph..." << std::endl;
-	Graph graph = parser.ParseData("../data/matrix500.json");
+	if (argc <= 1) {
+		std::cout << "No subprogram specified." << std::endl;
+		return 0;
+	}
 
-	std::cout << "Spawning colony..." << std::endl;
-	aco::Colony colony(&graph);
+	std::string subprogram = argv[1];
 
-    colony.costConstraint = 30000;
-    colony.returnHome = true;
-    colony.evaporation = 0.4;
-    colony.antCount = 750;
-    colony.iterations = 100;
-
-	std::cout << "Solving..." << std::endl;
-	aco::Solution best = colony.Solve();
-
-    colony.PrintSolution(best);
+	if (subprogram == "aco") {
+		aco::run(&graph, &args);
+	}
+	else {
+		std::cout << "Subprogram not recognized." << std::endl;
+	}
 
 	return 0;
 }
