@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cmath>
 #include <vector>
+#include <thread>
 
 namespace aco {
     typedef std::vector<std::vector<double>> MatrixDouble;

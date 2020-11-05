@@ -38,16 +38,22 @@ Solution Colony::Solve() {
 	this->_pheromoneMatrix = this->_initPheromoneMatrix();
 	this->_heuristicMatrix = this->_initHeuristicMatrix();
 
+        std::vector<std::thread> listOfThreads;
 	std::vector<Ant> ants = this->_initAnts();
 
 	printf("\n");
 
 	for (int iteration = 0; iteration < this->iterations; iteration++) {
         printf("\r%3.2f% : ", ((double)iteration)/this->iterations*100);
-
-		for (Ant &ant : ants) {
-			ant.Run();
+		for (Ant &ant : ants) {	
+			listOfThreads.push_back(ant.Run());	
+		};
+		
+		for (auto& t: listOfThreads){
+			t.join();
 		}
+		
+		listOfThreads.clear();
 
 		this->_evaporatePheromoneMatrix();
 
