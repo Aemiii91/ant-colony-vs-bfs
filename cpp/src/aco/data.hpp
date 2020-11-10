@@ -16,9 +16,10 @@ typedef std::vector<int> VertixList;
 typedef std::thread Thread;
 typedef std::function<void(int, int)> ProgressHandler;
 struct Solution {
-	double cost;
-	VertixList route;
+	double cost = 0.0;
+	VertixList route = {};
 
+    Solution(){};
     Solution(double cost, VertixList route) : cost(cost), route(route){};
 
 	friend std::ostream &operator<<(std::ostream &out,
