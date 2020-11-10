@@ -54,9 +54,9 @@ TEST_F(ACOTest, ColonySolveTest) {
 	colony.iterations = 50;
 	colony.costConstraint = 4000.0;
 
-	aco::Solution best = colony.SolveMultiple(colonies);
+	aco::Solution solution = colony.Solve(colonies);
 
-	colony.PrintSolution(best);
+	std::cout << solution;
 
-	ASSERT_EQ(8, best.route.size() - 1);
+	ASSERT_EQ(8, solution.route.size() - 1);
 }

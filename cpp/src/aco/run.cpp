@@ -65,7 +65,7 @@ void aco::run(Graph *graph, utils::ArgumentParser *args) {
 	}
 
 	auto start = std::chrono::high_resolution_clock::now();
-	Solution best = colony.SolveMultiple(colonies);
+	Solution bestSolution = colony.Solve(colonies);
 
 	auto stop = std::chrono::high_resolution_clock::now();
 	auto duration =
@@ -79,7 +79,7 @@ void aco::run(Graph *graph, utils::ArgumentParser *args) {
 	snprintf(s, 20, "%.3fs\n", (double)duration.count() / 1000000);
 	print::yellow(s);
 
-	colony.PrintSolution(best);
+	std::cout << bestSolution;
 }
 
 indicators::ProgressBar aco::createProgressBar(int maxProgress) {

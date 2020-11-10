@@ -8,8 +8,6 @@
 #include <functional>
 #include <indicators/termcolor.hpp>
 #include <ThreadPool/ThreadPool.h>
-#include <mutex>
-#include <thread>
 #include <vector>
 
 #include "../graph/graph.h"
@@ -21,7 +19,6 @@
 namespace aco {
 class Colony {
   public:
-	VertixList allVertices;
 	double alpha = 1;
 	double beta = 20;
 	double evaporation = 0.04;
@@ -36,35 +33,22 @@ class Colony {
 	ProgressHandler progressHandler = [](int n, int total) { /* no-op */ };
 
 	Colony(std::vector<int> allVertices, MatrixDouble costMatrix)
-		: allVertices(allVertices), _costMatrix(costMatrix){};
+		: _allVertices(allVertices), _costMatrix(costMatrix){};
 	Colony(Graph *graph);
 
-	Colony Clone() const;
-	Solution Solve();
-	Solution SolveMultiple(int colonyCount = 80);
-	bool IsBetterSolution(Solution newSolution, Solution currentSolution);
-	void PrintSolution(Solution solution);
-	Solution solution() {
-		return this->_solution;
-	}
-	MatrixDouble costMatrix() {
-		return MatrixDouble(this->_costMatrix);
-	}
-	MatrixDouble pheromoneMatrix() {
-		return MatrixDouble(this->_pheromoneMatrix);
-	}
-	MatrixDouble heuristicMatrix() {
-		return MatrixDouble(this->_heuristicMatrix);
-	}
+	Solution Solve(int colonyCount = 80);
 
   private:
 	Solution _solution;
 	bool _hasSolution = false;
 	int _progressCount = 0;
 	int _progressTotal = 100;
+	VertixList _allVertices;
 	MatrixDouble _costMatrix;
 	MatrixDouble _pheromoneMatrix;
 	MatrixDouble _heuristicMatrix;
+
+	Solution _solve();
 	MatrixDouble _initPheromoneMatrix();
 	MatrixDouble _initHeuristicMatrix();
 	std::vector<Ant> _initAnts();
@@ -73,6 +57,7 @@ class Colony {
 	double _calculateSolutionScore(Solution solution);
 	std::vector<Solution> _pickBestAntSolutions(std::vector<Ant> *ants);
 	int _findWorstSolution(std::vector<Solution> bestSolutions);
+	bool _isBetterSolution(Solution newSolution, Solution currentSolution);
 	void _updatePheromoneMatrix(Solution bestAntSolution);
 	void _evaporatePheromoneMatrix();
 	void _progressTick(int stepSize = 1);

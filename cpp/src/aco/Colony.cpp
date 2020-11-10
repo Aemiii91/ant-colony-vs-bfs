@@ -8,7 +8,7 @@ Colony::Colony(Graph *graph) {
 		MatrixDouble(matrixSize, std::vector<double>(matrixSize, 1.0));
 
 	for (Node &node : graph->nodelist) {
-		this->allVertices.push_back(node.ID);
+		this->_allVertices.push_back(node.ID);
 	}
 
 	for (int i = 0; i < matrixSize; i++) {
@@ -32,11 +32,31 @@ Colony::Colony(Graph *graph) {
 	}
 }
 
-Colony Colony::Clone() const {
-	return Colony(*this);
+Solution Colony::Solve(int colonyCount) {
+	std::vector<Solution> solutions;
+
+	this->_setProgressTotal(colonyCount * this->iterations * this->antCount);
+	ProgressHandler progressHandler = [this](int n, int total) {
+		this->_progressTick();
+	};
+
+	for (int i = 0; i < colonyCount; i++) {
+		Colony clone(*this);
+		clone.progressHandler = progressHandler;
+
+		Solution solution = clone._solve();
+
+		if (!this->_hasSolution ||
+			this->_isBetterSolution(solution, this->_solution)) {
+			this->_solution = solution;
+			this->_hasSolution = true;
+		}
+	}
+
+	return this->_solution;
 }
 
-Solution Colony::Solve() {
+Solution Colony::_solve() {
 	unsigned int threadCount = std::thread::hardware_concurrency();
 	ThreadPool pool(threadCount);
 
@@ -76,88 +96,27 @@ Solution Colony::Solve() {
 			this->_updatePheromoneMatrix(newSolution);
 
 			if (!this->_hasSolution ||
-				this->IsBetterSolution(newSolution, this->_solution)) {
+				this->_isBetterSolution(newSolution, this->_solution)) {
 				this->_solution = newSolution;
 				this->_hasSolution = true;
 			}
 		}
 
 		for (Ant &ant : ants) {
-			ant.Reset(this->allVertices);
+			ant.Reset(this->_allVertices);
 		}
 	}
 
 	return this->_solution;
-}
-
-Solution Colony::SolveMultiple(int colonyCount) {
-	std::vector<Solution> solutions;
-
-	this->_setProgressTotal(colonyCount * this->iterations * this->antCount);
-	ProgressHandler progressHandler = [this](int n, int total) {
-		this->_progressTick();
-	};
-
-	for (int i = 0; i < colonyCount; i++) {
-		Colony clone = this->Clone();
-		clone.progressHandler = progressHandler;
-		solutions.push_back(clone.Solve());
-	}
-
-	for (Solution &solution : solutions) {
-		if (!this->_hasSolution ||
-			this->IsBetterSolution(solution, this->_solution)) {
-			this->_solution = solution;
-			this->_hasSolution = true;
-		}
-	}
-
-	return this->_solution;
-}
-
-bool Colony::IsBetterSolution(Solution newSolution, Solution currentSolution) {
-	double newCost = newSolution.cost;
-	double currentCost = currentSolution.cost;
-
-	if (this->costConstraint > 0) {
-		double newScore = this->_calculateSolutionScore(newSolution);
-		double currentScore = this->_calculateSolutionScore(currentSolution);
-
-		return newScore > currentScore ||
-			   (newScore == currentScore && newCost < currentCost);
-	}
-
-	return newCost < currentCost;
-}
-
-void Colony::PrintSolution(Solution solution) {
-	int size = solution.route.size();
-	int score = solution.route[size - 1] == solution.route[0] ? size - 1 : size;
-
-	print::white("( ");
-	print::boldBlue(std::floor(solution.cost));
-	print::white(", ");
-	print::boldMagenta(score);
-	print::white(" ) ");
-	print::grey("= [");
-
-	for (int i = 0; i < solution.route.size(); i++) {
-		if (i > 0) {
-			print::grey(", ");
-		}
-		print::grey(solution.route[i]);
-	}
-
-	print::grey("]\n");
 }
 
 MatrixDouble Colony::_initPheromoneMatrix() {
-	int size = this->allVertices.size();
+	int size = this->_allVertices.size();
 	return MatrixDouble(size, std::vector<double>(size, 1.0));
 }
 
 MatrixDouble Colony::_initHeuristicMatrix() {
-	int size = this->allVertices.size();
+	int size = this->_allVertices.size();
 	MatrixDouble heuristicMatrix(size, std::vector<double>(size, 1.0));
 
 	for (int i = 0; i < size; i++) {
@@ -177,7 +136,7 @@ std::vector<Ant> Colony::_initAnts() {
 	std::vector<Ant> ants;
 
 	for (int i = 0; i < this->antCount; i++) {
-		ants.push_back(Ant(this->startVertix, this->allVertices,
+		ants.push_back(Ant(this->startVertix, this->_allVertices,
 						   &this->_costMatrix, &this->_pheromoneMatrix,
 						   &this->_heuristicMatrix, this->alpha, this->beta,
 						   this->costConstraint, this->returnHome));
@@ -200,7 +159,7 @@ std::vector<Solution> Colony::_pickBestAntSolutions(std::vector<Ant> *ants) {
 		if (solutions.size() >= this->bestAntLimit) {
 			int worstIndex = this->_findWorstSolution(solutions);
 
-			if (this->IsBetterSolution(newSolution, solutions[worstIndex])) {
+			if (this->_isBetterSolution(newSolution, solutions[worstIndex])) {
 				// remove the worst solution - to make room for the new better
 				// solution
 				solutions.erase(solutions.begin() + worstIndex);
@@ -223,12 +182,27 @@ int Colony::_findWorstSolution(std::vector<Solution> solutions) {
 	}
 
 	for (int i = 1; i < solutions.size(); i++) {
-		if (!this->IsBetterSolution(solutions[i], solutions[worstIndex])) {
+		if (!this->_isBetterSolution(solutions[i], solutions[worstIndex])) {
 			worstIndex = i;
 		}
 	}
 
 	return worstIndex;
+}
+
+bool Colony::_isBetterSolution(Solution newSolution, Solution currentSolution) {
+	double newCost = newSolution.cost;
+	double currentCost = currentSolution.cost;
+
+	if (this->costConstraint > 0) {
+		double newScore = this->_calculateSolutionScore(newSolution);
+		double currentScore = this->_calculateSolutionScore(currentSolution);
+
+		return newScore > currentScore ||
+			   (newScore == currentScore && newCost < currentCost);
+	}
+
+	return newCost < currentCost;
 }
 
 void Colony::_updatePheromoneMatrix(Solution antSolution) {
