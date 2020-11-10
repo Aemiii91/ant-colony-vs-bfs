@@ -18,6 +18,9 @@ typedef std::function<void(int, int)> ProgressHandler;
 struct Solution {
 	double cost;
 	VertixList route;
+
+    Solution(double cost, VertixList route) : cost(cost), route(route){};
+
 	friend std::ostream &operator<<(std::ostream &out,
 									const Solution &solution) {
 		int size = solution.route.size();
