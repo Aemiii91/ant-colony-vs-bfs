@@ -15,6 +15,11 @@ namespace utils::vector {
 		}
 		return -1;
 	};
+
+	template <typename T>
+	void removeValue(std::vector<T> *list, T value) {
+		list->erase(std::remove(list->begin(), list->end(), value), list->end());
+	}
 }
 
 #endif

@@ -37,7 +37,7 @@ void Ant::Reset(VertixList allVertices) {
 	this->_cost = 0.0;
 	this->_route = VertixList{this->startVertix};
 	this->possibleVertices = allVertices;
-	this->_removeFromVertixList(&(this->possibleVertices), this->startVertix);
+	utils::vector::removeValue(&(this->possibleVertices), this->startVertix);
 }
 
 bool Ant::_checkConstraint(double lookahead) {
@@ -90,13 +90,9 @@ int Ant::_pickNextVertix(int currentVertix) {
 
 void Ant::_traverse(int fromIndex, int toIndex) {
 	this->_route.push_back(toIndex);
-	this->_removeFromVertixList(&(this->possibleVertices), toIndex);
+	utils::vector::removeValue(&(this->possibleVertices), toIndex);
 
 	this->_cost += (*this->costMatrix)[fromIndex][toIndex];
-}
-
-void Ant::_removeFromVertixList(VertixList *vert, int value) {
-	vert->erase(std::remove(vert->begin(), vert->end(), value), vert->end());
 }
 
 double Ant::_calculateEdgeProbability(int fromIndex, int toIndex) {

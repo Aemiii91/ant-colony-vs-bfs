@@ -2,6 +2,7 @@
 #define ACO_ANT_HPP
 #pragma once
 
+#include "../utils/vector.hpp"
 #include "data.hpp"
 #include <algorithm>
 #include <cmath>
@@ -33,8 +34,8 @@ class Ant {
 		  heuristicMatrix(heuristicMatrix), alpha(alpha), beta(beta),
 		  costConstraint(costConstraint), returnHome(returnHome) {
 		this->_route = VertixList{this->startVertix};
-		this->_removeFromVertixList(&(this->possibleVertices),
-									this->startVertix);
+		utils::vector::removeValue(&(this->possibleVertices),
+								   this->startVertix);
 	}
 
 	void Run();
@@ -50,7 +51,6 @@ class Ant {
 	bool _checkConstraint(double lookahead = 0.0);
 	int _pickNextVertix(int currentVertix);
 	void _traverse(int fromIndex, int toIndex);
-	void _removeFromVertixList(VertixList *vert, int value);
 	double _calculateEdgeProbability(int fromIndex, int toIndex);
 	double _calculateMoveProbability(int fromIndex, int toIndex, double norm);
 	double _calculateProbabilityNorm(int currentVertix);
