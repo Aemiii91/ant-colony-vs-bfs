@@ -84,13 +84,14 @@ void aco::run(Graph *graph, utils::ArgumentParser *args) {
 
 indicators::ProgressBar aco::createProgressBar(int maxProgress) {
 	namespace opt = indicators::option;
+	std::string indicator = "#";
 	return indicators::ProgressBar{
-		opt::BarWidth{std::max<int>(10, indicators::terminal_width() - 50)},
+		opt::BarWidth{20},
 		opt::ShowElapsedTime{true},
 		opt::ShowRemainingTime{true},
 		opt::MaxProgress{maxProgress},
-		opt::Fill{"#"},
-		opt::Lead{"#"},
+		opt::Fill{indicator},
+		opt::Lead{indicator},
 		opt::ForegroundColor{print::colorsEnabled() ? indicators::Color::green
 													: indicators::Color::white},
 		opt::FontStyles{

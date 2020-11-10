@@ -4,7 +4,6 @@
 
 #include <iostream>
 #include <chrono>
-#include <indicators/terminal_size.hpp>
 #include <indicators/cursor_control.hpp>
 #include <indicators/progress_bar.hpp>
 
