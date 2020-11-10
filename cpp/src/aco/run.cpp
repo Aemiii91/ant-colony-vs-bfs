@@ -59,26 +59,11 @@ void aco::run(Graph *graph, utils::ArgumentParser *args) {
 	print::grey(" ]\n");
 
 	namespace opt = indicators::option;
-	indicators::ProgressBar bar{
-		opt::BarWidth{std::max<int>(10, indicators::terminal_width() - 50)},
-		opt::ShowElapsedTime{true},
-		opt::ShowRemainingTime{true},
-		opt::MaxProgress{totalCycles},
-		opt::Fill{"#"},
-		opt::Lead{"#"},
-		opt::ForegroundColor{print::colorsEnabled() ? indicators::Color::green
-													: indicators::Color::white},
-		opt::FontStyles{
-			std::vector<indicators::FontStyle>{indicators::FontStyle::bold}}};
+	auto bar = createProgressBar(totalCycles);
 
 	if (showProgress) {
 		colony.progressHandler = [&bar](int n, int total) {
-			bar.set_option(opt::PrefixText{
-				std::to_string((int)std::ceil((double)n / total * 100)) +
-				"% "});
-			bar.set_option(opt::PostfixText{std::to_string(n) + "/" +
-											std::to_string(total)});
-			bar.tick();
+			progressBarTick(&bar, n, total);
 		};
 	}
 
@@ -89,11 +74,8 @@ void aco::run(Graph *graph, utils::ArgumentParser *args) {
 	auto duration =
 		std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
 
-	bar.set_option(opt::PrefixText{"100% "});
-	bar.set_option(opt::PostfixText{std::to_string(totalCycles) + "/" +
-									std::to_string(totalCycles)});
-	if (!bar.is_completed()) {
-		bar.tick();
+	if (showProgress) {
+		progressBarTick(&bar, totalCycles, totalCycles);
 	}
 
 	char s[20];
@@ -104,4 +86,32 @@ void aco::run(Graph *graph, utils::ArgumentParser *args) {
 
 	// Show cursor
 	indicators::show_console_cursor(true);
+}
+
+indicators::ProgressBar aco::createProgressBar(int maxProgress) {
+	namespace opt = indicators::option;
+	return indicators::ProgressBar{
+		opt::BarWidth{std::max<int>(10, indicators::terminal_width() - 50)},
+		opt::ShowElapsedTime{true},
+		opt::ShowRemainingTime{true},
+		opt::MaxProgress{maxProgress},
+		opt::Fill{"#"},
+		opt::Lead{"#"},
+		opt::ForegroundColor{print::colorsEnabled() ? indicators::Color::green
+													: indicators::Color::white},
+		opt::FontStyles{
+			std::vector<indicators::FontStyle>{indicators::FontStyle::bold}}};
+}
+
+void aco::progressBarTick(indicators::ProgressBar *bar, int n, int total) {
+	namespace opt = indicators::option;
+
+	if (!bar->is_completed()) {
+		bar->set_option(opt::PrefixText{
+			std::to_string((int)std::ceil((double)n / total * 100)) +
+			"% "});
+		bar->set_option(opt::PostfixText{std::to_string(n) + "/" +
+										std::to_string(total)});	
+		bar->tick();
+	}
 }

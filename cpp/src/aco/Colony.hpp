@@ -37,15 +37,6 @@ class Colony {
 	Colony(std::vector<int> allVertices, MatrixDouble costMatrix)
 		: allVertices(allVertices), _costMatrix(costMatrix){};
 	Colony(Graph *graph);
-	Colony(const Colony *other, MatrixDouble costMatrix)
-		: allVertices(other->allVertices), alpha(other->alpha),
-		  beta(other->beta), evaporation(other->evaporation),
-		  pheromoneConstant(other->pheromoneConstant),
-		  costConstraint(other->costConstraint),
-		  startVertix(other->startVertix), antCount(other->antCount),
-		  iterations(other->iterations), bestAntLimit(other->bestAntLimit),
-		  returnHome(returnHome), threading(threading),
-		  _costMatrix(costMatrix){};
 
 	Colony Clone() const;
 	Solution Solve();
@@ -68,7 +59,6 @@ class Colony {
   private:
 	Solution _solution;
 	bool _hasSolution = false;
-	std::mutex _mutex;
 	int _progressCount = 0;
 	int _progressTotal = 100;
 	MatrixDouble _costMatrix;

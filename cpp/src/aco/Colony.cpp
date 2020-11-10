@@ -33,7 +33,7 @@ Colony::Colony(Graph *graph) {
 }
 
 Colony Colony::Clone() const {
-	return Colony(this, this->_costMatrix);
+	return Colony(*this);
 }
 
 Solution Colony::Solve() {
@@ -262,8 +262,6 @@ void Colony::_evaporatePheromoneMatrix() {
 }
 
 void Colony::_progressTick(int tickSize) {
-	std::unique_lock lock{_mutex};
-
 	this->_progressCount =
 		std::min(this->_progressCount + tickSize, this->_progressTotal);
 
@@ -271,6 +269,5 @@ void Colony::_progressTick(int tickSize) {
 }
 
 void Colony::_setProgressTotal(int value) {
-	std::unique_lock lock{_mutex};
 	this->_progressTotal = value;
 }
