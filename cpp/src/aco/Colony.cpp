@@ -174,10 +174,10 @@ std::vector<Ant> Colony::_initAnts() {
 }
 
 void Colony::_runThreads(std::vector<Thread> *threads,
-						 std::function<void(int)> job) {
+						 std::function<void(int)> job, bool override) {
 	int count = threads->size();
 
-	if (this->threading) {
+	if (this->threading && override) {
 		for (int i = 0; i < count; i++) {
 			threads->at(i) = Thread(job, i);
 		}

@@ -68,7 +68,7 @@ class Colony {
 	MatrixDouble _initHeuristicMatrix();
 	std::vector<Ant> _initAnts();
 	void _runThreads(std::vector<Thread> *threads,
-					 std::function<void(int)> job);
+					 std::function<void(int)> job, bool override = true);
 	double _calculateSolutionScore(Solution solution);
 	std::vector<Solution> _pickBestAntSolutions(std::vector<Ant> *ants);
 	int _findWorstSolution(std::vector<Solution> bestSolutions);
