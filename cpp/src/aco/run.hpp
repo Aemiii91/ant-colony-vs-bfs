@@ -17,6 +17,7 @@ namespace aco {
     void run(Graph *graph, utils::ArgumentParser *args);
     indicators::ProgressBar createProgressBar(int maxProgress);
     void progressBarTick(indicators::ProgressBar *bar, int n, int total);
+    void printParameters(int colonyCount, Colony *colony);
 }
 
 #endif

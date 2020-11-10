@@ -37,19 +37,38 @@ Colony Colony::Clone() const {
 }
 
 Solution Colony::Solve() {
+	unsigned int threadCount = std::thread::hardware_concurrency();
+	ThreadPool pool(threadCount);
+
+	// create default matrices
 	this->_pheromoneMatrix = this->_initPheromoneMatrix();
 	this->_heuristicMatrix = this->_initHeuristicMatrix();
 
+	// initialize ants
 	std::vector<Ant> ants = this->_initAnts();
-	std::vector<Thread> threads(this->antCount);
 
+	auto checkComplete = [&ants] {
+		for (Ant &ant : ants) {
+			if (!ant.runComplete) {
+				return false;
+			}
+		}
+		return true;
+	};
+
+	// set total progress (number of cycles)
 	this->_setProgressTotal(this->iterations * this->antCount);
 
 	for (int iteration = 0; iteration < this->iterations; iteration++) {
-		this->_runThreads(&threads, [this, &ants](int index) {
-			ants[index].Run();
-			this->_progressTick();
-		});
+		for (Ant &ant : ants) {
+			// add ant to queue
+			pool.enqueue([this, &ant] {
+				ant.Run();
+				this->_progressTick();
+			});
+		}
+
+		while (!checkComplete());
 
 		this->_evaporatePheromoneMatrix();
 
@@ -68,8 +87,6 @@ Solution Colony::Solve() {
 		}
 	}
 
-	threads.clear();
-
 	return this->_solution;
 }
 
@@ -81,15 +98,11 @@ Solution Colony::SolveMultiple(int colonyCount) {
 		this->_progressTick();
 	};
 
-	std::vector<Thread> threads(colonyCount);
-
-	this->_runThreads(&threads, [this, progressHandler, &solutions](int) {
+	for (int i = 0; i < colonyCount; i++) {
 		Colony clone = this->Clone();
 		clone.progressHandler = progressHandler;
 		solutions.push_back(clone.Solve());
-	});
-
-	threads.clear();
+	}
 
 	for (Solution &solution : solutions) {
 		if (!this->_hasSolution ||
@@ -171,25 +184,6 @@ std::vector<Ant> Colony::_initAnts() {
 	}
 
 	return ants;
-}
-
-void Colony::_runThreads(std::vector<Thread> *threads,
-						 std::function<void(int)> job, bool override) {
-	int count = threads->size();
-
-	if (this->threading && override) {
-		for (int i = 0; i < count; i++) {
-			threads->at(i) = Thread(job, i);
-		}
-
-		for (Thread &t : *threads) {
-			t.join();
-		}
-	} else {
-		for (int i = 0; i < count; i++) {
-			job(i);
-		}
-	}
 }
 
 double Colony::_calculateSolutionScore(Solution solution) {

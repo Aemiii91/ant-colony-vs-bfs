@@ -7,6 +7,7 @@
 #include <cmath>
 #include <functional>
 #include <indicators/termcolor.hpp>
+#include <ThreadPool/ThreadPool.h>
 #include <mutex>
 #include <thread>
 #include <vector>

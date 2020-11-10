@@ -6,9 +6,6 @@ void aco::run(Graph *graph, utils::ArgumentParser *args) {
 	time_t t;
 	srand(time(&t));
 
-	// Hide cursor
-	indicators::show_console_cursor(false);
-
 	Colony colony(graph);
 
 	int colonies = 1;
@@ -83,9 +80,6 @@ void aco::run(Graph *graph, utils::ArgumentParser *args) {
 	print::yellow(s);
 
 	colony.PrintSolution(best);
-
-	// Show cursor
-	indicators::show_console_cursor(true);
 }
 
 indicators::ProgressBar aco::createProgressBar(int maxProgress) {
@@ -114,4 +108,8 @@ void aco::progressBarTick(indicators::ProgressBar *bar, int n, int total) {
 										std::to_string(total)});	
 		bar->tick();
 	}
+}
+
+void aco::printParameters(int colonyCount, Colony *colony) {
+
 }
