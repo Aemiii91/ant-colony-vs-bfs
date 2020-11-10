@@ -8,7 +8,7 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
 include_directories(include)
 
-file(GLOB SOURCES "src/*.cpp" "src/graph/*" "src/aco/*" "src/utils/*")
+file(GLOB SOURCES "src/*.cpp" "src/graph/*.cpp" "src/aco/*.cpp" "src/utils/*.cpp" "src/ownAlgorithm/*.cpp")
 message("${SOURCES}")
 list(REMOVE_ITEM SOURCES "${CMAKE_SOURCE_DIR}/src/main.cpp" )
 file(GLOB TEST_SOURCES "tests/*.cpp")

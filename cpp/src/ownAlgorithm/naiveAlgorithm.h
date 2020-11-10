@@ -10,8 +10,8 @@
 class NaiveAlgorithm : public BaseAlgorithm {
   public:
 	NaiveAlgorithm(double timeInterval, Graph graph) {
-		this->_graph = graph;
 		this->_timeInterval = timeInterval;
+		this->_graph = graph;
 	}
 	/**
 	 * Runner function for the firstDraftAlgorithm
@@ -31,10 +31,22 @@ class NaiveAlgorithm : public BaseAlgorithm {
 	 * class, since it is specific to the algorithm itself.
 	 *
 	 * @param n2 pointer to the candidate node
-	 * @param timeSpent the accumulated timespent (time already used on the
-	 * route)
+	 *
 	 * @return true if the constraint can be satisfied, false if not
 	 */
-	bool CalculateConstraint(Node *n2, double timeSpent);
+	bool CalculateConstraint(Node *n2);
 	bool _run = true;
+	/**
+	 * Small method to go backwards in the graph, checking the constraint
+	 *
+	 * Uses the accumulated timespent and holds it against the traveltime
+	 * From the current final node of the path to the starting node
+	 * If the cost of going from the final node exceeds the time constraint
+	 * the final node is removed from the path. This process continues untill
+	 * we can get back to the starting node from the final node within the
+	 * given constraint
+	 */
+	void BackTrackGraph();
+	/// had to move this variable here in order to backtrack the graph later
+	double _timeSpent = 0;
 };

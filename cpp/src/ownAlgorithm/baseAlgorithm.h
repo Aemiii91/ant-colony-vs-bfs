@@ -1,5 +1,5 @@
 #pragma once
-#include "graph/graph.h"
+#include "../graph/graph.h"
 #include <climits>
 #include <exception>
 #include <iostream>
@@ -33,7 +33,7 @@ class BaseAlgorithm {
 	 * @param candidateNodeID the ID of the node to be checked
 	 * @return boolean if the node was found or not
 	 */
-	bool IsVisited(int candidateNodeID);
+	bool IsVisited(int candidateNodeID, vector<Node> visited);
 
 	/**
 	 * Returns the closest node in relation to the node given as param
@@ -45,7 +45,7 @@ class BaseAlgorithm {
 	 * @param CurretNode the node to which the closest node must be found
 	 * @return the closest node object
 	 */
-	Node GetClosestNode(Node CurrentNode);
+	Node GetClosestNode(Node CurrentNode, vector<Node> visited);
 	/**
 	 * Find node in graph.
 	 *
@@ -76,8 +76,6 @@ class BaseAlgorithm {
 	Graph _graph;
 	// the resulting path which will be returned to the user
 	std::vector<Node> _path;
-	// temporary vector used to store already visited nodes during the search
-	std::vector<Node> _visited;
 };
 
 /**

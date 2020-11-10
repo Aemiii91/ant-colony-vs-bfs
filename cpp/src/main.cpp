@@ -1,4 +1,5 @@
-//#include "jsonparser.h"
+#include "jsonparser.h"
+#include "ownAlgorithm/naiveAlgorithm.h"
 #include <ctime>
 #include <iostream>
 #include <random>
