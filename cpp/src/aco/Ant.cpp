@@ -2,28 +2,19 @@
 
 using namespace aco;
 
-void Ant::Reset(VertixList allVertices) {
-	this->firstRun = false;
-	this->route = VertixList{this->initVertix};
-	this->tourCost = 0.0;
-	this->possibleVertices = allVertices;
-	this->_removeFromVertixList(&(this->possibleVertices), this->initVertix);
-	this->runComplete = false;
-}
-
-void Ant::_walk(){
+void Ant::Run() {
 	int currentVertix;
 	int nextVertix;
 
 	while (this->possibleVertices.size()) {
-		currentVertix = this->route[this->route.size() - 1];
+		currentVertix = this->_route[this->_route.size() - 1];
 		nextVertix = this->_pickNextVertix(currentVertix);
 
 		double cost = (*this->costMatrix)[currentVertix][nextVertix];
 		double costHome;
 
 		if (this->returnHome) {
-			costHome = (*this->costMatrix)[nextVertix][this->initVertix];
+			costHome = (*this->costMatrix)[nextVertix][this->startVertix];
 		}
 
 		if (this->_checkConstraint(cost + costHome)) {
@@ -35,20 +26,23 @@ void Ant::_walk(){
 	}
 
 	if (this->returnHome) {
-		this->_traverse(nextVertix, this->initVertix);
+		this->_traverse(nextVertix, this->startVertix);
 	}
 
 	this->runComplete = true;
-
-
-	}
-std::thread Ant::Run() {  
-   std::thread t(&Ant::_walk, this);
-   return t;
 }
+
+void Ant::Reset(VertixList allVertices) {
+	this->runComplete = false;
+	this->_cost = 0.0;
+	this->_route = VertixList{this->startVertix};
+	this->possibleVertices = allVertices;
+	this->_removeFromVertixList(&(this->possibleVertices), this->startVertix);
+}
+
 bool Ant::_checkConstraint(double lookahead) {
 	return this->costConstraint == 0 ||
-		   (this->tourCost + lookahead) < this->costConstraint;
+		   (this->_cost + lookahead) < this->costConstraint;
 }
 
 int Ant::_pickNextVertix(int currentVertix) {
@@ -76,10 +70,9 @@ int Ant::_pickNextVertix(int currentVertix) {
 
 	for (int nextIndex = 0; nextIndex < size; nextIndex++) {
 		double weight = attractiveness[nextIndex] / sum;
-		double wc = weight + cumulative;
 
 		// choose next vertix based on probability
-		if (randomToss <= wc) {
+		if (randomToss <= (weight + cumulative)) {
 			return this->possibleVertices[nextIndex];
 		}
 
@@ -96,10 +89,10 @@ int Ant::_pickNextVertix(int currentVertix) {
 }
 
 void Ant::_traverse(int fromIndex, int toIndex) {
-	this->route.push_back(toIndex);
+	this->_route.push_back(toIndex);
 	this->_removeFromVertixList(&(this->possibleVertices), toIndex);
 
-	this->tourCost += (*this->costMatrix)[fromIndex][toIndex];
+	this->_cost += (*this->costMatrix)[fromIndex][toIndex];
 }
 
 void Ant::_removeFromVertixList(VertixList *vert, int value) {
@@ -107,11 +100,6 @@ void Ant::_removeFromVertixList(VertixList *vert, int value) {
 }
 
 double Ant::_calculateEdgeProbability(int fromIndex, int toIndex) {
-	// if (this->firstRun) {
-	//   return std::pow(1.0, this->alpha) *
-	//          std::pow((*this->heuristicMatrix)[fromIndex][toIndex],
-	//          this->beta);
-	// }
 	return std::pow((*this->pheromoneMatrix)[fromIndex][toIndex], this->alpha) *
 		   std::pow((*this->heuristicMatrix)[fromIndex][toIndex], this->beta);
 }

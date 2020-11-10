@@ -47,25 +47,16 @@ TEST_F(ACOTest, ColonySolveTest) {
 	time_t t;
 	srand(time(&t));
 
-	printf("Instantiating colony...\n");
 	Colony colony(this->allVertices, this->costMatrix);
 
-	int colonies = 80;
-	colony.alpha = 0.5;
-	colony.beta = 1.2;
-	colony.antCount = 50;
-	colony.iterations = 80;
+	int colonies = 10;
+	colony.antCount = 20;
+	colony.iterations = 50;
 	colony.costConstraint = 4000.0;
-	colony.returnHome = true;
 
-	printf("Solving with %d colonies of %d ants doing %d iterations...\n",
-		   colonies, colony.antCount, colony.iterations);
-	printf("= %'d cycles\n", colonies * colony.antCount * colony.iterations);
 	aco::Solution best = colony.SolveMultiple(colonies);
 
-	printf("Best solution: ");
 	colony.PrintSolution(best);
 
-	// ASSERT_EQ(8, best.second.size() - 1);
-    ASSERT_EQ(true, true);
+	ASSERT_EQ(8, best.route.size() - 1);
 }

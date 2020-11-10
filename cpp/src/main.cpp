@@ -3,16 +3,18 @@
 #include <iostream>
 #include <random>
 
-#include "utils/ArgumentParser.hpp"
 #include "aco/run.hpp"
 #include "jsonparser.h"
+#include "utils/ArgumentParser.hpp"
+#include "utils/print.hpp"
 
 int main(int argc, char **argv) {
 	utils::ArgumentParser args(argc, argv);
+	print::colorsEnabled(args.Exists("--colors"));
 
 	JsonParser parser;
-	Graph graph = parser.ParseData(args.Get<std::string>("--data",
-		"../data/matrix500.json"));
+	Graph graph = parser.ParseData(
+		args.Get<std::string>("--data", "../data/matrix500.json"));
 
 	if (argc <= 1) {
 		std::cout << "No subprogram specified." << std::endl;
@@ -23,8 +25,7 @@ int main(int argc, char **argv) {
 
 	if (subprogram == "aco") {
 		aco::run(&graph, &args);
-	}
-	else {
+	} else {
 		std::cout << "Subprogram not recognized." << std::endl;
 	}
 
