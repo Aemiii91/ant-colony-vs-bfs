@@ -88,7 +88,8 @@ Solution Colony::_solve() {
 			});
 		}
 
-		while (!checkComplete());
+		while (!checkComplete())
+			;
 
 		this->_evaporatePheromoneMatrix();
 

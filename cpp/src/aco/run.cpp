@@ -102,14 +102,11 @@ void aco::progressBarTick(indicators::ProgressBar *bar, int n, int total) {
 
 	if (!bar->is_completed()) {
 		bar->set_option(opt::PrefixText{
-			std::to_string((int)std::ceil((double)n / total * 100)) +
-			"% "});
-		bar->set_option(opt::PostfixText{std::to_string(n) + "/" +
-										std::to_string(total)});	
+			std::to_string((int)std::ceil((double)n / total * 100)) + "% "});
+		bar->set_option(
+			opt::PostfixText{std::to_string(n) + "/" + std::to_string(total)});
 		bar->tick();
 	}
 }
 
-void aco::printParameters(int colonyCount, Colony *colony) {
-
-}
+void aco::printParameters(int colonyCount, Colony *colony) {}
