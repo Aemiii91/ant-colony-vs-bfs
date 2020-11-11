@@ -1,10 +1,13 @@
 #pragma once
-#include "graph/graph.h"
-#include "rapidjson.h"
+
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <rapidjson/document.h>
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/writer.h>
+#include "graph/graph.h"
 
 class JsonParser {
   public:
