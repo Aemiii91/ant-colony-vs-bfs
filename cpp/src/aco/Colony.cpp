@@ -4,8 +4,7 @@ using namespace aco;
 
 Colony::Colony(Graph *graph, Parameters params) : _params(params) {
 	size_t size = graph->nodelist.size();
-	this->_costMatrix =
-		utils::vector::initialize2dVector(size, 1.0);
+	this->_costMatrix = utils::vector::initialize2dVector(size, 1.0);
 
 	int index = 0;
 	for (Node &node : graph->nodelist) {
@@ -37,7 +36,8 @@ Colony::Colony(Graph *graph, Parameters params) : _params(params) {
 Solution Colony::Solve(int colonyCount) {
 	std::vector<Solution> solutions;
 
-	this->_setProgressTotal(colonyCount * this->_params.iterations * this->_params.antCount);
+	this->_setProgressTotal(colonyCount * this->_params.iterations *
+							this->_params.antCount);
 
 	if (colonyCount == 1) {
 		return this->_exportSolution(this->_solve());
