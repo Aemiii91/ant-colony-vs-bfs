@@ -7,14 +7,11 @@
 #include <functional>
 #include <indicators/termcolor.hpp>
 #include <iostream>
-#include <thread>
 #include <vector>
 
 namespace aco {
 typedef std::vector<std::vector<double>> MatrixDouble;
 typedef std::vector<int> VertexList;
-typedef std::thread Thread;
-typedef std::function<void(int, int)> ProgressHandler;
 
 struct Parameters {
 	/// Importance of pheromone level.
@@ -45,20 +42,21 @@ struct Solution {
 	double cost = 0.0;
 	VertexList route = {};
 
-    Solution(){};
-    Solution(double cost, VertexList route) : cost(cost), route(route){};
+	Solution(){};
+	Solution(double cost, VertexList route) : cost(cost), route(route){};
+
+	int score() const {
+		size_t size = route.size();
+		return route[size - 1] == route[0] ? size - 1 : size;
+	};
 
 	friend std::ostream &operator<<(std::ostream &out,
 									const Solution &solution) {
-		int size = solution.route.size();
-		int score =
-			solution.route[size - 1] == solution.route[0] ? size - 1 : size;
-
 		out << "( " << termcolor::reset;
 		out << termcolor::bold << termcolor::blue << std::floor(solution.cost)
 			<< termcolor::reset;
 		out << ", ";
-		out << termcolor::bold << termcolor::magenta << score
+		out << termcolor::bold << termcolor::magenta << solution.score()
 			<< termcolor::reset;
 		out << " ) ";
 		out << termcolor::grey << "= [";

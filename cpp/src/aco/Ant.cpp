@@ -98,10 +98,12 @@ void Ant::_traverse(int fromIndex, int toIndex) {
 }
 
 double Ant::_calculateEdgeProbability(int fromIndex, int toIndex) {
-	return std::pow((*this->_pheromoneMatrix)[fromIndex][toIndex],
-					this->_params.alpha) *
-		   std::pow((*this->_heuristicMatrix)[fromIndex][toIndex],
+	double pheromone = std::pow((*this->_pheromoneMatrix)[fromIndex][toIndex],
+					this->_params.alpha);
+	double heuristic = std::pow((*this->_heuristicMatrix)[fromIndex][toIndex],
 					this->_params.beta);
+
+	return pheromone * heuristic;
 }
 
 double Ant::_calculateMoveProbability(int fromIndex, int toIndex, double norm) {
@@ -109,11 +111,9 @@ double Ant::_calculateMoveProbability(int fromIndex, int toIndex, double norm) {
 }
 
 double Ant::_calculateProbabilityNorm(int currentVertex) {
-	int size = _possibleVertices.size();
 	double norm = 0.0;
-	for (int nextIndex = 0; nextIndex < size; nextIndex++) {
-		norm += _calculateEdgeProbability(currentVertex,
-										  this->_possibleVertices[nextIndex]);
+	for (int nextVertex : this->_possibleVertices) {
+		norm += _calculateEdgeProbability(currentVertex, nextVertex);
 	}
 	return norm;
 }

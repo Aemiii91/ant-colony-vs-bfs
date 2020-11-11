@@ -6,11 +6,19 @@ Colony::Colony(Graph *graph, Parameters params) : _params(params) {
 	size_t size = graph->nodelist.size();
 	this->_costMatrix = utils::vector::initialize2dVector(size, 1.0);
 
+	int startVertexIndex = 0;
 	int index = 0;
 	for (Node &node : graph->nodelist) {
+		if (node.ID == this->_params.startVertex) {
+			startVertexIndex = index;
+		}
+
 		this->_vertexIDs.push_back(node.ID);
 		this->_allVertices.push_back(index++);
 	}
+
+	// convert startVertex ID to index
+	this->_params.startVertex = startVertexIndex;
 
 	for (int i = 0; i < size; i++) {
 		Node *node = &graph->nodelist[i];
@@ -43,29 +51,24 @@ Solution Colony::Solve(int colonyCount) {
 		return this->_exportSolution(this->_solve());
 	}
 
-	ProgressHandler progressHandler = [this](int n, int total) {
-		this->_progressTick();
-	};
+	auto progressHandler = [this](int n, int total) { this->_progressTick(); };
 
-	for (int i = 0; i < colonyCount; i++) {
+	for (int colonyID = 0; colonyID < colonyCount; colonyID++) {
 		Colony clone(*this);
 		clone.progressHandler = progressHandler;
-
-		Solution solution = clone._solve();
-
-		if (!this->_hasSolution ||
-			this->_isBetterSolution(solution, this->_solution)) {
-			this->_solution = solution;
-			this->_hasSolution = true;
-		}
+		clone.solutionHandler = [this, colonyID](Solution solution, int iteration, int) {
+			if (this->_assessSolution(solution)) {
+				this->solutionHandler(solution, iteration, colonyID);
+			}
+		};;
+		clone._solve();
 	}
 
 	return this->_exportSolution(this->_solution);
 }
 
 Solution Colony::_solve() {
-	unsigned int threadCount = std::thread::hardware_concurrency();
-	ThreadPool pool(threadCount);
+	ThreadPool pool(std::thread::hardware_concurrency());
 
 	// create default matrices
 	this->_initPheromoneMatrix();
@@ -75,7 +78,7 @@ Solution Colony::_solve() {
 	std::vector<Ant> ants;
 	this->_initAnts(&ants);
 
-	/// Return true if all ants are done.
+	/// Returns true if all ants are done.
 	auto checkComplete = [&ants] {
 		for (Ant &ant : ants) {
 			if (!ant.IsComplete()) {
@@ -105,11 +108,8 @@ Solution Colony::_solve() {
 
 		for (Solution newSolution : this->_pickBestAntSolutions(&ants)) {
 			this->_updatePheromoneMatrix(newSolution);
-
-			if (!this->_hasSolution ||
-				this->_isBetterSolution(newSolution, this->_solution)) {
-				this->_solution = newSolution;
-				this->_hasSolution = true;
+			if (this->_assessSolution(newSolution)) {
+				this->solutionHandler(newSolution, iteration, -1);
 			}
 		}
 
@@ -188,6 +188,16 @@ int Colony::_findWorstSolution(std::vector<Solution> solutions) {
 	}
 
 	return worstIndex;
+}
+
+bool Colony::_assessSolution(Solution solution) {
+	if (!this->_hasSolution ||
+		this->_isBetterSolution(solution, this->_solution)) {
+		this->_solution = solution;
+		this->_hasSolution = true;
+		return true;
+	}
+	return false;
 }
 
 bool Colony::_isBetterSolution(Solution newSolution, Solution currentSolution) {

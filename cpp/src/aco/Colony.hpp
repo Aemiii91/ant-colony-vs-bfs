@@ -20,7 +20,8 @@ namespace aco {
 class Colony {
   public:
 	/// Set this to subscribe to progress updates.
-	ProgressHandler progressHandler = [](int n, int total) { /* no-op */ };
+	std::function<void(int,int)> progressHandler = [](int, int) { /* no-op */ };
+	std::function<void(Solution,int,int)> solutionHandler = [](Solution, int, int) { /* no-op */ };
 
 	/**
 	 * Colony constructor to initialize with a Graph object.
@@ -69,10 +70,9 @@ class Colony {
 	void _initHeuristicMatrix();
 	/// Initializes the ants.
 	void _initAnts(std::vector<Ant> *ants);
-	void _runThreads(std::vector<Thread> *threads,
-					 std::function<void(int)> job, bool override = true);
 	std::vector<Solution> _pickBestAntSolutions(std::vector<Ant> *ants);
 	int _findWorstSolution(std::vector<Solution> bestSolutions);
+	bool _assessSolution(Solution solution);
 	bool _isBetterSolution(Solution newSolution, Solution currentSolution);
 	double _calculateSolutionScore(Solution solution);
 	void _updatePheromoneMatrix(Solution bestAntSolution);
