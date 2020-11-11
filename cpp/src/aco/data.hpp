@@ -39,24 +39,37 @@ struct Parameters {
 };
 
 struct Solution {
-	double cost = 0.0;
-	VertexList route = {};
+  public:
+	double cost;
+	VertexList route;
+	int score;
 
-	Solution(){};
-	Solution(double cost, VertexList route) : cost(cost), route(route){};
+	Solution() : cost(0.0), route({}), score(0) {};
+	Solution(double cost, VertexList route) : cost(cost), route(route), score(_calcScore(&route)) {};
 
-	int score() const {
-		size_t size = route.size();
-		return route[size - 1] == route[0] ? size - 1 : size;
-	};
+	friend bool operator>(const Solution &a, const Solution &b) {
+		return a.score > b.score ||
+			   (a.score == b.score && a.cost < b.cost);
+	}
+	friend bool operator>=(const Solution &a, const Solution &b) {
+		return a.score > b.score ||
+			   (a.score == b.score && a.cost <= b.cost);
+	}
+	friend bool operator<(const Solution &a, const Solution &b) {
+		return a.score < b.score ||
+			   (a.score == b.score && a.cost > b.cost);
+	}
+	friend bool operator<=(const Solution &a, const Solution &b) {
+		return a.score < b.score ||
+			   (a.score == b.score && a.cost >= b.cost);
+	}
 
-	friend std::ostream &operator<<(std::ostream &out,
-									const Solution &solution) {
+	friend std::ostream &operator<<(std::ostream &out, const Solution &solution) {
 		out << "( " << termcolor::reset;
 		out << termcolor::bold << termcolor::blue << std::floor(solution.cost)
 			<< termcolor::reset;
 		out << ", ";
-		out << termcolor::bold << termcolor::magenta << solution.score()
+		out << termcolor::bold << termcolor::magenta << solution.score
 			<< termcolor::reset;
 		out << " ) ";
 		out << termcolor::grey << "= [";
@@ -71,6 +84,12 @@ struct Solution {
 		out << "]\n" << termcolor::reset;
 
 		return out;
+	};
+
+  private:
+	int _calcScore(VertexList *route) {
+		size_t size = route->size();
+		return route[size - 1] == route[0] ? size - 1 : size;
 	};
 };
 } // namespace aco

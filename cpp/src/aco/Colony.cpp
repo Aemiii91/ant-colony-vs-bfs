@@ -56,11 +56,12 @@ Solution Colony::Solve(int colonyCount) {
 	for (int colonyID = 0; colonyID < colonyCount; colonyID++) {
 		Colony clone(*this);
 		clone.progressHandler = progressHandler;
-		clone.solutionHandler = [this, colonyID](Solution solution, int iteration, int) {
-			if (this->_assessSolution(solution)) {
-				this->solutionHandler(solution, iteration, colonyID);
+		clone.solutionHandler = [this, &clone, colonyID](double cost, int score,
+														 int iteration, int) {
+			if (this->_assessSolution(clone._solution)) {
+				this->solutionHandler(cost, score, iteration, colonyID);
 			}
-		};;
+		};
 		clone._solve();
 	}
 
@@ -108,8 +109,10 @@ Solution Colony::_solve() {
 
 		for (Solution newSolution : this->_pickBestAntSolutions(&ants)) {
 			this->_updatePheromoneMatrix(newSolution);
+
 			if (this->_assessSolution(newSolution)) {
-				this->solutionHandler(newSolution, iteration, -1);
+				this->solutionHandler(newSolution.cost, newSolution.score,
+									  iteration, -1);
 			}
 		}
 
@@ -152,71 +155,30 @@ void Colony::_initAnts(std::vector<Ant> *ants) {
 std::vector<Solution> Colony::_pickBestAntSolutions(std::vector<Ant> *ants) {
 	std::vector<Solution> solutions;
 
-	for (Ant &ant : *ants) {
-		Solution newSolution = ant.solution();
+	for (auto itr = ants->begin(); itr != ants->end(); ++itr) {
+		solutions.push_back(itr->solution());
+	}
 
-		// check if solution limit is reached
-		if (solutions.size() >= this->_params.bestAntLimit) {
-			int worstIndex = this->_findWorstSolution(solutions);
+	if (this->_params.bestAntLimit == 1) {
+		return {*std::max_element(solutions.begin(), solutions.end())};
+	}
 
-			if (this->_isBetterSolution(newSolution, solutions[worstIndex])) {
-				// remove the worst solution - to make room for the new better
-				// solution
-				solutions.erase(solutions.begin() + worstIndex);
-			}
-		}
+	std::sort(solutions.begin(), solutions.end(), greater<>());
 
-		if (solutions.size() < this->_params.bestAntLimit) {
-			solutions.push_back(newSolution);
-		}
+	if (this->_params.bestAntLimit > 0) {
+		solutions.resize(this->_params.bestAntLimit);
 	}
 
 	return solutions;
 }
 
-int Colony::_findWorstSolution(std::vector<Solution> solutions) {
-	int worstIndex = 0;
-
-	if (solutions.size() == 1) {
-		return 0;
-	}
-
-	for (int i = 1; i < solutions.size(); i++) {
-		if (!this->_isBetterSolution(solutions[i], solutions[worstIndex])) {
-			worstIndex = i;
-		}
-	}
-
-	return worstIndex;
-}
-
 bool Colony::_assessSolution(Solution solution) {
-	if (!this->_hasSolution ||
-		this->_isBetterSolution(solution, this->_solution)) {
+	if (!this->_hasSolution || solution > this->_solution) {
 		this->_solution = solution;
 		this->_hasSolution = true;
 		return true;
 	}
 	return false;
-}
-
-bool Colony::_isBetterSolution(Solution newSolution, Solution currentSolution) {
-	double newCost = newSolution.cost;
-	double currentCost = currentSolution.cost;
-
-	if (this->_params.costConstraint > 0) {
-		double newScore = this->_calculateSolutionScore(newSolution);
-		double currentScore = this->_calculateSolutionScore(currentSolution);
-
-		return newScore > currentScore ||
-			   (newScore == currentScore && newCost < currentCost);
-	}
-
-	return newCost < currentCost;
-}
-
-double Colony::_calculateSolutionScore(Solution solution) {
-	return solution.route.size();
 }
 
 void Colony::_updatePheromoneMatrix(Solution antSolution) {

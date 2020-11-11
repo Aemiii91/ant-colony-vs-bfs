@@ -32,12 +32,12 @@ void aco::run(Graph *graph, utils::ArgumentParser *args) {
 	std::string currentStatus = "";
 	int currentIterations = 0;
 
-	colony.solutionHandler = [&currentStatus, &params](Solution solution,
+	colony.solutionHandler = [&currentStatus, &params](double cost, int score,
 													   int iteration,
 													   int colonyID) {
 		std::stringstream s;
-		s << "( " << std::floor(solution.cost) << ", " << solution.score()
-		  << " ) @ " << (iteration + 1) << "/" << params.iterations;
+		s << "( " << std::floor(cost) << ", " << score << " ) @ "
+		  << (iteration + 1) << "/" << params.iterations;
 		if (colonyID >= 0) {
 			s << " (" << (colonyID + 1) << ")";
 		}
@@ -45,10 +45,10 @@ void aco::run(Graph *graph, utils::ArgumentParser *args) {
 	};
 
 	if (showProgress) {
-		std::cout << termcolor::grey << std::left << std::setw(28)
-				  << "Progress"
-				  << "[Elapsed<remaining] cycles  ( solution ) @ iteration (colony)"
-				  << termcolor::reset << std::endl;
+		std::cout
+			<< termcolor::grey << std::left << std::setw(28) << "Progress"
+			<< "[Elapsed<remaining] cycles  ( solution ) @ iteration (colony)"
+			<< termcolor::reset << std::endl;
 
 		colony.progressHandler = [&bar, &currentStatus](int n, int total) {
 			progressBarTick(&bar, n, total, currentStatus);
@@ -63,7 +63,7 @@ void aco::run(Graph *graph, utils::ArgumentParser *args) {
 		std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
 
 	if (showProgress) {
-		progressBarTick(&bar, totalCycles, totalCycles, currentStatus);
+		progressBarTick(&bar, totalCycles - 1, totalCycles, currentStatus);
 	}
 
 	char s[20];
@@ -127,7 +127,7 @@ void aco::progressBarTick(indicators::ProgressBar *bar, int n, int total,
 						  std::string currentStatus) {
 	std::stringstream prefix, postfix;
 	prefix << std::setw(3) << (int)std::ceil((double)n / total * 100) << "% ";
-	postfix << n << "/" << total << "  " << currentStatus;
+	postfix << std::min(n + 1, total) << "/" << total << "  " << currentStatus;
 
 	if (!bar->is_completed()) {
 		bar->set_option(indicators::option::PrefixText{prefix.str()});

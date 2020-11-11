@@ -2,12 +2,12 @@
 #define ACO_COLONY_HPP
 #pragma once
 
+#include <ThreadPool/ThreadPool.h>
 #include <algorithm>
 #include <atomic>
 #include <cmath>
 #include <functional>
 #include <indicators/termcolor.hpp>
-#include <ThreadPool/ThreadPool.h>
 #include <vector>
 
 #include "../graph/graph.h"
@@ -20,21 +20,23 @@ namespace aco {
 class Colony {
   public:
 	/// Set this to subscribe to progress updates.
-	std::function<void(int,int)> progressHandler = [](int, int) { /* no-op */ };
-	std::function<void(Solution,int,int)> solutionHandler = [](Solution, int, int) { /* no-op */ };
+	std::function<void(int, int)> progressHandler = [](int, int) {};
+	std::function<void(double, int, int, int)> solutionHandler =
+		[](double cost, int score, int iteration, int colonyID) {};
 
 	/**
 	 * Colony constructor to initialize with a Graph object.
-	 * 
+	 *
 	 * @param graph A pointer to the Graph object.
 	 */
 	Colony(Graph *graph, Parameters params);
 
 	/**
 	 * Launch the algorithm.
-	 * 
-	 * Alternatively set colonyCount to the number of colonies to solve, and get the best overall solution.
-	 * 
+	 *
+	 * Alternatively set colonyCount to the number of colonies to solve, and get
+	 * the best overall solution.
+	 *
 	 * @param colonyCount Number of colonies to solve.
 	 * @return The best solution.
 	 */
@@ -71,15 +73,14 @@ class Colony {
 	/// Initializes the ants.
 	void _initAnts(std::vector<Ant> *ants);
 	std::vector<Solution> _pickBestAntSolutions(std::vector<Ant> *ants);
-	int _findWorstSolution(std::vector<Solution> bestSolutions);
 	bool _assessSolution(Solution solution);
-	bool _isBetterSolution(Solution newSolution, Solution currentSolution);
 	double _calculateSolutionScore(Solution solution);
 	void _updatePheromoneMatrix(Solution bestAntSolution);
 	void _evaporatePheromoneMatrix();
 	void _progressTick(int stepSize = 1);
 	void _setProgressTotal(int value);
-	/// Converts internal solution (with indexes) to external solution (with IDs).
+	/// Converts internal solution (with indexes) to external solution (with
+	/// IDs).
 	Solution _exportSolution(Solution internalSolution);
 };
 } // namespace aco

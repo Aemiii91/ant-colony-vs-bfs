@@ -99,9 +99,9 @@ void Ant::_traverse(int fromIndex, int toIndex) {
 
 double Ant::_calculateEdgeProbability(int fromIndex, int toIndex) {
 	double pheromone = std::pow((*this->_pheromoneMatrix)[fromIndex][toIndex],
-					this->_params.alpha);
+								this->_params.alpha);
 	double heuristic = std::pow((*this->_heuristicMatrix)[fromIndex][toIndex],
-					this->_params.beta);
+								this->_params.beta);
 
 	return pheromone * heuristic;
 }
