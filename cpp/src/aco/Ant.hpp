@@ -3,7 +3,9 @@
 #pragma once
 
 #include "../utils/vector.hpp"
-#include "data.hpp"
+#include "MatrixData.hpp"
+#include "Parameters.hpp"
+#include "Solution.hpp"
 #include <algorithm>
 #include <cmath>
 #include <thread>
@@ -13,20 +15,18 @@ namespace aco {
 class Ant {
   public:
 	/**
-	 * 
+	 *
 	 */
-	Ant(Parameters params, VertexList possibleVertices, MatrixDouble *costMatrix,
-		MatrixDouble *pheromoneMatrix, MatrixDouble *heuristicMatrix)
-		: _params(params), _possibleVertices(possibleVertices),
-		  _costMatrix(costMatrix), _pheromoneMatrix(pheromoneMatrix),
-		  _heuristicMatrix(heuristicMatrix) {
-		this->_route = VertexList{this->_params.startVertex};
+	Ant(std::vector<int> possibleVertices, Parameters *params, MatrixData *matrixData)
+		: _possibleVertices(possibleVertices), _params(params),
+		  _matrixData(matrixData) {
+		this->_route = std::vector<int>{this->_params->startVertex};
 		utils::vector::removeValue(&(this->_possibleVertices),
-								   this->_params.startVertex);
+								   this->_params->startVertex);
 	}
 
 	void Run();
-	void Reset(VertexList allVertices);
+	void Reset(std::vector<int> allVertices);
 
 	bool IsComplete() {
 		return this->_runComplete;
@@ -36,14 +36,12 @@ class Ant {
 	};
 
   private:
-	Parameters _params;
-	VertexList _possibleVertices;
-	MatrixDouble *_costMatrix;
-	MatrixDouble *_pheromoneMatrix;
-	MatrixDouble *_heuristicMatrix;
+	Parameters *_params;
+	MatrixData *_matrixData;
+	std::vector<int> _possibleVertices;
 	bool _runComplete = false;
 	double _cost = 0.0;
-	VertexList _route;
+	std::vector<int> _route;
 
 	bool _checkConstraint(double lookahead = 0.0);
 	int _pickNextVertex(int currentVertex);

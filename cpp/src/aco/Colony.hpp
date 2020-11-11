@@ -14,7 +14,9 @@
 #include "../utils/print.hpp"
 #include "../utils/vector.hpp"
 #include "Ant.hpp"
-#include "data.hpp"
+#include "Parameters.hpp"
+#include "Solution.hpp"
+#include "MatrixData.hpp"
 
 namespace aco {
 class Colony {
@@ -54,29 +56,24 @@ class Colony {
 	/// Total number of cycles to run (sent to progressHandler).
 	int _progressTotal = 100;
 	/// Stores a vector of vertex IDs.
-	VertexList _vertexIDs;
+	std::vector<int> _vertexIDs;
 	/// Stores a vector of vertex indexes.
-	VertexList _allVertices;
-	/// Stores a 2D matrix of the edge's cost.
-	MatrixDouble _costMatrix;
-	/// Stores a 2D matrix of the edge's pheromone level.
-	MatrixDouble _pheromoneMatrix;
-	/// Stores a 2D matrix of the edge's heuristic (1 / cost).
-	MatrixDouble _heuristicMatrix;
+	std::vector<int> _allVertices;
+	/// Stores a collection of 2D matrices.
+	MatrixData _matrixData;
 
 	/// Solves this colony.
 	Solution _solve();
-	/// Creates a 2D matrix with default value 1.0.
-	void _initPheromoneMatrix();
-	/// Creates a 2D matrix with the edge's heuristic values.
-	void _initHeuristicMatrix();
+	/// Initializes the pheromone, heuristic and probability matrices.
+	void _initMatrices();
 	/// Initializes the ants.
 	void _initAnts(std::vector<Ant> *ants);
+	/// Returns true if all ants are done.
+	bool _checkAntsComplete(std::vector<Ant> *ants);
 	std::vector<Solution> _pickBestAntSolutions(std::vector<Ant> *ants);
 	bool _assessSolution(Solution solution);
 	double _calculateSolutionScore(Solution solution);
-	void _updatePheromoneMatrix(Solution bestAntSolution);
-	void _evaporatePheromoneMatrix();
+	void _depositPheromone(Solution antSolution);
 	void _progressTick(int stepSize = 1);
 	void _setProgressTotal(int value);
 	/// Converts internal solution (with indexes) to external solution (with

@@ -9,14 +9,14 @@ using namespace aco;
 
 class ACOTest : public ::testing::Test {
   public:
-	aco::VertexList allVertices;
+	std::vector<int> allVertices;
 	aco::MatrixDouble costMatrix;
 
   protected:
 	void SetUp() override {
 		setlocale(LC_ALL, "");
 
-		this->allVertices = VertexList{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+		this->allVertices = std::vector<int>{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 		this->costMatrix =
 			MatrixDouble{{0.0, 441.95, 519.73, 400.86, 630.96, 690.94, 708.62,
 						  836.19, 632.11, 724.57},

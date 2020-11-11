@@ -10,15 +10,15 @@ void Ant::Run() {
 		currentVertex = this->_route[this->_route.size() - 1];
 		nextVertex = this->_pickNextVertex(currentVertex);
 
-		double cost = (*this->_costMatrix)[currentVertex][nextVertex];
-		double costHome;
+		double cost = this->_matrixData->Cost(currentVertex, nextVertex);
+		double homeCost = 0.0;
 
-		if (this->_params.returnHome) {
-			costHome =
-				(*this->_costMatrix)[nextVertex][this->_params.startVertex];
+		if (this->_params->returnHome) {
+			homeCost =
+				this->_matrixData->Cost(nextVertex, this->_params->startVertex);
 		}
 
-		if (this->_checkConstraint(cost + costHome)) {
+		if (this->_checkConstraint(cost + homeCost)) {
 			this->_traverse(currentVertex, nextVertex);
 		} else {
 			nextVertex = currentVertex;
@@ -26,25 +26,25 @@ void Ant::Run() {
 		}
 	}
 
-	if (this->_params.returnHome) {
-		this->_traverse(nextVertex, this->_params.startVertex);
+	if (this->_params->returnHome) {
+		this->_traverse(nextVertex, this->_params->startVertex);
 	}
 
 	this->_runComplete = true;
 }
 
-void Ant::Reset(VertexList allVertices) {
+void Ant::Reset(std::vector<int> allVertices) {
 	this->_runComplete = false;
 	this->_cost = 0.0;
-	this->_route = VertexList{this->_params.startVertex};
+	this->_route = std::vector<int>{this->_params->startVertex};
 	this->_possibleVertices = allVertices;
 	utils::vector::removeValue(&(this->_possibleVertices),
-							   this->_params.startVertex);
+							   this->_params->startVertex);
 }
 
 bool Ant::_checkConstraint(double lookahead) {
-	return this->_params.costConstraint == 0 ||
-		   (this->_cost + lookahead) < this->_params.costConstraint;
+	return this->_params->costConstraint == 0 ||
+		   (this->_cost + lookahead) < this->_params->costConstraint;
 }
 
 int Ant::_pickNextVertex(int currentVertex) {
@@ -59,8 +59,6 @@ int Ant::_pickNextVertex(int currentVertex) {
 	for (int nextIndex = 0; nextIndex < size; nextIndex++) {
 		double probability = this->_calculateMoveProbability(
 			currentVertex, this->_possibleVertices[nextIndex], norm);
-		// double probability = this->_calculateEdgeProbability(currentVertex,
-		// this->_possibleVertices[nextIndex]);
 		attractiveness[nextIndex] = probability;
 		sum += probability;
 	}
@@ -94,26 +92,17 @@ void Ant::_traverse(int fromIndex, int toIndex) {
 	this->_route.push_back(toIndex);
 	utils::vector::removeValue(&(this->_possibleVertices), toIndex);
 
-	this->_cost += (*this->_costMatrix)[fromIndex][toIndex];
-}
-
-double Ant::_calculateEdgeProbability(int fromIndex, int toIndex) {
-	double pheromone = std::pow((*this->_pheromoneMatrix)[fromIndex][toIndex],
-								this->_params.alpha);
-	double heuristic = std::pow((*this->_heuristicMatrix)[fromIndex][toIndex],
-								this->_params.beta);
-
-	return pheromone * heuristic;
+	this->_cost += this->_matrixData->Cost(fromIndex, toIndex);
 }
 
 double Ant::_calculateMoveProbability(int fromIndex, int toIndex, double norm) {
-	return _calculateEdgeProbability(fromIndex, toIndex) / norm;
+	return this->_matrixData->Probability(fromIndex, toIndex) / norm;
 }
 
 double Ant::_calculateProbabilityNorm(int currentVertex) {
 	double norm = 0.0;
 	for (int nextVertex : this->_possibleVertices) {
-		norm += _calculateEdgeProbability(currentVertex, nextVertex);
+		norm += this->_matrixData->Probability(currentVertex, nextVertex);
 	}
 	return norm;
 }

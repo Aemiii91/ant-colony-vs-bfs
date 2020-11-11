@@ -3,9 +3,6 @@
 using namespace aco;
 
 Colony::Colony(Graph *graph, Parameters params) : _params(params) {
-	size_t size = graph->nodelist.size();
-	this->_costMatrix = utils::vector::initialize2dVector(size, 1.0);
-
 	int startVertexIndex = 0;
 	int index = 0;
 	for (Node &node : graph->nodelist) {
@@ -20,25 +17,8 @@ Colony::Colony(Graph *graph, Parameters params) : _params(params) {
 	// convert startVertex ID to index
 	this->_params.startVertex = startVertexIndex;
 
-	for (int i = 0; i < size; i++) {
-		Node *node = &graph->nodelist[i];
-
-		int offset = 0;
-		for (int j = 0; j < node->edgeList.size(); j++) {
-			Edge *edge = &node->edgeList[j];
-
-			if (i == j) {
-				offset = 1;
-			}
-
-			if (j + offset < size) {
-				double cost = edge->weight;
-				this->_costMatrix[i][j + offset] = cost > 1.0 ? cost : 1.0;
-			}
-		}
-
-		this->_costMatrix[i][i] = 0.0;
-	}
+	// initialize the matrices
+	this->_matrixData = MatrixData(this->_vertexIDs, graph, &this->_params);
 }
 
 Solution Colony::Solve(int colonyCount) {
@@ -71,23 +51,9 @@ Solution Colony::Solve(int colonyCount) {
 Solution Colony::_solve() {
 	ThreadPool pool(std::thread::hardware_concurrency());
 
-	// create default matrices
-	this->_initPheromoneMatrix();
-	this->_initHeuristicMatrix();
-
 	// initialize ants
 	std::vector<Ant> ants;
 	this->_initAnts(&ants);
-
-	/// Returns true if all ants are done.
-	auto checkComplete = [&ants] {
-		for (Ant &ant : ants) {
-			if (!ant.IsComplete()) {
-				return false;
-			}
-		}
-		return true;
-	};
 
 	// set total progress (number of cycles)
 	this->_setProgressTotal(this->_params.iterations * this->_params.antCount);
@@ -101,14 +67,14 @@ Solution Colony::_solve() {
 			});
 		}
 
-		while (!checkComplete()) {
+		while (!this->_checkAntsComplete(&ants)) {
 			/* Wait for ants to complete. */
 		}
 
-		this->_evaporatePheromoneMatrix();
+		this->_matrixData.EvaporatePheromone();
 
 		for (Solution newSolution : this->_pickBestAntSolutions(&ants)) {
-			this->_updatePheromoneMatrix(newSolution);
+			this->_depositPheromone(newSolution);
 
 			if (this->_assessSolution(newSolution)) {
 				this->solutionHandler(newSolution.cost, newSolution.score,
@@ -124,32 +90,20 @@ Solution Colony::_solve() {
 	return this->_solution;
 }
 
-void Colony::_initPheromoneMatrix() {
-	this->_pheromoneMatrix =
-		utils::vector::initialize2dVector(this->_allVertices.size(), 1.0);
-}
-
-void Colony::_initHeuristicMatrix() {
-	size_t size = this->_allVertices.size();
-	this->_heuristicMatrix = utils::vector::initialize2dVector(size, 1.0);
-
-	for (int i = 0; i < size; i++) {
-		for (int j = 0; j < size; j++) {
-			double cost = this->_costMatrix[i][j];
-
-			if (cost > 0) {
-				this->_heuristicMatrix[i][j] /= cost;
-			}
-		}
-	}
-}
-
 void Colony::_initAnts(std::vector<Ant> *ants) {
 	for (int i = 0; i < this->_params.antCount; i++) {
-		ants->push_back(Ant(this->_params, this->_allVertices,
-							&this->_costMatrix, &this->_pheromoneMatrix,
-							&this->_heuristicMatrix));
+		ants->push_back(
+			Ant(this->_allVertices, &this->_params, &this->_matrixData));
 	}
+}
+
+bool Colony::_checkAntsComplete(std::vector<Ant> *ants) {
+	for (auto ant = ants->begin(); ant != ants->end(); ++ant) {
+		if (!ant->IsComplete()) {
+			return false;
+		}
+	}
+	return true;
 }
 
 std::vector<Solution> Colony::_pickBestAntSolutions(std::vector<Ant> *ants) {
@@ -181,25 +135,14 @@ bool Colony::_assessSolution(Solution solution) {
 	return false;
 }
 
-void Colony::_updatePheromoneMatrix(Solution antSolution) {
+void Colony::_depositPheromone(Solution antSolution) {
 	// calculate quality of the ant
-	double pheromone = this->_params.pheromoneConstant / antSolution.cost;
+	double deposit = this->_params.pheromoneConstant / antSolution.cost;
 
 	for (int i = 0; i < antSolution.route.size() - 1; i++) {
 		int fromIndex = antSolution.route[i];
 		int toIndex = antSolution.route[i + 1];
-		double currentLevel = this->_pheromoneMatrix[fromIndex][toIndex];
-		this->_pheromoneMatrix[fromIndex][toIndex] = currentLevel + pheromone;
-	}
-}
-
-void Colony::_evaporatePheromoneMatrix() {
-	int size = this->_pheromoneMatrix.size();
-
-	for (int i = 0; i < size; i++) {
-		for (int j = 0; j < size; j++) {
-			this->_pheromoneMatrix[i][j] *= 1 - this->_params.evaporation;
-		}
+		this->_matrixData.DepositPheromone(fromIndex, toIndex, deposit);
 	}
 }
 
