@@ -1,4 +1,6 @@
 #include "jsonparser.h"
+#include "ownAlgorithm/baseAlgorithm.h"
+#include "ownAlgorithm/depthFirstAlgorithm.h"
 #include "ownAlgorithm/naiveAlgorithm.h"
 #include <ctime>
 #include <iostream>
