@@ -4,7 +4,6 @@
 
 #include <iostream>
 #include <chrono>
-#include <indicators/cursor_control.hpp>
 #include <indicators/progress_bar.hpp>
 
 #include "../utils/ArgumentParser.hpp"
@@ -16,7 +15,7 @@ namespace aco {
     void run(Graph *graph, utils::ArgumentParser *args);
     indicators::ProgressBar createProgressBar(int maxProgress);
     void progressBarTick(indicators::ProgressBar *bar, int n, int total);
-    void printParameters(int colonyCount, Colony *colony);
+    void printParameters(int colonyCount, Parameters params);
 }
 
 #endif

@@ -11,10 +11,16 @@
 #include <functional>
 #include <stdexcept>
 
+/**
+ * A simple C++11 Thread Pool implementation.
+ * 
+ * Source: https://github.com/progschj/ThreadPool
+ */
 class ThreadPool {
 public:
     ThreadPool(size_t);
     template<class F, class... Args>
+    /// Enqueue a function pointer and arguments.
     auto enqueue(F&& f, Args&&... args) 
         -> std::future<typename std::result_of<F(Args...)>::type>;
     ~ThreadPool();
@@ -35,7 +41,7 @@ inline ThreadPool::ThreadPool(size_t threads)
 {
     for(size_t i = 0;i<threads;++i)
         workers.emplace_back([this] {
-            while(true) {
+            while(true) { /* changed for loop to while loop */
                 std::function<void()> task;
 
                 {

@@ -17,8 +17,23 @@ namespace utils::vector {
 	};
 
 	template <typename T>
+	int indexAtValue(std::vector<T> *list, T value) {
+		for (int i = 0; i < list->size(); i++) {
+			if (list->at(i) == value) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	template <typename T>
 	void removeValue(std::vector<T> *list, T value) {
 		list->erase(std::remove(list->begin(), list->end(), value), list->end());
+	}
+
+	template <typename T>
+	std::vector<std::vector<T>> initialize2dVector(size_t size, T defaultValue) {
+		return std::vector<std::vector<T>>(size, std::vector<T>(size, defaultValue));
 	}
 }
 

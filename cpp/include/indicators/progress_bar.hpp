@@ -22,6 +22,15 @@
 
 namespace indicators {
 
+/**
+ * Thread-safe progress bars and spinners
+ * Header-only library. Grab a copy of include/indicators.
+ * Single-header version in single_include/indicators.
+ * Source for the above GIF can be found here
+ * MIT License
+ * 
+ * Source: https://github.com/p-ranav/indicators
+ */
 class ProgressBar {
   using Settings =
       std::tuple<option::BarWidth, option::PrefixText, option::PostfixText,

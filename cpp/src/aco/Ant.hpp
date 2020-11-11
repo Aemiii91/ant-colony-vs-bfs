@@ -12,48 +12,45 @@
 namespace aco {
 class Ant {
   public:
-	VertixList possibleVertices;
-	MatrixDouble *costMatrix;
-	MatrixDouble *pheromoneMatrix;
-	MatrixDouble *heuristicMatrix;
-	double alpha;
-	double beta;
-	double costConstraint;
-	int startVertix;
-	bool runComplete = false;
-	bool returnHome;
 	/**
-	 * @param alpha importance of pheromone level
-	 * @param beta importance of heuristic information
+	 * 
 	 */
-	Ant(int startVertix, VertixList possibleVertices, MatrixDouble *costMatrix,
-		MatrixDouble *pheromoneMatrix, MatrixDouble *heuristicMatrix,
-		double alpha, double beta, double costConstraint, bool returnHome)
-		: startVertix(startVertix), possibleVertices(possibleVertices),
-		  costMatrix(costMatrix), pheromoneMatrix(pheromoneMatrix),
-		  heuristicMatrix(heuristicMatrix), alpha(alpha), beta(beta),
-		  costConstraint(costConstraint), returnHome(returnHome) {
-		this->_route = VertixList{this->startVertix};
-		utils::vector::removeValue(&(this->possibleVertices),
-								   this->startVertix);
+	Ant(Parameters params, VertexList possibleVertices, MatrixDouble *costMatrix,
+		MatrixDouble *pheromoneMatrix, MatrixDouble *heuristicMatrix)
+		: _params(params), _possibleVertices(possibleVertices),
+		  _costMatrix(costMatrix), _pheromoneMatrix(pheromoneMatrix),
+		  _heuristicMatrix(heuristicMatrix) {
+		this->_route = VertexList{this->_params.startVertex};
+		utils::vector::removeValue(&(this->_possibleVertices),
+								   this->_params.startVertex);
 	}
 
 	void Run();
-	void Reset(VertixList allVertices);
+	void Reset(VertexList allVertices);
 
+	bool IsComplete() {
+		return this->_runComplete;
+	};
 	Solution solution() {
 		return Solution(this->_cost, this->_route);
 	};
 
   private:
+	Parameters _params;
+	VertexList _possibleVertices;
+	MatrixDouble *_costMatrix;
+	MatrixDouble *_pheromoneMatrix;
+	MatrixDouble *_heuristicMatrix;
+	bool _runComplete = false;
 	double _cost = 0.0;
-	VertixList _route;
+	VertexList _route;
+
 	bool _checkConstraint(double lookahead = 0.0);
-	int _pickNextVertix(int currentVertix);
+	int _pickNextVertex(int currentVertex);
 	void _traverse(int fromIndex, int toIndex);
 	double _calculateEdgeProbability(int fromIndex, int toIndex);
 	double _calculateMoveProbability(int fromIndex, int toIndex, double norm);
-	double _calculateProbabilityNorm(int currentVertix);
+	double _calculateProbabilityNorm(int currentVertex);
 };
 } // namespace aco
 

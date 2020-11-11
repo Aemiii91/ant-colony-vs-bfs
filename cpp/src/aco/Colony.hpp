@@ -19,49 +19,68 @@
 namespace aco {
 class Colony {
   public:
-	double alpha = 1;
-	double beta = 20;
-	double evaporation = 0.04;
-	double pheromoneConstant = 100.0;
-	double costConstraint = 30000;
-	int startVertix = 0;
-	int antCount = 50;
-	int iterations = 80;
-	int bestAntLimit = 1;
-	bool returnHome = true;
-	bool threading = true;
+	/// Set this to subscribe to progress updates.
 	ProgressHandler progressHandler = [](int n, int total) { /* no-op */ };
 
-	Colony(std::vector<int> allVertices, MatrixDouble costMatrix)
-		: _allVertices(allVertices), _costMatrix(costMatrix){};
-	Colony(Graph *graph);
+	/**
+	 * Colony constructor to initialize with a Graph object.
+	 * 
+	 * @param graph A pointer to the Graph object.
+	 */
+	Colony(Graph *graph, Parameters params);
 
-	Solution Solve(int colonyCount = 80);
+	/**
+	 * Launch the algorithm.
+	 * 
+	 * Alternatively set colonyCount to the number of colonies to solve, and get the best overall solution.
+	 * 
+	 * @param colonyCount Number of colonies to solve.
+	 * @return The best solution.
+	 */
+	Solution Solve(int colonyCount = 1);
 
   private:
+	/// Stores the received parameters.
+	Parameters _params;
+	/// Stores the current best solution.
 	Solution _solution;
+	/// Whether a solution has been found.
 	bool _hasSolution = false;
+	/// Cumulative value of cycles done (sent to progressHandler).
 	int _progressCount = 0;
+	/// Total number of cycles to run (sent to progressHandler).
 	int _progressTotal = 100;
-	VertixList _allVertices;
+	/// Stores a vector of vertex IDs.
+	VertexList _vertexIDs;
+	/// Stores a vector of vertex indexes.
+	VertexList _allVertices;
+	/// Stores a 2D matrix of the edge's cost.
 	MatrixDouble _costMatrix;
+	/// Stores a 2D matrix of the edge's pheromone level.
 	MatrixDouble _pheromoneMatrix;
+	/// Stores a 2D matrix of the edge's heuristic (1 / cost).
 	MatrixDouble _heuristicMatrix;
 
+	/// Solves this colony.
 	Solution _solve();
-	MatrixDouble _initPheromoneMatrix();
-	MatrixDouble _initHeuristicMatrix();
-	std::vector<Ant> _initAnts();
+	/// Creates a 2D matrix with default value 1.0.
+	void _initPheromoneMatrix();
+	/// Creates a 2D matrix with the edge's heuristic values.
+	void _initHeuristicMatrix();
+	/// Initializes the ants.
+	void _initAnts(std::vector<Ant> *ants);
 	void _runThreads(std::vector<Thread> *threads,
 					 std::function<void(int)> job, bool override = true);
-	double _calculateSolutionScore(Solution solution);
 	std::vector<Solution> _pickBestAntSolutions(std::vector<Ant> *ants);
 	int _findWorstSolution(std::vector<Solution> bestSolutions);
 	bool _isBetterSolution(Solution newSolution, Solution currentSolution);
+	double _calculateSolutionScore(Solution solution);
 	void _updatePheromoneMatrix(Solution bestAntSolution);
 	void _evaporatePheromoneMatrix();
 	void _progressTick(int stepSize = 1);
 	void _setProgressTotal(int value);
+	/// Converts internal solution (with indexes) to external solution (with IDs).
+	Solution _exportSolution(Solution internalSolution);
 };
 } // namespace aco
 
