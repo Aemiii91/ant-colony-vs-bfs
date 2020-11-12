@@ -48,17 +48,15 @@ bool Ant::_checkConstraint(double lookahead) {
 }
 
 int Ant::_pickNextVertex(int currentVertex) {
-	double norm = this->_calculateProbabilityNorm(currentVertex);
-	double highestWeight = 0.0;
-	int highestWeightVertex = this->_possibleVertices[0];
-	int size = this->_possibleVertices.size();
-
-	std::vector<double> attractiveness(size, 0.0);
+	size_t size = this->_possibleVertices.size();
+	double norm = this->_probabilityNorm(currentVertex);
 	double sum = 0.0;
+	std::vector<double> attractiveness(size, 0.0);
 
 	for (int nextIndex = 0; nextIndex < size; nextIndex++) {
-		double probability = this->_calculateMoveProbability(
-			currentVertex, this->_possibleVertices[nextIndex], norm);
+		int nextVertex = this->_possibleVertices[nextIndex];
+		double probability =
+			this->_matrixData->Probability(currentVertex, nextVertex) / norm;
 		attractiveness[nextIndex] = probability;
 		sum += probability;
 	}
@@ -76,16 +74,11 @@ int Ant::_pickNextVertex(int currentVertex) {
 			return this->_possibleVertices[nextIndex];
 		}
 
-		if (weight > highestWeight) {
-			highestWeightVertex = this->_possibleVertices[nextIndex];
-			highestWeight = weight;
-		}
-
 		cumulative += weight;
 	}
 
-	// no vertex was selected - return vertex with highest probability
-	return highestWeightVertex;
+	// should never end up here (consider throwing error)
+	return 0;
 }
 
 void Ant::_traverse(int fromIndex, int toIndex) {
@@ -95,11 +88,7 @@ void Ant::_traverse(int fromIndex, int toIndex) {
 	this->_cost += this->_matrixData->Cost(fromIndex, toIndex);
 }
 
-double Ant::_calculateMoveProbability(int fromIndex, int toIndex, double norm) {
-	return this->_matrixData->Probability(fromIndex, toIndex) / norm;
-}
-
-double Ant::_calculateProbabilityNorm(int currentVertex) {
+double Ant::_probabilityNorm(int currentVertex) {
 	double norm = 0.0;
 	for (int nextVertex : this->_possibleVertices) {
 		norm += this->_matrixData->Probability(currentVertex, nextVertex);

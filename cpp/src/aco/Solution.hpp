@@ -6,6 +6,7 @@
 #include <cmath>
 #include <indicators/termcolor.hpp>
 #include <iostream>
+#include "../utils/print.hpp"
 
 namespace aco {
 struct Solution {
@@ -15,7 +16,7 @@ struct Solution {
 	int score;
 
 	Solution() : cost(0.0), route({}), score(0) {};
-	Solution(double cost, std::vector<int> route) : cost(cost), route(route), score(_calcScore(&route)) {};
+	Solution(double cost, std::vector<int> route) : cost(cost), route(route), score(_calcScore(&this->route)) {};
 
 	friend bool operator>(const Solution &a, const Solution &b) {
 		return a.score > b.score ||
@@ -35,23 +36,37 @@ struct Solution {
 	}
 
 	friend std::ostream &operator<<(std::ostream &out, const Solution &solution) {
-		out << "( " << termcolor::reset;
-		out << termcolor::bold << termcolor::blue << std::floor(solution.cost)
-			<< termcolor::reset;
-		out << ", ";
-		out << termcolor::bold << termcolor::magenta << solution.score
-			<< termcolor::reset;
-		out << " ) ";
-		out << termcolor::grey << "= [";
+		if (print::colorsEnabled()) {
+			out << "( " << termcolor::reset;
+			out << termcolor::bold << termcolor::blue << std::floor(solution.cost)
+				<< termcolor::reset;
+			out << ", ";
+			out << termcolor::bold << termcolor::magenta << solution.score
+				<< termcolor::reset;
+			out << " ) ";
+			out << termcolor::grey << "= [";
 
-		for (int i = 0; i < solution.route.size(); i++) {
-			if (i > 0) {
-				out << ", ";
+			for (int i = 0; i < solution.route.size(); i++) {
+				if (i > 0) {
+					out << ", ";
+				}
+				out << solution.route[i];
 			}
-			out << solution.route[i];
-		}
 
-		out << "]\n" << termcolor::reset;
+			out << "]\n" << termcolor::reset;
+		}
+		else {
+			out << "( " << std::floor(solution.cost) << ", " << solution.score << " ) = [";
+
+			for (int i = 0; i < solution.route.size(); i++) {
+				if (i > 0) {
+					out << ", ";
+				}
+				out << solution.route[i];
+			}
+
+			out << "]\n";
+		}
 
 		return out;
 	};

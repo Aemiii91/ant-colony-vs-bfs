@@ -68,6 +68,8 @@ class Colony {
 	void _initMatrices();
 	/// Initializes the ants.
 	void _initAnts(std::vector<Ant> *ants);
+	void _runAnts(ThreadPool *pool, std::vector<Ant> *ants);
+	void _resetAnts(std::vector<Ant> *ants);
 	/// Returns true if all ants are done.
 	bool _checkAntsComplete(std::vector<Ant> *ants);
 	std::vector<Solution> _pickBestAntSolutions(std::vector<Ant> *ants);

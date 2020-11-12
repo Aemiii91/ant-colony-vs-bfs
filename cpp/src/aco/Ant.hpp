@@ -17,10 +17,10 @@ class Ant {
 	/**
 	 *
 	 */
-	Ant(std::vector<int> possibleVertices, Parameters *params, MatrixData *matrixData)
-		: _possibleVertices(possibleVertices), _params(params),
-		  _matrixData(matrixData) {
+	Ant(std::vector<int> allVertices, Parameters *params, MatrixData *matrixData)
+		: _params(params), _matrixData(matrixData) {
 		this->_route = std::vector<int>{this->_params->startVertex};
+		this->_possibleVertices = allVertices;
 		utils::vector::removeValue(&(this->_possibleVertices),
 								   this->_params->startVertex);
 	}
@@ -46,9 +46,7 @@ class Ant {
 	bool _checkConstraint(double lookahead = 0.0);
 	int _pickNextVertex(int currentVertex);
 	void _traverse(int fromIndex, int toIndex);
-	double _calculateEdgeProbability(int fromIndex, int toIndex);
-	double _calculateMoveProbability(int fromIndex, int toIndex, double norm);
-	double _calculateProbabilityNorm(int currentVertex);
+	double _probabilityNorm(int currentVertex);
 };
 } // namespace aco
 

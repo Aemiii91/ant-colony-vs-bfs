@@ -59,17 +59,7 @@ Solution Colony::_solve() {
 	this->_setProgressTotal(this->_params.iterations * this->_params.antCount);
 
 	for (int iteration = 0; iteration < this->_params.iterations; iteration++) {
-		for (Ant &ant : ants) {
-			// add ant to queue
-			pool.enqueue([this, &ant] {
-				ant.Run();
-				this->_progressTick();
-			});
-		}
-
-		while (!this->_checkAntsComplete(&ants)) {
-			/* Wait for ants to complete. */
-		}
+		this->_runAnts(&pool, &ants);
 
 		this->_matrixData.EvaporatePheromone();
 
@@ -82,9 +72,7 @@ Solution Colony::_solve() {
 			}
 		}
 
-		for (Ant &ant : ants) {
-			ant.Reset(this->_allVertices);
-		}
+		this->_resetAnts(&ants);
 	}
 
 	return this->_solution;
@@ -94,6 +82,35 @@ void Colony::_initAnts(std::vector<Ant> *ants) {
 	for (int i = 0; i < this->_params.antCount; i++) {
 		ants->push_back(
 			Ant(this->_allVertices, &this->_params, &this->_matrixData));
+	}
+}
+
+void Colony::_runAnts(ThreadPool *pool, std::vector<Ant> *ants) {
+	for (auto ant = ants->begin(); ant != ants->end(); ++ant) {
+		auto job = [this, ant] {
+			ant->Run();
+			this->_progressTick();
+		};
+
+		if (this->_params.threading) {
+			pool->enqueue(job);
+		} else {
+			job();
+		}
+	}
+
+	if (!this->_params.threading) {
+		return;
+	}
+
+	while (!this->_checkAntsComplete(ants)) {
+		/* Wait for ants to complete. */
+	}
+}
+
+void Colony::_resetAnts(std::vector<Ant> *ants) {
+	for (auto ant = ants->begin(); ant != ants->end(); ++ant) {
+		ant->Reset(this->_allVertices);
 	}
 }
 
