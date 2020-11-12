@@ -11,7 +11,7 @@ from smac.facade.func_facade import fmin_smac
 def acorunner(x):
     print(x)
     upperScore = 100
-    staticparams = 'aco --data "matrix500.json" --colonies 1 --ants 20 --iterations 10 '
+    staticparams = 'aco --data "matrix500.json" --colonies 1 --ants 30 --iterations 100 --smac_mode '
     dynamicAlpha = '--alpha ' + str(x[0])
     dynamicBeta  = '--beta ' + str(x[1])
     dynamicEvaporation = '--evaporation ' + str(x[2]) 
