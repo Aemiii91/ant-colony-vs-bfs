@@ -1,8 +1,8 @@
-#include "run.hpp"
+#include "AntColony.hpp"
 
 using namespace aco;
 
-void aco::run(Graph *graph, utils::ArgumentParser *args) {
+void AntColony::run(Graph *graph, utils::ArgumentParser *args) {
 	time_t t;
 	srand(time(&t));
 
@@ -22,12 +22,12 @@ void aco::run(Graph *graph, utils::ArgumentParser *args) {
 	params.threading = !args->Exists("--nothreading");
 	bool showProgress = args->Exists("--progress");
 
-	printParameters(colonyCount, params);
+	_printParameters(colonyCount, params);
 
 	Colony colony(graph, params);
 
 	int totalCycles = colonyCount * params.antCount * params.iterations;
-	indicators::ProgressBar bar = createProgressBar(totalCycles);
+	indicators::ProgressBar bar = _createProgressBar(totalCycles);
 
 	std::string currentStatus = "";
 	int currentIterations = 0;
@@ -51,7 +51,7 @@ void aco::run(Graph *graph, utils::ArgumentParser *args) {
 			<< termcolor::reset << std::endl;
 
 		colony.progressHandler = [&bar, &currentStatus](int n, int total) {
-			progressBarTick(&bar, n, total, currentStatus);
+			_progressBarTick(&bar, n, total, currentStatus);
 		};
 	}
 
@@ -63,53 +63,50 @@ void aco::run(Graph *graph, utils::ArgumentParser *args) {
 		std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
 
 	if (showProgress) {
-		progressBarTick(&bar, totalCycles - 1, totalCycles, currentStatus);
+		_progressBarTick(&bar, totalCycles - 1, totalCycles, currentStatus);
 	}
 
 	char s[20];
 	snprintf(s, 20, "%.3fs\n", (double)duration.count() / 1000000);
-	print::yellow(s);
+	printc::yellow(s);
 
 	std::cout << bestSolution;
 }
 
-void aco::printParameters(int colonyCount, Parameters params) {
+void AntColony::_printParameters(int colonyCount, Parameters params) {
+	std::stringstream paramStr;
+
 	if (colonyCount > 1) {
-		print::bold(std::to_string(colonyCount) + " colonies");
-		print::grey(", ");
+		paramStr << colonyCount << " colonies, ";
 	}
-	print::bold(std::to_string(params.antCount) + " ants");
-	print::grey(", ");
-	print::bold(std::to_string(params.iterations) + " iterations");
-	print::grey(", ");
-	print::grey("[ alpha=");
-	print::bold(params.alpha);
-	print::grey(", beta=");
-	print::bold(params.beta);
-	print::grey(", evaporation=");
-	print::bold(params.evaporation);
-	print::grey(", pheromone=");
-	print::bold(params.pheromoneConstant);
+	paramStr << params.antCount << " ants, ";
+	paramStr << params.iterations << " iterations";
+
+	printc::bold(paramStr.str());
+
+	std::stringstream extraStr;
+	extraStr << " [ alpha=" << params.alpha << ", beta=" << params.beta
+			 << ", evaporation=" << params.evaporation
+			 << ", pheromone=" << params.pheromoneConstant;
 	if (params.bestAntLimit != 1) {
-		print::grey(", best_ants=");
-		print::bold(params.bestAntLimit);
+		extraStr << ", best_ants=" << params.bestAntLimit;
 	}
 	if (params.startVertex != 0) {
-		print::grey(", start=");
-		print::bold(params.startVertex);
+		extraStr << ", start=" << params.startVertex;
 	}
 	if (params.costConstraint != 0) {
-		print::grey(", cost=");
-		print::bold(params.costConstraint);
+		extraStr << ", cost=" << params.costConstraint;
 	}
-	print::grey(" ]\n");
+	extraStr << " ]\n";
+
+	printc::boldGrey(extraStr.str());
 }
 
-indicators::ProgressBar aco::createProgressBar(int maxProgress) {
+indicators::ProgressBar AntColony::_createProgressBar(int maxProgress) {
 	namespace opt = indicators::option;
 	std::string indicator = "#";
-	auto fgColor = print::colorsEnabled() ? indicators::Color::green
-										  : indicators::Color::white;
+	auto fgColor = printc::colorsEnabled() ? indicators::Color::green
+										   : indicators::Color::white;
 
 	return indicators::ProgressBar{
 		opt::BarWidth{20},
@@ -123,8 +120,8 @@ indicators::ProgressBar aco::createProgressBar(int maxProgress) {
 			std::vector<indicators::FontStyle>{indicators::FontStyle::bold}}};
 }
 
-void aco::progressBarTick(indicators::ProgressBar *bar, int n, int total,
-						  std::string currentStatus) {
+void AntColony::_progressBarTick(indicators::ProgressBar *bar, int n, int total,
+								 std::string currentStatus) {
 	std::stringstream prefix, postfix;
 	prefix << std::setw(3) << (int)std::ceil((double)n / total * 100) << "% ";
 	postfix << std::min(n + 1, total) << "/" << total << "  " << currentStatus;

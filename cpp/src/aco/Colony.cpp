@@ -2,37 +2,17 @@
 
 using namespace aco;
 
-Colony::Colony(Graph *graph, Parameters params) : _params(params) {
-	int startVertexIndex = 0;
-	int index = 0;
-	for (Node &node : graph->nodelist) {
-		if (node.ID == this->_params.startVertex) {
-			startVertexIndex = index;
-		}
-
-		this->_vertexIDs.push_back(node.ID);
-		this->_allVertices.push_back(index++);
-	}
-
-	// convert startVertex ID to index
-	this->_params.startVertex = startVertexIndex;
-
-	// initialize the matrices
-	this->_matrixData = MatrixData(this->_vertexIDs, graph, &this->_params);
-}
-
 Solution Colony::Solve(int colonyCount) {
-	std::vector<Solution> solutions;
-
-	this->_setProgressTotal(colonyCount * this->_params.iterations *
-							this->_params.antCount);
-
+	// if only one colony, run this one
 	if (colonyCount == 1) {
 		return this->_exportSolution(this->_solve());
 	}
 
+	this->_progressTotal =
+		colonyCount * this->_params.iterations * this->_params.antCount;
 	auto progressHandler = [this](int n, int total) { this->_progressTick(); };
 
+	// clone the amount of colonies needed, and solve each of them
 	for (int colonyID = 0; colonyID < colonyCount; colonyID++) {
 		Colony clone(*this);
 		clone.progressHandler = progressHandler;
@@ -56,7 +36,7 @@ Solution Colony::_solve() {
 	this->_initAnts(&ants);
 
 	// set total progress (number of cycles)
-	this->_setProgressTotal(this->_params.iterations * this->_params.antCount);
+	this->_progressTotal = this->_params.iterations * this->_params.antCount;
 
 	for (int iteration = 0; iteration < this->_params.iterations; iteration++) {
 		this->_runAnts(&pool, &ants);
@@ -163,20 +143,16 @@ void Colony::_depositPheromone(Solution antSolution) {
 	}
 }
 
-void Colony::_progressTick(int tickSize) {
+void Colony::_progressTick() {
 	this->_progressCount =
-		std::min(this->_progressCount + tickSize, this->_progressTotal);
+		std::min(this->_progressCount + 1, this->_progressTotal);
 
 	this->progressHandler(this->_progressCount, this->_progressTotal);
 }
 
-void Colony::_setProgressTotal(int value) {
-	this->_progressTotal = value;
-}
-
 Solution Colony::_exportSolution(Solution solution) {
 	for (int &index : solution.route) {
-		index = this->_vertexIDs[index];
+		index = (&this->_graphNodes->at(index))->ID;
 	}
 	return solution;
 }

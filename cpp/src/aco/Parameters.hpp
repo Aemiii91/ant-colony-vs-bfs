@@ -3,6 +3,9 @@
 #pragma once
 
 namespace aco {
+/**
+ * A struct to contain the colony's parameters.
+ */
 struct Parameters {
 	/// Importance of pheromone level.
 	double alpha = 1;

@@ -3,43 +3,47 @@
 using namespace aco;
 
 void Ant::Run() {
-	int currentVertex;
+	int homeVertex = this->_route[0];
+	int currentVertex = homeVertex;
 	int nextVertex;
 
-	while (this->_possibleVertices.size()) {
-		currentVertex = this->_route[this->_route.size() - 1];
+	while (!this->_possibleVertices.empty()) {
+		// pick next vertex based on probabilities
 		nextVertex = this->_pickNextVertex(currentVertex);
 
+		// get the cost of the move
 		double cost = this->_matrixData->Cost(currentVertex, nextVertex);
-		double homeCost = 0.0;
 
 		if (this->_params->returnHome) {
-			homeCost =
-				this->_matrixData->Cost(nextVertex, this->_params->startVertex);
+			// add the cost of getting home
+			cost += this->_matrixData->Cost(nextVertex, homeVertex);
 		}
 
-		if (this->_checkConstraint(cost + homeCost)) {
+		// check if the move can be made
+		if (this->_checkConstraint(cost)) {
 			this->_traverse(currentVertex, nextVertex);
+			currentVertex = nextVertex;
 		} else {
-			nextVertex = currentVertex;
+			// can't make the move, stop going further
 			break;
 		}
 	}
 
+	// return home if parameter set
 	if (this->_params->returnHome) {
-		this->_traverse(nextVertex, this->_params->startVertex);
+		this->_traverse(currentVertex, homeVertex);
 	}
 
 	this->_runComplete = true;
 }
 
 void Ant::Reset(std::vector<int> allVertices) {
+	int startVertex = this->_params->startVertex;
 	this->_runComplete = false;
 	this->_cost = 0.0;
-	this->_route = std::vector<int>{this->_params->startVertex};
+	this->_route = std::vector<int>{startVertex};
 	this->_possibleVertices = allVertices;
-	utils::vector::removeValue(&(this->_possibleVertices),
-							   this->_params->startVertex);
+	utils::vector::removeValue(&(this->_possibleVertices), startVertex);
 }
 
 bool Ant::_checkConstraint(double lookahead) {
@@ -53,6 +57,7 @@ int Ant::_pickNextVertex(int currentVertex) {
 	double sum = 0.0;
 	std::vector<double> attractiveness(size, 0.0);
 
+	// calculate normalized probabilities (attractiveness) and the sum
 	for (int nextIndex = 0; nextIndex < size; nextIndex++) {
 		int nextVertex = this->_possibleVertices[nextIndex];
 		double probability =
@@ -77,15 +82,15 @@ int Ant::_pickNextVertex(int currentVertex) {
 		cumulative += weight;
 	}
 
-	// should never end up here (consider throwing error)
-	return 0;
+	// mathematically impossible to get here
+	throw("IMPOSSIBLE: The ant couldn't pick next vertex.");
 }
 
-void Ant::_traverse(int fromIndex, int toIndex) {
-	this->_route.push_back(toIndex);
-	utils::vector::removeValue(&(this->_possibleVertices), toIndex);
+void Ant::_traverse(int currentVertex, int nextVertex) {
+	this->_route.push_back(nextVertex);
+	utils::vector::removeValue(&(this->_possibleVertices), nextVertex);
 
-	this->_cost += this->_matrixData->Cost(fromIndex, toIndex);
+	this->_cost += this->_matrixData->Cost(currentVertex, nextVertex);
 }
 
 double Ant::_probabilityNorm(int currentVertex) {

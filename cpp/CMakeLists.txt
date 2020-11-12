@@ -14,8 +14,10 @@ list(REMOVE_ITEM SOURCES "${CMAKE_SOURCE_DIR}/src/main.cpp" )
 file(GLOB TEST_SOURCES "tests/*.cpp")
 
 include_directories(${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-include_directories("/src")
-include_directories(graph)
+include_directories("src")
+include_directories("src/graph")
+include_directories("src/aco")
+include_directories("src/utils")
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
