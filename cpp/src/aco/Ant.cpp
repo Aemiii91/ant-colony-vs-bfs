@@ -70,20 +70,21 @@ int Ant::_pickNextVertex(int currentVertex) {
 	// http://stackoverflow.com/a/3679747/5343977
 	double randomToss = (rand() / (RAND_MAX + 1.0));
 	double cumulative = 0.0;
+	int pickedVertex;
 
 	for (int nextIndex = 0; nextIndex < size; nextIndex++) {
 		double weight = attractiveness[nextIndex] / sum;
 
 		// choose next vertex based on probability
 		if (randomToss <= (weight + cumulative)) {
-			return this->_possibleVertices[nextIndex];
+			pickedVertex = this->_possibleVertices[nextIndex];
+			break;
 		}
 
 		cumulative += weight;
 	}
 
-	// mathematically impossible to get here
-	throw("IMPOSSIBLE: The ant couldn't pick next vertex.");
+	return pickedVertex;
 }
 
 void Ant::_traverse(int currentVertex, int nextVertex) {
