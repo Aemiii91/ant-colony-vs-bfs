@@ -15,6 +15,7 @@ cpp/**/DartConfiguration.tcl
 cpp/tests*.cmake
 build/
 cpp/smac/smac3*
+cpp/smac/routeplanner
 
 .vscode
 
