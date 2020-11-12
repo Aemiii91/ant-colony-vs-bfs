@@ -26,6 +26,7 @@ struct Parameters {
 	bool returnHome = true;
 	/// Turn multi-threading on or off.
 	bool threading = true;
+
 };
 } // namespace aco
 

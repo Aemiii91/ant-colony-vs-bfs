@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <chrono>
+#include <fstream>
 #include <indicators/progress_bar.hpp>
 
 #include "../utils/ArgumentParser.hpp"
@@ -16,6 +17,7 @@ namespace aco {
     indicators::ProgressBar createProgressBar(int maxProgress);
     void progressBarTick(indicators::ProgressBar *bar, int n, int total, std::string currentStatus);
     void printParameters(int colonyCount, Parameters params);
+    void dumpRoute(Solution solution);
 }
 
 #endif

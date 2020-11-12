@@ -5,6 +5,7 @@ using namespace aco;
 void aco::run(Graph *graph, utils::ArgumentParser *args) {
 	time_t t;
 	srand(time(&t));
+    int routeNumber = 0;
 
 	int colonyCount = 1;
 	Parameters params;
@@ -18,11 +19,12 @@ void aco::run(Graph *graph, utils::ArgumentParser *args) {
 	args->Get("--ants", &params.antCount);
 	args->Get("--iterations", &params.iterations);
 	args->Get("--best_ants", &params.bestAntLimit);
+    bool smacMode = args->Exists("--smac_mode");
 	params.returnHome = !args->Exists("--noreturn");
 	params.threading = !args->Exists("--nothreading");
 	bool showProgress = args->Exists("--progress");
 
-	printParameters(colonyCount, params);
+	if(!smacMode) printParameters(colonyCount, params);
 
 	Colony colony(graph, params);
 
@@ -66,11 +68,16 @@ void aco::run(Graph *graph, utils::ArgumentParser *args) {
 		progressBarTick(&bar, totalCycles - 1, totalCycles, currentStatus);
 	}
 
-	char s[20];
-	snprintf(s, 20, "%.3fs\n", (double)duration.count() / 1000000);
-	print::yellow(s);
+    if(!smacMode) {
+        char s[20];
+    	snprintf(s, 20, "%.3fs\n", (double)duration.count() / 1000000);
+    	print::yellow(s);
 
-	std::cout << bestSolution;
+    	std::cout << bestSolution;
+    } else {
+        std::cout << bestSolution.route.capacity();
+        dumpRoute(bestSolution); 
+    }
 }
 
 void aco::printParameters(int colonyCount, Parameters params) {
@@ -103,6 +110,13 @@ void aco::printParameters(int colonyCount, Parameters params) {
 		print::bold(params.costConstraint);
 	}
 	print::grey(" ]\n");
+}
+
+void aco::dumpRoute(Solution solution) {
+    ofstream outfile;
+    outfile.open("pathLog");
+    outfile << solution;
+    outfile.close();
 }
 
 indicators::ProgressBar aco::createProgressBar(int maxProgress) {
