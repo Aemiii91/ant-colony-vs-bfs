@@ -4,6 +4,9 @@
 // std
 #include <algorithm>
 #include <cmath>
+#include <ctime>
+#include <iterator>
+#include <random>
 #include <thread>
 // submodules
 #include <utils/vector.hpp>
@@ -24,12 +27,9 @@ class Ant {
 	 */
 	Ant(std::vector<int> allVertices, Parameters *params,
 		MatrixData *matrixData)
-		: _params(params), _matrixData(matrixData) {
-                int startVertex = this->_params->startVertex;
-		this->_route = std::vector<int>{startVertex};
-		this->_possibleVertices = allVertices;
-		utils::vector::removeValue(&(this->_possibleVertices),
-								   startVertex);
+		: _params(params), _matrixData(matrixData),
+		  _random(std::random_device{}()) {
+		this->Init(allVertices);
 	}
 
 	/**
@@ -42,7 +42,13 @@ class Ant {
 	 *
 	 * @param allVertices A list of all the vertices' indexes.
 	 */
-	void Reset(std::vector<int> allVertices);
+	void Init(std::vector<int> allVertices) {
+		_runComplete = false;
+		_cost = 0.0;
+		_route = std::vector<int>{_params->startVertex};
+		_possibleVertices = allVertices;
+		utils::vector::removeValue(&(_possibleVertices), _params->startVertex);
+	}
 
 	/**
 	 * Check if the ant is done.
@@ -50,7 +56,7 @@ class Ant {
 	 * @return True if ant is done.
 	 */
 	bool IsComplete() {
-		return this->_runComplete;
+		return _runComplete;
 	};
 	/**
 	 * Extract the ant's solution.
@@ -58,7 +64,7 @@ class Ant {
 	 * @return A `Solution` object, with the ant's route, cost and score.
 	 */
 	Solution solution() {
-		return Solution(this->_cost, this->_route);
+		return Solution(_cost, _route);
 	};
 
   private:
@@ -68,34 +74,23 @@ class Ant {
 	MatrixData *_matrixData;
 	/// A list of possible vertices.
 	std::vector<int> _possibleVertices;
+	/// A Mersenne Twister pseudo-random generator of 32-bit numbers.
+	std::mt19937 _random;
 	/// True if the ant is done.
-	bool _runComplete = false;
+	bool _runComplete;
 	/// Cumulative cost variable.
-	double _cost = 0.0;
+	double _cost;
 	/// Container for the constructed route.
 	std::vector<int> _route;
 
 	/**
 	 * If `costConstraint` is set, check whether the constraint is met.
 	 *
-	 * @param lookahead A lookahead value added to the current cost when
-	 * comparing.
-	 * @return True if the `cost+lookahead` value is lower than the
-	 * `costConstraint`.
+	 * @param currentVertex Vertex the ant moves from.
+	 * @param nextVertex Vertex the ant moves to.
+	 * @return True if the move can be made.
 	 */
-	bool _checkConstraint(double lookahead = 0.0);
-
-	/**
-	 * Calculates the normalized probabilities for each possible vertex, and
-	 * picks one of them.
-	 *
-	 * @param vertexList a list of all possible vertices
-         * @param attract a vector of attractiveness of a vertices
-         * @param gen pseudo-random number generators
-	 * @return The picked vertix (index).
-	 */
-	int _weighted_choice(std::vector<int> &vertexList,
-						 std::vector<double> &attract, std::mt19937 &gen);
+	bool _checkMove(int currentVertex, int nextVertex);
 	/**
 	 * Calculates the normalized probabilities for each possible vertex, and
 	 * picks one of them.
@@ -105,7 +100,24 @@ class Ant {
 	 */
 	int _pickNextVertex(int currentVertex);
 	/**
-	 * Moves the ant. Adds the next vertex to the route, and removes it from
+	 * Calculates normalized probabilities (attractiveness).
+	 *
+	 * @param currentVertex The vertex the ant is currently on.
+	 * @param norm The normalization value.
+	 * @return A vector of normalized probabilities.
+	 */
+	std::vector<double> _attractivenessVector(int currentVertex, double norm);
+	/**
+	 * Performs a weighted choice on a vector of attractiveness.
+	 *
+	 * @param attractiveness A vector of the vertices' attractiveness.
+	 * @return The index of the weighted choice.
+	 */
+	int _weightedChoice(std::vector<double> *attractiveness);
+	/**
+	 * Moves the ant.
+	 *
+	 * Adds the next vertex to the route, and removes it from
 	 * `possibleVertices`. Adds the cost of the move to the cumulative cost
 	 * variable.
 	 *

@@ -39,15 +39,15 @@ class Colony {
 	 */
 	Colony(Graph *graph, Parameters params)
 		: _graphNodes(&graph->nodelist), _params(params) {
-		size_t size = this->_graphNodes->size();
+		size_t size = _graphNodes->size();
 
 		// create the list of indexes
 		for (int index = 0; index < size; index++) {
-			this->_allVertices.push_back(index);
+			_allVertices.push_back(index);
 		}
 
 		// initialize the matrices
-		this->_matrixData = MatrixData(graph, &this->_params);
+		_matrixData = MatrixData(graph, &_params);
 	}
 
 	/**

@@ -26,7 +26,7 @@ class MatrixData {
 	MatrixData(Graph *graph, Parameters *params)
 		: _size(graph->nodelist.size()), _alpha(params->alpha),
 		  _beta(params->beta), _evaporation(params->evaporation) {
-		this->_initMatrices(graph);
+		_initMatrices(graph);
 	}
 	MatrixData() : _size(0){};
 
@@ -37,7 +37,7 @@ class MatrixData {
 	 * @return The edge's cost.
 	 */
 	double Cost(int fromIndex, int toIndex) {
-		return this->_cost[fromIndex][toIndex];
+		return _cost[fromIndex][toIndex];
 	};
 
 	/**
@@ -47,7 +47,7 @@ class MatrixData {
 	 * @return The edge's probability.
 	 */
 	double Probability(int fromIndex, int toIndex) {
-		return this->_probability[fromIndex][toIndex];
+		return _probability[fromIndex][toIndex];
 	};
 
 	/**
@@ -58,21 +58,21 @@ class MatrixData {
 	 * the ant.
 	 */
 	void DepositPheromone(int fromIndex, int toIndex, double deposit) {
-		this->_pheromone[fromIndex][toIndex] =
-			this->_pheromone[fromIndex][toIndex] + deposit;
-		this->_updateProbability(fromIndex, toIndex);
+		_pheromone[fromIndex][toIndex] =
+			_pheromone[fromIndex][toIndex] + deposit;
+		_updateProbability(fromIndex, toIndex);
 	}
 
 	/**
 	 * Run evaporation on the pheromone level on all edges.
 	 */
 	void EvaporatePheromone() {
-		double coefficient = 1 - this->_evaporation;
+		double coefficient = 1 - _evaporation;
 
-		for (int i = 0; i < this->_size; i++) {
-			for (int j = 0; j < this->_size; j++) {
-				this->_pheromone[i][j] *= coefficient;
-				this->_updateProbability(i, j);
+		for (int i = 0; i < _size; i++) {
+			for (int j = 0; j < _size; j++) {
+				_pheromone[i][j] *= coefficient;
+				_updateProbability(i, j);
 			}
 		}
 	}
@@ -100,15 +100,15 @@ class MatrixData {
 	 */
 	void _initMatrices(Graph *graph) {
 		auto init = utils::vector::initialize2dVector<double>;
-		this->_cost = init(this->_size, 0.0);
-		this->_pheromone = init(this->_size, 1.0);
-		this->_heuristic = init(this->_size, 0.0);
-		this->_probability = init(this->_size, 0.0);
+		_cost = init(_size, 0.0);
+		_pheromone = init(_size, 1.0);
+		_heuristic = init(_size, 0.0);
+		_probability = init(_size, 0.0);
 
-		for (int fromIndex = 0; fromIndex < this->_size; fromIndex++) {
+		for (int fromIndex = 0; fromIndex < _size; fromIndex++) {
 			Node *fromNode = &graph->nodelist[fromIndex];
 
-			for (int toIndex = 0; toIndex < this->_size; toIndex++) {
+			for (int toIndex = 0; toIndex < _size; toIndex++) {
 				if (fromIndex == toIndex) {
 					// skip the matrix diagonals
 					continue;
@@ -124,10 +124,10 @@ class MatrixData {
 						}
 						return false;
 					});
-				double heuristic = std::pow(1.0 / cost, this->_beta);
-				this->_cost[fromIndex][toIndex] = cost;
-				this->_heuristic[fromIndex][toIndex] = heuristic;
-				this->_probability[fromIndex][toIndex] = heuristic;
+				double heuristic = std::pow(1.0 / cost, _beta);
+				_cost[fromIndex][toIndex] = cost;
+				_heuristic[fromIndex][toIndex] = heuristic;
+				_probability[fromIndex][toIndex] = heuristic;
 			}
 		}
 	}
@@ -138,10 +138,10 @@ class MatrixData {
 	 * @param toIndex The vertex to go to.
 	 */
 	void _updateProbability(int fromIndex, int toIndex) {
-		double alpha = this->_alpha;
-		double pheromone = this->_pheromone[fromIndex][toIndex];
-		double heuristic = this->_heuristic[fromIndex][toIndex];
-		this->_probability[fromIndex][toIndex] =
+		double alpha = _alpha;
+		double pheromone = _pheromone[fromIndex][toIndex];
+		double heuristic = _heuristic[fromIndex][toIndex];
+		_probability[fromIndex][toIndex] =
 			std::pow(pheromone, alpha) * heuristic;
 	}
 };

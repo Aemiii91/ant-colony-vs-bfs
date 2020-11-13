@@ -19,7 +19,7 @@ class ArgumentParser {
      */
 	ArgumentParser(int &argc, char **argv) {
 		for (int i = 1; i < argc; i++) {
-			this->_tokens.push_back(std::string(argv[i]));
+			_tokens.push_back(std::string(argv[i]));
 		}
 	}
 
@@ -33,9 +33,9 @@ class ArgumentParser {
 	void Get(const std::string &option, T *valuePointer) const {
 		std::vector<std::string>::const_iterator itr;
 
-		itr = std::find(this->_tokens.begin(), this->_tokens.end(), option);
+		itr = std::find(_tokens.begin(), _tokens.end(), option);
 
-		if (itr != this->_tokens.end() && ++itr != this->_tokens.end()) {
+		if (itr != _tokens.end() && ++itr != _tokens.end()) {
 			std::stringstream convert(*itr);
 			convert >> *valuePointer;
 		}
@@ -48,8 +48,8 @@ class ArgumentParser {
      * @return True if option is set.
      */
 	bool Exists(const std::string &option) const {
-		return std::find(this->_tokens.begin(), this->_tokens.end(), option) !=
-			   this->_tokens.end();
+		return std::find(_tokens.begin(), _tokens.end(), option) !=
+			   _tokens.end();
 	}
 
   private:
