@@ -36,33 +36,26 @@ struct Solution {
 	/// Default constructor.
 	Solution() : cost(0.0), route({}), score(0){};
 
-	/**
-	 * Comparison implementation: A better solution is greater than a worse
-	 * solution.
-	 */
-	friend bool operator>(const Solution &a, const Solution &b) {
-		return a.score > b.score || (a.score == b.score && a.cost < b.cost);
+	/// Comparison implementation
+	bool operator==(const Solution &other) {
+		return this->score == other.score && this->cost == other.cost;
 	}
-	/**
-	 * Comparison implementation: A better solution is greater than or equal to
-	 * a worse solution.
-	 */
-	friend bool operator>=(const Solution &a, const Solution &b) {
-		return a.score > b.score || (a.score == b.score && a.cost <= b.cost);
+	bool operator!=(const Solution &other) {
+		return !(*this == other);
 	}
-	/**
-	 * Comparison implementation: A worse solution is less than a better
-	 * solution.
-	 */
-	friend bool operator<(const Solution &a, const Solution &b) {
-		return a.score < b.score || (a.score == b.score && a.cost > b.cost);
+	/// A better solution is "greater than" a worse solution.
+	bool operator>(const Solution &other) {
+		return this->score > other.score ||
+			   (this->score == other.score && this->cost < other.cost);
 	}
-	/**
-	 * Comparison implementation: A worse solution is less than or equal to a
-	 * better solution.
-	 */
-	friend bool operator<=(const Solution &a, const Solution &b) {
-		return a.score < b.score || (a.score == b.score && a.cost >= b.cost);
+	bool operator>=(const Solution &other) {
+		return *this > other || *this == other;
+	}
+	bool operator<(const Solution &other) {
+		return !(*this > other || *this == other);
+	}
+	bool operator<=(const Solution &other) {
+		return !(*this > other);
 	}
 
 	/// Stream operator implementation
