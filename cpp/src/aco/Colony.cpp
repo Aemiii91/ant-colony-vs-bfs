@@ -16,7 +16,7 @@ Solution Colony::Solve(int colonyCount) {
 			clone.progressHandler = progressHandler;
 			clone.solutionHandler =
 				[this, &clone, colonyID](double, int, int iteration, int) {
-					_assessSolution(clone._bestInColony, iteration, colonyID);
+					this->_assessSolution(clone._bestInColony, iteration, colonyID);
 				};
 			clone._solve();
 		}
@@ -85,17 +85,20 @@ bool Colony::_checkAntsComplete(std::vector<Ant> *ants) {
 std::vector<Solution> Colony::_pickBestAnts(std::vector<Ant> *ants) {
 	std::vector<Solution> antSolutions;
 
+	// extract all ant solutions
 	for (auto itr = ants->begin(); itr != ants->end(); ++itr) {
 		antSolutions.push_back(itr->solution());
 	}
 
+	// if only one solution needed, return the maximum solution (best)
 	if (_params.bestAntLimit == 1) {
 		return {*std::max_element(antSolutions.begin(), antSolutions.end())};
 	}
+	else if (_params.bestAntLimit > 0) {
+		// sort the solution in descending order (better first)
+		std::sort(antSolutions.begin(), antSolutions.end(), greater<>());
 
-	std::sort(antSolutions.begin(), antSolutions.end(), greater<>());
-
-	if (_params.bestAntLimit > 0) {
+		// reduce vector to its first n elements
 		antSolutions.resize(_params.bestAntLimit);
 	}
 
@@ -114,9 +117,10 @@ bool Colony::_assessSolution(Solution solution, int iteration, int colonyID) {
 }
 
 void Colony::_depositPheromone(Solution antSolution) {
-	// calculate quality of the ant
+	// calculate quality of the ant (the quality function)
 	double deposit = _params.pheromoneConstant / antSolution.cost;
 
+	// deposit pheromone along the ant's route
 	for (int i = 0; i < antSolution.route.size() - 1; i++) {
 		int fromIndex = antSolution.route[i];
 		int toIndex = antSolution.route[i + 1];
