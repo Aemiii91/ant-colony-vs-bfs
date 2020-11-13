@@ -7,7 +7,7 @@
 #include <iostream>
 #include <vector>
 // include
-#include <indicators/termcolor.hpp>
+#include <termcolor/termcolor.hpp>
 // submodules
 #include <utils/printc.hpp>
 

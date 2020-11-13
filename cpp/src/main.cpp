@@ -4,12 +4,12 @@
 #include <random>
 // submodules
 #include <aco/AntColony.hpp>
+#include <ownAlgorithm/depthFirstAlgorithm.h>
+#include <ownAlgorithm/naiveAlgorithm.h>
 #include <utils/ArgumentParser.hpp>
 #include <utils/printc.hpp>
 // local
 #include "jsonparser.h"
-#include "ownAlgorithm/depthFirstAlgorithm.h"
-#include "ownAlgorithm/naiveAlgorithm.h"
 
 int main(int argc, char **argv) {
 	utils::ArgumentParser args(argc, argv);

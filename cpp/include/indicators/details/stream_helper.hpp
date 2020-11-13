@@ -3,7 +3,7 @@
 
 #include <indicators/display_width.hpp>
 #include <indicators/setting.hpp>
-#include <indicators/termcolor.hpp>
+#include <termcolor/termcolor.hpp>
 
 #include <algorithm>
 #include <chrono>
