@@ -15,8 +15,8 @@ void Ant::Run() {
 
 		// get the cost of the move
 		double cost = this->_matrixData->Cost(currentVertex, nextVertex);
-		
-                if (this->_params->returnHome) {
+
+		if (this->_params->returnHome) {
 			// add the cost of getting home
 			cost += this->_matrixData->Cost(nextVertex, homeVertex);
 		}
@@ -44,8 +44,7 @@ void Ant::Reset(std::vector<int> allVertices) {
 	this->_cost = 0.0;
 	this->_route = std::vector<int>{startVertex};
 	this->_possibleVertices = allVertices;
-	utils::vector::removeValue(&(this->_possibleVertices),
-							   startVertex);
+	utils::vector::removeValue(&(this->_possibleVertices), startVertex);
 }
 
 bool Ant::_checkConstraint(double lookahead) {
@@ -63,8 +62,8 @@ int Ant::_pickNextVertex(int currentVertex) {
 	size_t size = this->_possibleVertices.size();
 	double norm = this->_probabilityNorm(currentVertex);
 	int pickedVertex;
-        
-        std::vector<double> attractiveness(size, 0.0);
+
+	std::vector<double> attractiveness(size, 0.0);
 
 	// calculate normalized probabilities (attractiveness) and the sum
 	for (int nextIndex = 0; nextIndex < size; nextIndex++) {
@@ -73,7 +72,6 @@ int Ant::_pickNextVertex(int currentVertex) {
 			this->_matrixData->Probability(currentVertex, nextVertex) / norm;
 		attractiveness[nextIndex] = probability;
 	}
-
 
 	auto g = std::mt19937(std::random_device{}());
 	pickedVertex =
@@ -113,4 +111,3 @@ double Ant::_probabilityNorm(int currentVertex) {
 	}
 	return norm;
 }
-
