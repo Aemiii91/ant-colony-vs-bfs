@@ -8,8 +8,7 @@ Solution Colony::Solve(int colonyCount) {
 		return _exportSolution(_solve());
 	}
 
-	_progressTotal =
-		colonyCount * _params.iterations * _params.antCount;
+	_progressTotal = colonyCount * _params.iterations * _params.antCount;
 	auto progressHandler = [this](int n, int total) { _progressTick(); };
 
 	// clone the amount of colonies needed, and solve each of them
@@ -60,8 +59,7 @@ Solution Colony::_solve() {
 
 void Colony::_initAnts(std::vector<Ant> *ants) {
 	for (int i = 0; i < _params.antCount; i++) {
-		ants->push_back(
-			Ant(_allVertices, &_params, &_matrixData));
+		ants->push_back(Ant(_allVertices, &_params, &_matrixData));
 	}
 }
 
@@ -144,8 +142,7 @@ void Colony::_depositPheromone(Solution antSolution) {
 }
 
 void Colony::_progressTick() {
-	_progressCount =
-		std::min(_progressCount + 1, _progressTotal);
+	_progressCount = std::min(_progressCount + 1, _progressTotal);
 
 	this->progressHandler(_progressCount, _progressTotal);
 }
