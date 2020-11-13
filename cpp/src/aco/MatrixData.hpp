@@ -37,7 +37,7 @@ class MatrixData {
 	 * @return The edge's cost.
 	 */
 	double Cost(int fromIndex, int toIndex) {
-		return _cost[fromIndex][toIndex];
+		return _costMatrix[fromIndex][toIndex];
 	};
 
 	/**
@@ -47,7 +47,7 @@ class MatrixData {
 	 * @return The edge's probability.
 	 */
 	double Probability(int fromIndex, int toIndex) {
-		return _probability[fromIndex][toIndex];
+		return _probabilityMatrix[fromIndex][toIndex];
 	};
 
 	/**
@@ -58,8 +58,8 @@ class MatrixData {
 	 * the ant.
 	 */
 	void DepositPheromone(int fromIndex, int toIndex, double deposit) {
-		_pheromone[fromIndex][toIndex] =
-			_pheromone[fromIndex][toIndex] + deposit;
+		_pheromoneMatrix[fromIndex][toIndex] =
+			_pheromoneMatrix[fromIndex][toIndex] + deposit;
 		_updateProbability(fromIndex, toIndex);
 	}
 
@@ -71,7 +71,7 @@ class MatrixData {
 
 		for (int i = 0; i < _size; i++) {
 			for (int j = 0; j < _size; j++) {
-				_pheromone[i][j] *= coefficient;
+				_pheromoneMatrix[i][j] *= coefficient;
 				_updateProbability(i, j);
 			}
 		}
@@ -79,18 +79,21 @@ class MatrixData {
 
   private:
 	size_t _size;
+	/// Importance of pheromone level.
 	double _alpha;
+	/// Importance of heuristic information.
 	double _beta;
+	/// The evaporation rate (evaporation_coefficient = 1 - evaporation_rate).
 	double _evaporation;
 
 	/// 2D matrix of the edge's cost.
-	std::vector<std::vector<double>> _cost;
+	std::vector<std::vector<double>> _costMatrix;
 	/// 2D matrix of the edge's pheromone level.
-	std::vector<std::vector<double>> _pheromone;
+	std::vector<std::vector<double>> _pheromoneMatrix;
 	/// 2D matrix of the edge's heuristics ((1/cost)^beta).
-	std::vector<std::vector<double>> _heuristic;
+	std::vector<std::vector<double>> _heuristicMatrix;
 	/// 2D matrix of the edge's probabilities (pheromone^alpha * (1/cost)^beta).
-	std::vector<std::vector<double>> _probability;
+	std::vector<std::vector<double>> _probabilityMatrix;
 
 	/**
 	 * Initializes the matrices and populates them with values based on the
@@ -100,10 +103,10 @@ class MatrixData {
 	 */
 	void _initMatrices(Graph *graph) {
 		auto init = utils::vector::initialize2dVector<double>;
-		_cost = init(_size, 0.0);
-		_pheromone = init(_size, 1.0);
-		_heuristic = init(_size, 0.0);
-		_probability = init(_size, 0.0);
+		_costMatrix = init(_size, 0.0);
+		_pheromoneMatrix = init(_size, 1.0);
+		_heuristicMatrix = init(_size, 0.0);
+		_probabilityMatrix = init(_size, 0.0);
 
 		for (int fromIndex = 0; fromIndex < _size; fromIndex++) {
 			Node *fromNode = &graph->nodelist[fromIndex];
@@ -115,19 +118,22 @@ class MatrixData {
 				}
 
 				Node *toNode = &graph->nodelist.at(toIndex);
+
 				double cost = 1.0;
-				utils::vector::match(
-					&fromNode->edgeList, [toNode, &cost](Edge *edge) {
-						if (edge->dist == toNode->ID) {
-							cost = std::max(edge->weight, 1.0);
-							return true;
-						}
-						return false;
-					});
+				auto getEdgeCost = [toNode, &cost](Edge *edge) {
+					if (edge->dist == toNode->ID) {
+						cost = std::max(edge->weight, 1.0);
+						return true;
+					}
+					return false;
+				};
+				utils::vector::match(&fromNode->edgeList, getEdgeCost);
+
 				double heuristic = std::pow(1.0 / cost, _beta);
-				_cost[fromIndex][toIndex] = cost;
-				_heuristic[fromIndex][toIndex] = heuristic;
-				_probability[fromIndex][toIndex] = heuristic;
+				
+				_costMatrix[fromIndex][toIndex] = cost;
+				_heuristicMatrix[fromIndex][toIndex] = heuristic;
+				_probabilityMatrix[fromIndex][toIndex] = heuristic;
 			}
 		}
 	}
@@ -139,9 +145,9 @@ class MatrixData {
 	 */
 	void _updateProbability(int fromIndex, int toIndex) {
 		double alpha = _alpha;
-		double pheromone = _pheromone[fromIndex][toIndex];
-		double heuristic = _heuristic[fromIndex][toIndex];
-		_probability[fromIndex][toIndex] =
+		double pheromone = _pheromoneMatrix[fromIndex][toIndex];
+		double heuristic = _heuristicMatrix[fromIndex][toIndex];
+		_probabilityMatrix[fromIndex][toIndex] =
 			std::pow(pheromone, alpha) * heuristic;
 	}
 };

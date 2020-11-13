@@ -17,7 +17,7 @@ struct Parameters {
 	double pheromoneConstant = 100.0;
 	/// Constraint for the cost of the solution (set 0 for no constraint).
 	double costConstraint = 30000;
-	/// The ID of the start vertex.
+	/// The index value of the start vertex.
 	int startVertex = 0;
 	/// Number of ants in the colony.
 	int antCount = 50;

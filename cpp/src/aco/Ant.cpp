@@ -21,7 +21,7 @@ void Ant::Run() {
 	}
 
 	// return home if parameter set
-	if (_params->returnHome) {
+	if (_returnHome) {
 		_traverse(currentVertex, _route.front());
 	}
 
@@ -29,27 +29,38 @@ void Ant::Run() {
 }
 
 bool Ant::_checkMove(int currentVertex, int nextVertex) {
-	if (_params->costConstraint == 0) {
+	if (_costConstraint == 0) {
 		return true;
 	}
 
 	// get the cost of the move
 	double moveCost = _matrixData->Cost(currentVertex, nextVertex);
 
-	if (_params->returnHome) {
+	if (_returnHome) {
 		// add the cost of getting home
 		moveCost += _matrixData->Cost(nextVertex, _route.front());
 	}
 
-	return (_cost + moveCost) < _params->costConstraint;
+	return (_routeCost + moveCost) < _costConstraint;
 }
 
 int Ant::_pickNextVertex(int currentVertex) {
 	double norm = _probabilityNorm(currentVertex);
+
 	std::vector<double> attractiveness =
 		_attractivenessVector(currentVertex, norm);
+
 	int choice = _weightedChoice(&attractiveness);
+
 	return _possibleVertices.at(choice);
+}
+
+double Ant::_probabilityNorm(int currentVertex) {
+	double norm = 0.0;
+	for (int nextVertex : _possibleVertices) {
+		norm += _matrixData->Probability(currentVertex, nextVertex);
+	}
+	return norm;
 }
 
 std::vector<double> Ant::_attractivenessVector(int currentVertex, double norm) {
@@ -69,20 +80,12 @@ std::vector<double> Ant::_attractivenessVector(int currentVertex, double norm) {
 int Ant::_weightedChoice(std::vector<double> *attractiveness) {
 	auto dist = std::discrete_distribution<int>(attractiveness->begin(),
 												attractiveness->end());
-	return dist(_random);
+	return dist(_randomGenerator);
 }
 
 void Ant::_traverse(int currentVertex, int nextVertex) {
 	_route.push_back(nextVertex);
 	utils::vector::removeValue(&(_possibleVertices), nextVertex);
 
-	_cost += _matrixData->Cost(currentVertex, nextVertex);
-}
-
-double Ant::_probabilityNorm(int currentVertex) {
-	double norm = 0.0;
-	for (int nextVertex : _possibleVertices) {
-		norm += _matrixData->Probability(currentVertex, nextVertex);
-	}
-	return norm;
+	_routeCost += _matrixData->Cost(currentVertex, nextVertex);
 }

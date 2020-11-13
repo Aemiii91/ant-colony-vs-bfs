@@ -22,14 +22,29 @@ class Ant {
 	 * Constructs an ant.
 	 *
 	 * @param allVertices A list of all the vertices' indexes.
+	 * @param startVertex The index of vertex the ant should start at.
 	 * @param params A pointer to the Colony's parameters
 	 * @param matrixData A pointer to the Colony's matrix data.
 	 */
-	Ant(std::vector<int> allVertices, Parameters *params,
+	Ant(std::vector<int> allVertices, int startVertex, Parameters *params,
 		MatrixData *matrixData)
-		: _params(params), _matrixData(matrixData),
-		  _random(std::random_device{}()) {
+		: _startVertex(startVertex), _costConstraint(params->costConstraint),
+		  _returnHome(params->returnHome), _matrixData(matrixData),
+		  _randomGenerator(std::random_device{}()) {
 		this->Init(allVertices);
+	}
+
+	/**
+	 * Initializes the ant's default values.
+	 *
+	 * @param allVertices A list of all the vertices' indexes.
+	 */
+	void Init(std::vector<int> allVertices) {
+		_runComplete = false;
+		_routeCost = 0.0;
+		_route = std::vector<int>{_startVertex};
+		_possibleVertices = allVertices;
+		utils::vector::removeValue(&(_possibleVertices), _startVertex);
 	}
 
 	/**
@@ -37,25 +52,13 @@ class Ant {
 	 * `costConstraint` or when it runs out of possible vertices.
 	 */
 	void Run();
-	/**
-	 * Reset the ant.
-	 *
-	 * @param allVertices A list of all the vertices' indexes.
-	 */
-	void Init(std::vector<int> allVertices) {
-		_runComplete = false;
-		_cost = 0.0;
-		_route = std::vector<int>{_params->startVertex};
-		_possibleVertices = allVertices;
-		utils::vector::removeValue(&(_possibleVertices), _params->startVertex);
-	}
 
 	/**
 	 * Check if the ant is done.
 	 *
 	 * @return True if ant is done.
 	 */
-	bool IsComplete() {
+	bool isComplete() {
 		return _runComplete;
 	};
 	/**
@@ -64,22 +67,26 @@ class Ant {
 	 * @return A `Solution` object, with the ant's route, cost and score.
 	 */
 	Solution solution() {
-		return Solution(_cost, _route);
+		return Solution(_routeCost, _route);
 	};
 
   private:
-	/// Stores a pointer to the Colony's parameters.
-	Parameters *_params;
 	/// Stores a pointer to the Colony's matrix data.
 	MatrixData *_matrixData;
+	/// The index value of the ant's start vertex.
+	int _startVertex;
+	/// Whether the ant should return home.
+	bool _returnHome;
+	/// Constraint for the cost of the ant's solution.
+	double _costConstraint;
 	/// A list of possible vertices.
 	std::vector<int> _possibleVertices;
 	/// A Mersenne Twister pseudo-random generator of 32-bit numbers.
-	std::mt19937 _random;
+	std::mt19937 _randomGenerator;
 	/// True if the ant is done.
 	bool _runComplete;
 	/// Cumulative cost variable.
-	double _cost;
+	double _routeCost;
 	/// Container for the constructed route.
 	std::vector<int> _route;
 
@@ -99,6 +106,14 @@ class Ant {
 	 * @return The picked vertix (index).
 	 */
 	int _pickNextVertex(int currentVertex);
+	/**
+	 * Gets the `norm` value, which is the sum of all the possible edges'
+	 * probabilities.
+	 *
+	 * @param currentVertex The vertex the ant is currently on.
+	 * @return A `norm` value.
+	 */
+	double _probabilityNorm(int currentVertex);
 	/**
 	 * Calculates normalized probabilities (attractiveness).
 	 *
@@ -125,14 +140,6 @@ class Ant {
 	 * @param nextVertex Vertex the ant moves to.
 	 */
 	void _traverse(int currentVertex, int nextVertex);
-	/**
-	 * Gathers the `norm` value, which is the sum of all the possible edges
-	 * probabilities.
-	 *
-	 * @param currentVertex The vertex the ant is currently on.
-	 * @return A `norm` value.
-	 */
-	double _probabilityNorm(int currentVertex);
 };
 } // namespace aco
 

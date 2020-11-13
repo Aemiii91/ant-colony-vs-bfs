@@ -63,7 +63,7 @@ void AntColony::run(Graph *graph, utils::ArgumentParser *args) {
 		std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
 
 	if (showProgress) {
-		_progressBarTick(&bar, totalCycles - 1, totalCycles, currentStatus);
+		_progressBarTick(&bar, totalCycles, totalCycles, currentStatus);
 	}
 
 	char s[20];
@@ -124,7 +124,7 @@ void AntColony::_progressBarTick(indicators::ProgressBar *bar, int n, int total,
 								 std::string currentStatus) {
 	std::stringstream prefix, postfix;
 	prefix << std::setw(3) << (int)std::ceil((double)n / total * 100) << "% ";
-	postfix << std::min(n + 1, total) << "/" << total << "  " << currentStatus;
+	postfix << std::min(n, total) << "/" << total << "  " << currentStatus;
 
 	if (!bar->is_completed()) {
 		bar->set_option(indicators::option::PrefixText{prefix.str()});

@@ -5,31 +5,26 @@ using namespace aco;
 Solution Colony::Solve(int colonyCount) {
 	// if only one colony, run this one
 	if (colonyCount == 1) {
-		return _exportSolution(_solve());
+		_solve();
+	} else {
+		_progressTotal = colonyCount * _params.iterations * _params.antCount;
+		auto progressHandler = [this](int n, int total) { _progressTick(); };
+
+		// clone the amount of colonies needed, and solve each of them
+		for (int colonyID = 0; colonyID < colonyCount; colonyID++) {
+			Colony clone(*this);
+			clone.progressHandler = progressHandler;
+			clone.solutionHandler = [this, &clone, colonyID](double, int, int iteration, int) {
+				_assessSolution(clone._bestInColony, iteration, colonyID);
+			};
+			clone._solve();
+		}
 	}
 
-	_progressTotal = colonyCount * _params.iterations * _params.antCount;
-	auto progressHandler = [this](int n, int total) { _progressTick(); };
-
-	// clone the amount of colonies needed, and solve each of them
-	for (int colonyID = 0; colonyID < colonyCount; colonyID++) {
-		Colony clone(*this);
-		clone.progressHandler = progressHandler;
-		clone.solutionHandler = [this, &clone, colonyID](double cost, int score,
-														 int iteration, int) {
-			if (_assessSolution(clone._solution)) {
-				this->solutionHandler(cost, score, iteration, colonyID);
-			}
-		};
-		clone._solve();
-	}
-
-	return _exportSolution(_solution);
+	return _exportSolution(_bestInColony);
 }
 
-Solution Colony::_solve() {
-	ThreadPool pool(std::thread::hardware_concurrency());
-
+void Colony::_solve() {
 	// initialize ants
 	std::vector<Ant> ants;
 	_initAnts(&ants);
@@ -38,47 +33,32 @@ Solution Colony::_solve() {
 	_progressTotal = _params.iterations * _params.antCount;
 
 	for (int iteration = 0; iteration < _params.iterations; iteration++) {
-		_runAnts(&pool, &ants);
+		_runAnts(&ants);
 
 		_matrixData.EvaporatePheromone();
 
-		for (Solution newSolution : _pickBestAntSolutions(&ants)) {
-			_depositPheromone(newSolution);
-
-			if (_assessSolution(newSolution)) {
-				this->solutionHandler(newSolution.cost, newSolution.score,
-									  iteration, -1);
-			}
+		for (Solution bestInIteration : _pickBestAnts(&ants)) {
+			_depositPheromone(bestInIteration);
+			_assessSolution(bestInIteration, iteration);
 		}
 
 		_resetAnts(&ants);
 	}
-
-	return _solution;
 }
 
 void Colony::_initAnts(std::vector<Ant> *ants) {
 	for (int i = 0; i < _params.antCount; i++) {
-		ants->push_back(Ant(_allVertices, &_params, &_matrixData));
+		ants->push_back(
+			Ant(_allVertices, _params.startVertex, &_params, &_matrixData));
 	}
 }
 
-void Colony::_runAnts(ThreadPool *pool, std::vector<Ant> *ants) {
+void Colony::_runAnts(std::vector<Ant> *ants) {
 	for (auto ant = ants->begin(); ant != ants->end(); ++ant) {
-		auto job = [this, ant] {
+		_runThreaded([this, ant] {
 			ant->Run();
 			_progressTick();
-		};
-
-		if (_params.threading) {
-			pool->enqueue(job);
-		} else {
-			job();
-		}
-	}
-
-	if (!_params.threading) {
-		return;
+		});
 	}
 
 	while (!_checkAntsComplete(ants)) {
@@ -94,37 +74,38 @@ void Colony::_resetAnts(std::vector<Ant> *ants) {
 
 bool Colony::_checkAntsComplete(std::vector<Ant> *ants) {
 	for (auto ant = ants->begin(); ant != ants->end(); ++ant) {
-		if (!ant->IsComplete()) {
+		if (!ant->isComplete()) {
 			return false;
 		}
 	}
 	return true;
 }
 
-std::vector<Solution> Colony::_pickBestAntSolutions(std::vector<Ant> *ants) {
-	std::vector<Solution> solutions;
+std::vector<Solution> Colony::_pickBestAnts(std::vector<Ant> *ants) {
+	std::vector<Solution> antSolutions;
 
 	for (auto itr = ants->begin(); itr != ants->end(); ++itr) {
-		solutions.push_back(itr->solution());
+		antSolutions.push_back(itr->solution());
 	}
 
 	if (_params.bestAntLimit == 1) {
-		return {*std::max_element(solutions.begin(), solutions.end())};
+		return {*std::max_element(antSolutions.begin(), antSolutions.end())};
 	}
 
-	std::sort(solutions.begin(), solutions.end(), greater<>());
+	std::sort(antSolutions.begin(), antSolutions.end(), greater<>());
 
 	if (_params.bestAntLimit > 0) {
-		solutions.resize(_params.bestAntLimit);
+		antSolutions.resize(_params.bestAntLimit);
 	}
 
-	return solutions;
+	return antSolutions;
 }
 
-bool Colony::_assessSolution(Solution solution) {
-	if (!_hasSolution || solution > _solution) {
-		_solution = solution;
+bool Colony::_assessSolution(Solution solution, int iteration, int colonyID) {
+	if (!_hasSolution || solution > _bestInColony) {
+		_bestInColony = solution;
 		_hasSolution = true;
+		this->solutionHandler(solution.cost, solution.score, iteration, colonyID);
 		return true;
 	}
 	return false;
@@ -141,15 +122,27 @@ void Colony::_depositPheromone(Solution antSolution) {
 	}
 }
 
-void Colony::_progressTick() {
-	_progressCount = std::min(_progressCount + 1, _progressTotal);
-
-	this->progressHandler(_progressCount, _progressTotal);
-}
-
 Solution Colony::_exportSolution(Solution solution) {
 	for (int &index : solution.route) {
 		index = (&_graphNodes->at(index))->ID;
 	}
 	return solution;
 }
+
+void Colony::_progressTick() {
+	_progressCount = std::min(_progressCount + 1, _progressTotal);
+
+	this->progressHandler(_progressCount, _progressTotal);
+}
+
+void Colony::_runThreaded(std::function<void(void)> job) {
+	if (_params.threading) {
+		Colony::_threadPool.enqueue(job);
+	} else {
+		job();
+	}
+}
+
+// initialize the shared thread pool
+ThreadPool Colony::_threadPool =
+	ThreadPool(std::thread::hardware_concurrency());
