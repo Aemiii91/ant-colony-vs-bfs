@@ -14,9 +14,10 @@ Solution Colony::Solve(int colonyCount) {
 		for (int colonyID = 0; colonyID < colonyCount; colonyID++) {
 			Colony clone(*this);
 			clone.progressHandler = progressHandler;
-			clone.solutionHandler = [this, &clone, colonyID](double, int, int iteration, int) {
-				_assessSolution(clone._bestInColony, iteration, colonyID);
-			};
+			clone.solutionHandler =
+				[this, &clone, colonyID](double, int, int iteration, int) {
+					_assessSolution(clone._bestInColony, iteration, colonyID);
+				};
 			clone._solve();
 		}
 	}
@@ -105,7 +106,8 @@ bool Colony::_assessSolution(Solution solution, int iteration, int colonyID) {
 	if (!_hasSolution || solution > _bestInColony) {
 		_bestInColony = solution;
 		_hasSolution = true;
-		this->solutionHandler(solution.cost, solution.score, iteration, colonyID);
+		this->solutionHandler(solution.cost, solution.score, iteration,
+							  colonyID);
 		return true;
 	}
 	return false;
