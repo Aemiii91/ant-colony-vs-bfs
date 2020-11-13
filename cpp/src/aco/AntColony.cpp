@@ -3,9 +3,6 @@
 using namespace aco;
 
 void AntColony::run(Graph *graph, utils::ArgumentParser *args) {
-	time_t t;
-	srand(time(&t));
-
 	int colonyCount = 1;
 	Parameters params;
 	args->Get("--colonies", &colonyCount);
@@ -22,54 +19,68 @@ void AntColony::run(Graph *graph, utils::ArgumentParser *args) {
 	params.threading = !args->Exists("--nothreading");
 	bool showProgress = args->Exists("--progress");
 
+	// print all parameters
 	_printParameters(colonyCount, params);
 
+	// spawn the colony
 	Colony colony(graph, params);
 
+	// initialize progress bar
 	int totalCycles = colonyCount * params.antCount * params.iterations;
 	indicators::ProgressBar bar = _createProgressBar(totalCycles);
-
 	std::string currentStatus = "";
 	int currentIterations = 0;
 
-	colony.solutionHandler = [&currentStatus, &params](double cost, int score,
-													   int iteration,
-													   int colonyID) {
-		std::stringstream s;
-		s << "( " << std::floor(cost) << ", " << score << " ) @ "
-		  << (iteration + 1) << "/" << params.iterations;
-		if (colonyID >= 0) {
-			s << " (" << (colonyID + 1) << ")";
-		}
-		currentStatus = s.str();
-	};
-
 	if (showProgress) {
+		// print progress bar legend
 		std::cout
 			<< termcolor::grey << std::left << std::setw(28) << "Progress"
 			<< "[Elapsed<remaining] cycles  ( solution ) @ iteration (colony)"
 			<< termcolor::reset << std::endl;
 
+		// set solution handler (it's called whenever a better solution is
+		// found)
+		colony.solutionHandler = [&currentStatus,
+								  &params](double cost, int score,
+										   int iteration, int colonyID) {
+			// set status to current best solution
+			std::stringstream s;
+			s << "( " << std::floor(cost) << ", " << score << " ) @ "
+			  << (iteration + 1) << "/" << params.iterations;
+			if (colonyID >= 0) {
+				s << " (" << (colonyID + 1) << ")";
+			}
+			currentStatus = s.str();
+		};
+
+		// set progress handler (to update the progress bar)
 		colony.progressHandler = [&bar, &currentStatus](int n, int total) {
 			_progressBarTick(&bar, n, total, currentStatus);
 		};
 	}
 
+	// start timer
 	auto start = std::chrono::high_resolution_clock::now();
+
+	// solve the ant colony
 	Solution bestSolution = colony.Solve(colonyCount);
 
+	// stop timer
 	auto stop = std::chrono::high_resolution_clock::now();
-	auto duration =
-		std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
 
 	if (showProgress) {
+		// update the progress bar to 100%
 		_progressBarTick(&bar, totalCycles, totalCycles, currentStatus);
 	}
 
+	// calculate and print runtime
+	auto duration =
+		std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
 	char s[20];
 	snprintf(s, 20, "%.3fs\n", (double)duration.count() / 1000000);
 	printc::yellow(s);
 
+	// print the solution
 	std::cout << bestSolution;
 }
 
