@@ -14,10 +14,10 @@ Solution Colony::Solve(int colonyCount) {
 		for (int colonyID = 0; colonyID < colonyCount; colonyID++) {
 			Colony clone(*this);
 			clone.progressHandler = progressHandler;
-			clone.solutionHandler =
-				[this, &clone, colonyID](double, int, int iteration, int) {
-					this->_assessSolution(clone._bestInColony, iteration, colonyID);
-				};
+			clone.solutionHandler = [this, &clone, colonyID](
+										double, int, int iteration, int) {
+				this->_assessSolution(clone._bestInColony, iteration, colonyID);
+			};
 			clone._solve();
 		}
 	}
@@ -93,8 +93,7 @@ std::vector<Solution> Colony::_pickBestAnts(std::vector<Ant> *ants) {
 	// if only one solution needed, return the maximum solution (best)
 	if (_params.bestAntLimit == 1) {
 		return {*std::max_element(antSolutions.begin(), antSolutions.end())};
-	}
-	else if (_params.bestAntLimit > 0) {
+	} else if (_params.bestAntLimit > 0) {
 		// sort the solution in descending order (better first)
 		std::sort(antSolutions.begin(), antSolutions.end(), greater<>());
 
