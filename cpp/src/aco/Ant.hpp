@@ -25,10 +25,11 @@ class Ant {
 	Ant(std::vector<int> allVertices, Parameters *params,
 		MatrixData *matrixData)
 		: _params(params), _matrixData(matrixData) {
-		int startVertex = this->_params->startVertex;
+                int startVertex = this->_params->startVertex;
 		this->_route = std::vector<int>{startVertex};
 		this->_possibleVertices = allVertices;
-		utils::vector::removeValue(&(this->_possibleVertices), startVertex);
+		utils::vector::removeValue(&(this->_possibleVertices),
+								   startVertex);
 	}
 
 	/**
@@ -83,6 +84,18 @@ class Ant {
 	 * `costConstraint`.
 	 */
 	bool _checkConstraint(double lookahead = 0.0);
+
+	/**
+	 * Calculates the normalized probabilities for each possible vertex, and
+	 * picks one of them.
+	 *
+	 * @param vertexList a list of all possible vertices
+         * @param attract a vector of attractiveness of a vertices
+         * @param gen pseudo-random number generators
+	 * @return The picked vertix (index).
+	 */
+	int _weighted_choice(std::vector<int> &vertexList,
+						 std::vector<double> &attract, std::mt19937 &gen);
 	/**
 	 * Calculates the normalized probabilities for each possible vertex, and
 	 * picks one of them.

@@ -4,7 +4,6 @@
 #include <iterator>
 #include <random>
 using namespace aco;
-
 void Ant::Run() {
 	int homeVertex = this->_route[0];
 	int currentVertex = homeVertex;
@@ -16,11 +15,8 @@ void Ant::Run() {
 
 		// get the cost of the move
 		double cost = this->_matrixData->Cost(currentVertex, nextVertex);
-		if (nextVertex > 500) {
-			std::cout << "The currentVertex = " << currentVertex << " "
-					  << " nextVertex:  " << nextVertex << std::endl;
-		}
-		if (this->_params->returnHome) {
+		
+                if (this->_params->returnHome) {
 			// add the cost of getting home
 			cost += this->_matrixData->Cost(nextVertex, homeVertex);
 		}
@@ -48,7 +44,8 @@ void Ant::Reset(std::vector<int> allVertices) {
 	this->_cost = 0.0;
 	this->_route = std::vector<int>{startVertex};
 	this->_possibleVertices = allVertices;
-	utils::vector::removeValue(&(this->_possibleVertices), startVertex);
+	utils::vector::removeValue(&(this->_possibleVertices),
+							   startVertex);
 }
 
 bool Ant::_checkConstraint(double lookahead) {
@@ -56,17 +53,18 @@ bool Ant::_checkConstraint(double lookahead) {
 		   (this->_cost + lookahead) < this->_params->costConstraint;
 }
 
-template <class PossibleVertices, class Attractiveness, class Generater>
-auto weighted_choice( PossibleVertices &pickedVertex, Attractiveness &attract, Generater &gen) {
-	auto dist = std::discrete_distribution<int>(std::begin(attract), std::end(attract));
-	int index = dist(gen);
-	return pickedVertex[index];
+int Ant::_weighted_choice(std::vector<int> &vertexList,
+						  std::vector<double> &attract, std::mt19937 &gen) {
+	auto dist =
+		std::discrete_distribution<int>(std::begin(attract), std::end(attract));
+	return vertexList[dist(gen)];
 }
 int Ant::_pickNextVertex(int currentVertex) {
 	size_t size = this->_possibleVertices.size();
 	double norm = this->_probabilityNorm(currentVertex);
-	double sum = 0.0;
-	std::vector<double> attractiveness(size, 0.0);
+	int pickedVertex;
+        
+        std::vector<double> attractiveness(size, 0.0);
 
 	// calculate normalized probabilities (attractiveness) and the sum
 	for (int nextIndex = 0; nextIndex < size; nextIndex++) {
@@ -74,21 +72,20 @@ int Ant::_pickNextVertex(int currentVertex) {
 		double probability =
 			this->_matrixData->Probability(currentVertex, nextVertex) / norm;
 		attractiveness[nextIndex] = probability;
-		sum += probability;
 	}
 
-	int pickedVertex;
 
-        auto g = std::mt19937(std::random_device{}());
-        pickedVertex = weighted_choice(this->_possibleVertices, attractiveness, g);
+	auto g = std::mt19937(std::random_device{}());
+	pickedVertex =
+		this->_weighted_choice(this->_possibleVertices, attractiveness, g);
 
 	// cumulative probability behavior, inspired by:
 	// http://stackoverflow.com/a/3679747/5343977
 
-	//double randomToss = (rand() / (RAND_MAX + 1.0));
-	//double cumulative = 0.0;
+	// double randomToss = (rand() / (RAND_MAX + 1.0));
+	// double cumulative = 0.0;
 
-        //for (int nextIndex = 0; nextIndex < size; nextIndex++) {
+	// for (int nextIndex = 0; nextIndex < size; nextIndex++) {
 	//	double weight = attractiveness[nextIndex] / sum;
 
 	//	// choose next vertex based on probability
@@ -116,3 +113,4 @@ double Ant::_probabilityNorm(int currentVertex) {
 	}
 	return norm;
 }
+
