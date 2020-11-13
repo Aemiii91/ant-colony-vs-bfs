@@ -86,7 +86,7 @@ struct Solution {
 				out << solution.route[i];
 			}
 
-			out << "]\n" << termcolor::reset;
+			out << "]" << termcolor::reset << std::endl;
 		} else {
 			out << "( " << std::floor(solution.cost) << ", " << solution.score
 				<< " )" << std::endl;
@@ -98,7 +98,7 @@ struct Solution {
 				}
 				out << solution.route[i];
 			}
-			out << "]\n";
+			out << "]" << std::endl;
 		}
 
 		return out;
@@ -109,10 +109,11 @@ struct Solution {
 	 * Calculates the solution's score, based on the route.
 	 *
 	 * @param route A pointer to the solution's route.
+	 * @return The solution's score.
 	 */
 	int _calcScore(std::vector<int> *route) {
 		size_t size = route->size();
-		return route->at(size - 1) == route->at(0) ? size - 1 : size;
+		return size > 0 && route->front() == route->back() ? size - 1 : size;
 	};
 };
 } // namespace aco
