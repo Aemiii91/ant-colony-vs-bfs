@@ -8,6 +8,7 @@
 //!
 //! :copyright: (c) 2013 by Ihor Kalnytskyi
 //! :license: BSD, see LICENSE for details
+//! :url: https://github.com/ikalnytskyi/termcolor
 //!
 
 #ifndef TERMCOLOR_HPP_

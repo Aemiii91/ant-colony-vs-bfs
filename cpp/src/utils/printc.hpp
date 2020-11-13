@@ -3,7 +3,7 @@
 #pragma once
 
 #include <functional>
-#include <indicators/termcolor.hpp>
+#include <termcolor/termcolor.hpp>
 #include <iostream>
 #include <string>
 

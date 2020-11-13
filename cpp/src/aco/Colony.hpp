@@ -8,7 +8,7 @@
 #include <functional>
 // include
 #include <ThreadPool/ThreadPool.h>
-#include <indicators/termcolor.hpp>
+#include <termcolor/termcolor.hpp>
 // submodules
 #include <graph/graph.h>
 #include <utils/printc.hpp>
