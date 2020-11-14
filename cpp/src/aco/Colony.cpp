@@ -55,15 +55,23 @@ void Colony::_initAnts(std::vector<Ant> *ants) {
 }
 
 void Colony::_runAnts(std::vector<Ant> *ants) {
-	for (auto ant = ants->begin(); ant != ants->end(); ++ant) {
-		_runThreaded([this, ant] {
+	std::vector<std::future<void>> taskFutures;
+
+	if (_params.threading) {
+		for (auto ant = ants->begin(); ant != ants->end(); ++ant) {
+			taskFutures.push_back(
+				Colony::_threadPool.enqueue(&Ant::Run, &(*ant)));
+		}
+
+		for (auto &taskFuture : taskFutures) {
+			taskFuture.get();
+			_progressTick();
+		}
+	} else {
+		for (auto ant = ants->begin(); ant != ants->end(); ++ant) {
 			ant->Run();
 			_progressTick();
-		});
-	}
-
-	while (!_checkAntsComplete(ants)) {
-		/* Wait for ants to complete. */
+		}
 	}
 }
 
@@ -138,14 +146,6 @@ void Colony::_progressTick() {
 	_progressCount = std::min(_progressCount + 1, _progressTotal);
 
 	this->progressHandler(_progressCount, _progressTotal);
-}
-
-void Colony::_runThreaded(std::function<void(void)> job) {
-	if (_params.threading) {
-		Colony::_threadPool.enqueue(job);
-	} else {
-		job();
-	}
 }
 
 // initialize the shared thread pool

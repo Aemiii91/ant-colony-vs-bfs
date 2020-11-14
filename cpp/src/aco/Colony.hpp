@@ -144,12 +144,6 @@ class Colony {
 	 * Adds 1 to the `progressCount`, and calls the `progressHandler`.
 	 */
 	void _progressTick();
-	/**
-	 * Add a job to the threadpool if threading enabled.
-	 *
-	 * @param job The job to run.
-	 */
-	void _runThreaded(std::function<void(void)> job);
 };
 } // namespace aco
 

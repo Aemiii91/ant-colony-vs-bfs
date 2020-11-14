@@ -40,9 +40,6 @@ struct Solution {
 	bool operator==(const Solution &other) {
 		return this->score == other.score && this->cost == other.cost;
 	}
-	bool operator!=(const Solution &other) {
-		return !(*this == other);
-	}
 	/// A better solution is "greater than" a worse solution.
 	bool operator>(const Solution &other) {
 		return this->score > other.score ||
@@ -52,7 +49,7 @@ struct Solution {
 		return *this > other || *this == other;
 	}
 	bool operator<(const Solution &other) {
-		return !(*this > other || *this == other);
+		return !(*this >= other);
 	}
 	bool operator<=(const Solution &other) {
 		return !(*this > other);
