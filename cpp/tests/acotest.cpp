@@ -14,21 +14,18 @@ using namespace aco;
 
 class ACOTest : public ::testing::Test {
   public:
-	static JsonParser json;
-	static Graph graph;
-	static Parameters params;
-	static MatrixData matrixData;
+	Graph graph;
 
   protected:
 	void SetUp() override {
 		setlocale(LC_ALL, "");
+
+		JsonParser json;
+		this->graph = json.ParseData("../data/matrix10");
 	}
 
 	void TearDown() override {}
 };
-
-JsonParser ACOTest::json;
-Graph ACOTest::graph = ACOTest::json.ParseData("../data/matrix10");
 
 TEST_F(ACOTest, AntColonyTest) {
 	// Save cout's buffer
@@ -37,6 +34,9 @@ TEST_F(ACOTest, AntColonyTest) {
 
 	// Redirect cout to stringstream buffer
 	std::cout.rdbuf(buffer.rdbuf());
+
+	// remove colors from output
+	termcolor::setEnabled(false);
 
 	int test_argc = 10;
 	char *test_argv[] = {
@@ -48,7 +48,7 @@ TEST_F(ACOTest, AntColonyTest) {
 
 	utils::ArgumentParser args(test_argc, test_argv);
 
-	AntColony::run(&ACOTest::graph, &args);
+	AntColony::run(&this->graph, &args);
 
 	// redirect cout to its old self
 	std::cout.rdbuf(sbuf);
@@ -59,10 +59,9 @@ TEST_F(ACOTest, AntColonyTest) {
 		std::cout << line << std::endl;
 	}
 
-	bool expected = true;
-	bool result = content[2] == "( 3550, 8 )";
+	std::string result = content[2];
 
-	ASSERT_EQ(expected, result);
+	ASSERT_EQ("( 3550, 8 )", result);
 }
 
 TEST_F(ACOTest, ColonyTest) {
@@ -72,7 +71,7 @@ TEST_F(ACOTest, ColonyTest) {
 	params.iterations = 50;
 	params.costConstraint = 4000.0;
 
-	Colony colony(&ACOTest::graph, params);
+	Colony colony(&this->graph, params);
 
 	Solution solution = colony.Solve(colonies);
 
@@ -83,10 +82,10 @@ TEST_F(ACOTest, ColonyTest) {
 
 TEST_F(ACOTest, AntTest) {
 	Parameters params;
-	MatrixData matrixData(&ACOTest::graph, &params);
+	MatrixData matrixData(&this->graph, &params);
 
 	std::vector<int> allVertices;
-	size_t size = ACOTest::graph.nodelist.size();
+	size_t size = this->graph.nodelist.size();
 	for (int i = 0; i < size; i++) {
 		allVertices.push_back(i);
 	}
@@ -118,7 +117,7 @@ TEST_F(ACOTest, MatrixDataTest) {
 	Parameters params;
 	params.evaporation = 0.5;
 
-	MatrixData matrixData(&ACOTest::graph, &params);
+	MatrixData matrixData(&this->graph, &params);
 
 	int fromIndex = 0;
 	int toIndex = 1;
