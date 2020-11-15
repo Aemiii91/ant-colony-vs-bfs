@@ -11,7 +11,6 @@
 #include <termcolor/termcolor.hpp>
 // submodules
 #include <graph/graph.h>
-#include <utils/printc.hpp>
 #include <utils/vector.hpp>
 // local
 #include "Ant.hpp"

@@ -26,25 +26,12 @@ int match(std::vector<T> *list, Func matchFunc) {
 
 /**
  * Remove an element from a vector.
- * 
+ *
  * @param list The vector to remove from.
  * @param value The element to remove.
  */
 template <typename T> void removeValue(std::vector<T> *list, T value) {
 	list->erase(std::remove(list->begin(), list->end(), value), list->end());
-}
-
-/**
- * Initializes a square 2D vector (matrix).
- * 
- * @param size The dimension of the vector.
- * @param defaultValue The default value to insert.
- * @return A 2D vector.
- */
-template <typename T>
-std::vector<std::vector<T>> initialize2dVector(size_t size, T defaultValue) {
-	return std::vector<std::vector<T>>(size,
-									   std::vector<T>(size, defaultValue));
 }
 } // namespace utils::vector
 

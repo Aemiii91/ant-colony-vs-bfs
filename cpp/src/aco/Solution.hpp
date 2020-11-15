@@ -8,8 +8,6 @@
 #include <vector>
 // include
 #include <termcolor/termcolor.hpp>
-// submodules
-#include <utils/printc.hpp>
 
 namespace aco {
 /**
@@ -58,38 +56,24 @@ struct Solution {
 	/// Stream operator implementation
 	friend std::ostream &operator<<(std::ostream &out,
 									const Solution &solution) {
-		if (printc::colorsEnabled()) {
-			out << "( " << termcolor::reset;
-			out << termcolor::bold << termcolor::blue
-				<< std::floor(solution.cost) << termcolor::reset;
-			out << ", ";
-			out << termcolor::bold << termcolor::magenta << solution.score
-				<< termcolor::reset;
-			out << " )" << std::endl;
+		out << "( " << termcolor::reset;
+		out << termcolor::bold << termcolor::blue << std::floor(solution.cost)
+			<< termcolor::reset;
+		out << ", ";
+		out << termcolor::bold << termcolor::magenta << solution.score
+			<< termcolor::reset;
+		out << " )" << std::endl;
 
-			out << termcolor::grey << "[";
+		out << termcolor::grey << "[";
 
-			for (int i = 0; i < solution.route.size(); i++) {
-				if (i > 0) {
-					out << ", ";
-				}
-				out << solution.route[i];
+		for (int i = 0; i < solution.route.size(); i++) {
+			if (i > 0) {
+				out << ", ";
 			}
-
-			out << "]" << termcolor::reset << std::endl;
-		} else {
-			out << "( " << std::floor(solution.cost) << ", " << solution.score
-				<< " )" << std::endl;
-
-			out << "[";
-			for (int i = 0; i < solution.route.size(); i++) {
-				if (i > 0) {
-					out << ", ";
-				}
-				out << solution.route[i];
-			}
-			out << "]" << std::endl;
+			out << solution.route[i];
 		}
+
+		out << "]" << termcolor::reset << std::endl;
 
 		return out;
 	};

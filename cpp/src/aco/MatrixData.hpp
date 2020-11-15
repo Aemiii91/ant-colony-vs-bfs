@@ -102,7 +102,10 @@ class MatrixData {
 	 * @param graph A pointer to the graph object.
 	 */
 	void _initMatrices(Graph *graph) {
-		auto init = utils::vector::initialize2dVector<double>;
+		auto init = [](size_t size, double defaultValue) {
+			return std::vector<std::vector<double>>(
+				size, std::vector<double>(size, defaultValue));
+		};
 		_costMatrix = init(_size, 0.0);
 		_pheromoneMatrix = init(_size, 1.0);
 		_heuristicMatrix = init(_size, 0.0);
@@ -130,7 +133,7 @@ class MatrixData {
 				utils::vector::match(&fromNode->edgeList, getEdgeCost);
 
 				double heuristic = std::pow(1.0 / cost, _beta);
-				
+
 				_costMatrix[fromIndex][toIndex] = cost;
 				_heuristicMatrix[fromIndex][toIndex] = heuristic;
 				_probabilityMatrix[fromIndex][toIndex] = heuristic;

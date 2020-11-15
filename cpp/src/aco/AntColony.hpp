@@ -7,10 +7,10 @@
 #include <iostream>
 // include
 #include <indicators/progress_bar.hpp>
+#include <termcolor/termcolor.hpp>
 // submodules
 #include <graph/graph.h>
 #include <utils/ArgumentParser.hpp>
-#include <utils/printc.hpp>
 // local
 #include "Colony.hpp"
 

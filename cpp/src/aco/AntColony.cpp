@@ -78,7 +78,7 @@ void AntColony::run(Graph *graph, utils::ArgumentParser *args) {
 		std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
 	char s[20];
 	snprintf(s, 20, "%.3fs\n", (double)duration.count() / 1000000);
-	printc::yellow(s);
+	std::cout << termcolor::yellow << s << termcolor::reset;
 
 	// print the solution
 	std::cout << bestSolution;
@@ -88,36 +88,30 @@ void AntColony::_printParameters(int colonyCount, Parameters params) {
 	std::stringstream paramStr;
 
 	if (colonyCount > 1) {
-		paramStr << colonyCount << " colonies, ";
+		std::cout << colonyCount << " colonies, ";
 	}
-	paramStr << params.antCount << " ants, ";
-	paramStr << params.iterations << " iterations";
+	std::cout << params.antCount << " ants, ";
+	std::cout << params.iterations << " iterations";
 
-	printc::bold(paramStr.str());
-
-	std::stringstream extraStr;
-	extraStr << " [ alpha=" << params.alpha << ", beta=" << params.beta
-			 << ", evaporation=" << params.evaporation
-			 << ", pheromone=" << params.pheromoneConstant;
+	std::cout << termcolor::grey;
+	std::cout << " [ alpha=" << params.alpha << ", beta=" << params.beta
+			  << ", evaporation=" << params.evaporation
+			  << ", pheromone=" << params.pheromoneConstant;
 	if (params.bestAntLimit != 1) {
-		extraStr << ", best_ants=" << params.bestAntLimit;
+		std::cout << ", best_ants=" << params.bestAntLimit;
 	}
 	if (params.startVertex != 0) {
-		extraStr << ", start=" << params.startVertex;
+		std::cout << ", start=" << params.startVertex;
 	}
 	if (params.costConstraint != 0) {
-		extraStr << ", cost=" << params.costConstraint;
+		std::cout << ", cost=" << params.costConstraint;
 	}
-	extraStr << " ]\n";
-
-	printc::boldGrey(extraStr.str());
+	std::cout << " ]" << termcolor::reset << std::endl;
 }
 
 indicators::ProgressBar AntColony::_createProgressBar(int maxProgress) {
 	namespace opt = indicators::option;
 	std::string indicator = "#";
-	auto fgColor = printc::colorsEnabled() ? indicators::Color::green
-										   : indicators::Color::white;
 
 	return indicators::ProgressBar{
 		opt::BarWidth{20},
@@ -126,7 +120,7 @@ indicators::ProgressBar AntColony::_createProgressBar(int maxProgress) {
 		opt::MaxProgress{maxProgress},
 		opt::Fill{indicator},
 		opt::Lead{indicator},
-		opt::ForegroundColor{fgColor},
+		opt::ForegroundColor{indicators::Color::green},
 		opt::FontStyles{
 			std::vector<indicators::FontStyle>{indicators::FontStyle::bold}}};
 }

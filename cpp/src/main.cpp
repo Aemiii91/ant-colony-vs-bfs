@@ -2,20 +2,21 @@
 #include <ctime>
 #include <iostream>
 #include <random>
+// include
+#include <termcolor/termcolor.hpp>
 // submodules
 #include <aco/AntColony.hpp>
 #include <ownAlgorithm/depthFirstAlgorithm.h>
 #include <ownAlgorithm/naiveAlgorithm.h>
 #include <utils/ArgumentParser.hpp>
-#include <utils/printc.hpp>
 // local
 #include "jsonparser.h"
 
 int main(int argc, char **argv) {
 	utils::ArgumentParser args(argc, argv);
 
-	// enable output colors
-	printc::colorsEnabled(args.Exists("--colors"));
+	// enable/disable output colors
+	termcolor::setEnabled(args.Exists("--colors"));
 
 	// default dataset path
 	std::string path = "../data/matrix500.json";
@@ -38,10 +39,10 @@ int main(int argc, char **argv) {
 		aco::AntColony::run(&graph, &args);
 	} else if (subprogram == "naive") {
 		// run naive algorithm
-		printc::yellow("Not implemented.\n");
+		std::cout << "Not implemented." << std::endl;
 	} else {
-		printc::red("Error: ");
-		printc::bold("Subprogram not recognized.\n");
+		std::cout << termcolor::red << "Error: " << termcolor::reset;
+		std::cout << "Subprogram not recognized." << std::endl;
 	}
 
 	return 0;
