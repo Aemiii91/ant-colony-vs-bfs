@@ -85,8 +85,6 @@ void AntColony::run(Graph *graph, utils::ArgumentParser *args) {
 }
 
 void AntColony::_printParameters(int colonyCount, Parameters params) {
-	std::stringstream paramStr;
-
 	if (colonyCount > 1) {
 		std::cout << colonyCount << " colonies, ";
 	}
