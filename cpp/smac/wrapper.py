@@ -14,5 +14,7 @@ if __name__ == '__main__':
     x3 = sys.argv[11]
     x4 = sys.argv[13]
     x5 = sys.argv[15]
-    res = acorunner((x1,x2,x3,x4,x5))
+    x6 = sys.argv[17]
+    x7 = sys.argv[19]
+    res = acorunner((x1,x2,x3,x4,x5,x6,x7))
     print('Result for SMAC: SUCCESS, 0, 0, %f, %s' % (res, seed))

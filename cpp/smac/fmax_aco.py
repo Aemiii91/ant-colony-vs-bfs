@@ -9,19 +9,21 @@ import os
 from smac.facade.func_facade import fmin_smac
  
 def acorunner(x):
-    print(x)
+    #print(x)
     upperScore = 100
-    staticparams = 'aco --data "matrix500.json" --colonies 1 --ants 30 --iterations 100 --smac_mode '
+    staticparams = 'aco --data "matrix500.json" --colonies 1 --smac_mode '
     dynamicAlpha = '--alpha ' + str(x[0])
     dynamicBeta  = '--beta ' + str(x[1])
     dynamicEvaporation = '--evaporation ' + str(x[2]) 
     dynamicPheromone = '--pheromone ' + str(x[3])
     dynamicBestAntLimit = '--best_ants ' + str(x[4])
-    dynamicParams = dynamicAlpha + dynamicBeta + dynamicEvaporation + dynamicPheromone + dynamicBestAntLimit
+    dynamicAntCount = '--ants ' + str(x[5])
+    dynamicIterations = '--iterations ' + str(x[6])
+    dynamicParams = dynamicAlpha + dynamicBeta + dynamicEvaporation + dynamicPheromone + dynamicBestAntLimit + dynamicAntCount + dynamicIterations
     cmd = "./routeplanner "
     stdoutdata = subprocess.getoutput(cmd + staticparams + dynamicParams)
-    print('stdoutdata := ' + stdoutdata)
-    print('params := '+ dynamicParams)
+    #print('stdoutdata := ' + stdoutdata)
+    #print('params := '+ dynamicParams)
     return upperScore - int(stdoutdata)
  
  
