@@ -2,181 +2,152 @@
 
 using namespace aco;
 
-Colony::Colony(Graph *graph, Parameters params) : _params(params) {
-	int startVertexIndex = 0;
-	int index = 0;
-	for (Node &node : graph->nodelist) {
-		if (node.ID == this->_params.startVertex) {
-			startVertexIndex = index;
-		}
-
-		this->_vertexIDs.push_back(node.ID);
-		this->_allVertices.push_back(index++);
-	}
-
-	// convert startVertex ID to index
-	this->_params.startVertex = startVertexIndex;
-
-	// initialize the matrices
-	this->_matrixData = MatrixData(this->_vertexIDs, graph, &this->_params);
-}
-
 Solution Colony::Solve(int colonyCount) {
-	std::vector<Solution> solutions;
-
-	this->_setProgressTotal(colonyCount * this->_params.iterations *
-							this->_params.antCount);
-
+	// if only one colony, run this one
 	if (colonyCount == 1) {
-		return this->_exportSolution(this->_solve());
+		_solve();
+	} else {
+		_progressTotal = colonyCount * _params.iterations * _params.antCount;
+		auto progressHandler = [this](int n, int total) { _progressTick(); };
+
+		// clone the amount of colonies needed, and solve each of them
+		for (int colonyID = 0; colonyID < colonyCount; colonyID++) {
+			Colony clone(*this);
+			clone.progressHandler = progressHandler;
+			clone.solutionHandler =
+				[this, &clone, colonyID](double, int, int iteration, int) {
+					_assessSolution(clone._bestInColony, iteration, colonyID);
+				};
+			clone._solve();
+		}
 	}
 
-	auto progressHandler = [this](int n, int total) { this->_progressTick(); };
-
-	for (int colonyID = 0; colonyID < colonyCount; colonyID++) {
-		Colony clone(*this);
-		clone.progressHandler = progressHandler;
-		clone.solutionHandler = [this, &clone, colonyID](double cost, int score,
-														 int iteration, int) {
-			if (this->_assessSolution(clone._solution)) {
-				this->solutionHandler(cost, score, iteration, colonyID);
-			}
-		};
-		clone._solve();
-	}
-
-	return this->_exportSolution(this->_solution);
+	return _exportSolution(_bestInColony);
 }
 
-Solution Colony::_solve() {
-	ThreadPool pool(std::thread::hardware_concurrency());
-
+void Colony::_solve() {
 	// initialize ants
 	std::vector<Ant> ants;
-	this->_initAnts(&ants);
+	_initAnts(&ants);
 
 	// set total progress (number of cycles)
-	this->_setProgressTotal(this->_params.iterations * this->_params.antCount);
+	_progressTotal = _params.iterations * _params.antCount;
 
-	for (int iteration = 0; iteration < this->_params.iterations; iteration++) {
-		this->_runAnts(&pool, &ants);
+	for (int iteration = 0; iteration < _params.iterations; iteration++) {
+		_runAnts(&ants);
 
-		this->_matrixData.EvaporatePheromone();
+		_matrixData.EvaporatePheromone();
 
-		for (Solution newSolution : this->_pickBestAntSolutions(&ants)) {
-			this->_depositPheromone(newSolution);
-
-			if (this->_assessSolution(newSolution)) {
-				this->solutionHandler(newSolution.cost, newSolution.score,
-									  iteration, -1);
-			}
+		for (Solution bestInIteration : _pickBestAnts(&ants)) {
+			_depositPheromone(bestInIteration);
+			_assessSolution(bestInIteration, iteration);
 		}
 
-		this->_resetAnts(&ants);
+		_resetAnts(&ants);
 	}
-
-	return this->_solution;
 }
 
 void Colony::_initAnts(std::vector<Ant> *ants) {
-	for (int i = 0; i < this->_params.antCount; i++) {
+	for (int i = 0; i < _params.antCount; i++) {
 		ants->push_back(
-			Ant(this->_allVertices, &this->_params, &this->_matrixData));
+			Ant(_allVertices, _params.startVertex, &_params, &_matrixData));
 	}
 }
 
-void Colony::_runAnts(ThreadPool *pool, std::vector<Ant> *ants) {
-	for (auto ant = ants->begin(); ant != ants->end(); ++ant) {
-		auto job = [this, ant] {
-			ant->Run();
-			this->_progressTick();
-		};
+void Colony::_runAnts(std::vector<Ant> *ants) {
+	std::vector<std::future<void>> taskFutures;
 
-		if (this->_params.threading) {
-			pool->enqueue(job);
-		} else {
-			job();
+	if (_params.threading) {
+		for (auto ant = ants->begin(); ant != ants->end(); ++ant) {
+			taskFutures.push_back(
+				Colony::_threadPool.enqueue(&Ant::Run, &(*ant)));
 		}
-	}
 
-	if (!this->_params.threading) {
-		return;
-	}
-
-	while (!this->_checkAntsComplete(ants)) {
-		/* Wait for ants to complete. */
+		for (auto &taskFuture : taskFutures) {
+			taskFuture.get();
+			_progressTick();
+		}
+	} else {
+		for (auto ant = ants->begin(); ant != ants->end(); ++ant) {
+			ant->Run();
+			_progressTick();
+		}
 	}
 }
 
 void Colony::_resetAnts(std::vector<Ant> *ants) {
 	for (auto ant = ants->begin(); ant != ants->end(); ++ant) {
-		ant->Reset(this->_allVertices);
+		ant->Init(_allVertices);
 	}
 }
 
 bool Colony::_checkAntsComplete(std::vector<Ant> *ants) {
 	for (auto ant = ants->begin(); ant != ants->end(); ++ant) {
-		if (!ant->IsComplete()) {
+		if (!ant->isComplete()) {
 			return false;
 		}
 	}
 	return true;
 }
 
-std::vector<Solution> Colony::_pickBestAntSolutions(std::vector<Ant> *ants) {
-	std::vector<Solution> solutions;
+std::vector<Solution> Colony::_pickBestAnts(std::vector<Ant> *ants) {
+	std::vector<Solution> antSolutions;
 
+	// extract all ant solutions
 	for (auto itr = ants->begin(); itr != ants->end(); ++itr) {
-		solutions.push_back(itr->solution());
+		antSolutions.push_back(itr->solution());
 	}
 
-	if (this->_params.bestAntLimit == 1) {
-		return {*std::max_element(solutions.begin(), solutions.end())};
+	// if only one solution needed, return the maximum solution (best)
+	if (_params.bestAntLimit == 1) {
+		return {*std::max_element(antSolutions.begin(), antSolutions.end())};
+	} else if (_params.bestAntLimit > 0) {
+		// sort the solution in descending order (better first)
+		std::sort(antSolutions.begin(), antSolutions.end(), greater<>());
+
+		// reduce vector to its first n elements
+		antSolutions.resize(_params.bestAntLimit);
 	}
 
-	std::sort(solutions.begin(), solutions.end(), greater<>());
-
-	if (this->_params.bestAntLimit > 0) {
-		solutions.resize(this->_params.bestAntLimit);
-	}
-
-	return solutions;
+	return antSolutions;
 }
 
-bool Colony::_assessSolution(Solution solution) {
-	if (!this->_hasSolution || solution > this->_solution) {
-		this->_solution = solution;
-		this->_hasSolution = true;
+bool Colony::_assessSolution(Solution solution, int iteration, int colonyID) {
+	if (!_hasSolution || solution > _bestInColony) {
+		_bestInColony = solution;
+		_hasSolution = true;
+		this->solutionHandler(solution.cost, solution.score, iteration,
+							  colonyID);
 		return true;
 	}
 	return false;
 }
 
 void Colony::_depositPheromone(Solution antSolution) {
-	// calculate quality of the ant
-	double deposit = this->_params.pheromoneConstant / antSolution.cost;
+	// calculate quality of the ant (the quality function)
+	double deposit = _params.pheromoneConstant / antSolution.cost;
 
+	// deposit pheromone along the ant's route
 	for (int i = 0; i < antSolution.route.size() - 1; i++) {
 		int fromIndex = antSolution.route[i];
 		int toIndex = antSolution.route[i + 1];
-		this->_matrixData.DepositPheromone(fromIndex, toIndex, deposit);
+		_matrixData.DepositPheromone(fromIndex, toIndex, deposit);
 	}
-}
-
-void Colony::_progressTick(int tickSize) {
-	this->_progressCount =
-		std::min(this->_progressCount + tickSize, this->_progressTotal);
-
-	this->progressHandler(this->_progressCount, this->_progressTotal);
-}
-
-void Colony::_setProgressTotal(int value) {
-	this->_progressTotal = value;
 }
 
 Solution Colony::_exportSolution(Solution solution) {
 	for (int &index : solution.route) {
-		index = this->_vertexIDs[index];
+		index = (&_graphNodes->at(index))->ID;
 	}
 	return solution;
 }
+
+void Colony::_progressTick() {
+	_progressCount = std::min(_progressCount + 1, _progressTotal);
+
+	this->progressHandler(_progressCount, _progressTotal);
+}
+
+// initialize the shared thread pool
+ThreadPool Colony::_threadPool =
+	ThreadPool(std::thread::hardware_concurrency());

@@ -3,95 +3,89 @@
 using namespace aco;
 
 void Ant::Run() {
-	int currentVertex;
+	int currentVertex = _route.front();
 	int nextVertex;
 
-	while (this->_possibleVertices.size()) {
-		currentVertex = this->_route[this->_route.size() - 1];
-		nextVertex = this->_pickNextVertex(currentVertex);
+	while (!_possibleVertices.empty()) {
+		// pick next vertex based on probabilities
+		nextVertex = _pickNextVertex(currentVertex);
 
-		double cost = this->_matrixData->Cost(currentVertex, nextVertex);
-		double homeCost = 0.0;
-
-		if (this->_params->returnHome) {
-			homeCost =
-				this->_matrixData->Cost(nextVertex, this->_params->startVertex);
-		}
-
-		if (this->_checkConstraint(cost + homeCost)) {
-			this->_traverse(currentVertex, nextVertex);
+		// check if the move can be made
+		if (_checkMove(currentVertex, nextVertex)) {
+			_traverse(currentVertex, nextVertex);
+			currentVertex = nextVertex;
 		} else {
-			nextVertex = currentVertex;
+			// can't make the move, stop going further
 			break;
 		}
 	}
 
-	if (this->_params->returnHome) {
-		this->_traverse(nextVertex, this->_params->startVertex);
+	// return home if parameter set
+	if (_returnHome) {
+		_traverse(currentVertex, _route.front());
 	}
 
-	this->_runComplete = true;
+	_runComplete = true;
 }
 
-void Ant::Reset(std::vector<int> allVertices) {
-	this->_runComplete = false;
-	this->_cost = 0.0;
-	this->_route = std::vector<int>{this->_params->startVertex};
-	this->_possibleVertices = allVertices;
-	utils::vector::removeValue(&(this->_possibleVertices),
-							   this->_params->startVertex);
-}
+bool Ant::_checkMove(int currentVertex, int nextVertex) {
+	if (_costConstraint == 0) {
+		return true;
+	}
 
-bool Ant::_checkConstraint(double lookahead) {
-	return this->_params->costConstraint == 0 ||
-		   (this->_cost + lookahead) < this->_params->costConstraint;
+	// get the cost of the move
+	double moveCost = _matrixData->Cost(currentVertex, nextVertex);
+
+	if (_returnHome) {
+		// add the cost of getting home
+		moveCost += _matrixData->Cost(nextVertex, _route.front());
+	}
+
+	return (_routeCost + moveCost) < _costConstraint;
 }
 
 int Ant::_pickNextVertex(int currentVertex) {
-	size_t size = this->_possibleVertices.size();
-	double norm = this->_probabilityNorm(currentVertex);
-	double sum = 0.0;
-	std::vector<double> attractiveness(size, 0.0);
+	double norm = _probabilityNorm(currentVertex);
 
-	for (int nextIndex = 0; nextIndex < size; nextIndex++) {
-		int nextVertex = this->_possibleVertices[nextIndex];
-		double probability =
-			this->_matrixData->Probability(currentVertex, nextVertex) / norm;
-		attractiveness[nextIndex] = probability;
-		sum += probability;
-	}
+	std::vector<double> attractiveness =
+		_attractivenessVector(currentVertex, norm);
 
-	// cumulative probability behavior, inspired by:
-	// http://stackoverflow.com/a/3679747/5343977
-	double randomToss = (rand() / (RAND_MAX + 1.0));
-	double cumulative = 0.0;
+	int choice = _weightedChoice(&attractiveness);
 
-	for (int nextIndex = 0; nextIndex < size; nextIndex++) {
-		double weight = attractiveness[nextIndex] / sum;
-
-		// choose next vertex based on probability
-		if (randomToss <= (weight + cumulative)) {
-			return this->_possibleVertices[nextIndex];
-		}
-
-		cumulative += weight;
-	}
-
-	// should never end up here (consider throwing error)
-	return 0;
-}
-
-void Ant::_traverse(int fromIndex, int toIndex) {
-	this->_route.push_back(toIndex);
-	utils::vector::removeValue(&(this->_possibleVertices), toIndex);
-
-	this->_cost += this->_matrixData->Cost(fromIndex, toIndex);
+	return _possibleVertices.at(choice);
 }
 
 double Ant::_probabilityNorm(int currentVertex) {
 	double norm = 0.0;
-	for (int nextVertex : this->_possibleVertices) {
-		norm += this->_matrixData->Probability(currentVertex, nextVertex);
+	for (int nextVertex : _possibleVertices) {
+		norm += _matrixData->Probability(currentVertex, nextVertex);
 	}
 	return norm;
+}
+
+std::vector<double> Ant::_attractivenessVector(int currentVertex, double norm) {
+	size_t size = _possibleVertices.size();
+	std::vector<double> attractiveness(size, 0.0);
+
+	for (int nextIndex = 0; nextIndex < size; nextIndex++) {
+		int nextVertex = _possibleVertices[nextIndex];
+		double probability =
+			_matrixData->Probability(currentVertex, nextVertex) / norm;
+		attractiveness[nextIndex] = probability;
+	}
+
+	return attractiveness;
+}
+
+int Ant::_weightedChoice(std::vector<double> *attractiveness) {
+	auto dist = std::discrete_distribution<int>(attractiveness->begin(),
+												attractiveness->end());
+	return dist(_randomGenerator);
+}
+
+void Ant::_traverse(int currentVertex, int nextVertex) {
+	_route.push_back(nextVertex);
+	utils::vector::removeValue(&(_possibleVertices), nextVertex);
+
+	_routeCost += _matrixData->Cost(currentVertex, nextVertex);
 }

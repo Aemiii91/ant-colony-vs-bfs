@@ -1,63 +1,146 @@
 #include <gtest/gtest.h>
 
+#include <chrono>
 #include <locale.h>
 #include <stdexcept>
+#include <vector>
 
-#include "../src/aco/Colony.hpp"
+#include <aco/AntColony.hpp>
+#include <graph/graph.h>
+#include <jsonparser.h>
+#include <utils/ArgumentParser.hpp>
 
 using namespace aco;
 
 class ACOTest : public ::testing::Test {
   public:
-	std::vector<int> allVertices;
-	aco::MatrixDouble costMatrix;
+	Graph graph;
 
   protected:
 	void SetUp() override {
 		setlocale(LC_ALL, "");
 
-		this->allVertices = std::vector<int>{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-		this->costMatrix =
-			MatrixDouble{{0.0, 441.95, 519.73, 400.86, 630.96, 690.94, 708.62,
-						  836.19, 632.11, 724.57},
-						 {441.95, 0.0, 225.93, 648.8, 637.27, 977.89, 497.03,
-						  1170.65, 777.65, 757.71},
-						 {518.0, 225.93, 0.0, 932.94, 728.94, 1120.02, 319.58,
-						  1262.32, 1061.79, 862.78},
-						 {413.48, 661.42, 865.8, 0.0, 1024.44, 537.48, 1005.39,
-						  756.98, 217.55, 733.72},
-						 {571.76, 609.91, 701.58, 888.39, 0.0, 1061.81, 1072.42,
-						  1072.55, 1203.87, 1296.33},
-						 {665.6, 955.79, 1116.1, 498.47, 1108.33, 0.0, 1222.45,
-						  333.25, 462.75, 999.19},
-						 {614.14, 438.44, 280.61, 918.36, 1098.79, 1150.07, 0.0,
-						  1308.43, 963.42, 647.25},
-						 {798.7, 1172.23, 1263.91, 725.93, 1082.63, 333.25,
-						  1384.22, 0.0, 852.55, 1226.65},
-						 {608.35, 848.98, 1053.36, 217.55, 1239.31, 559.99,
-						  1039.54, 844.6, 0.0, 556.99},
-						 {716.48, 757.71, 875.49, 753.9, 1347.44, 1075.64,
-						  659.97, 1295.14, 556.99, 0.0}};
+		JsonParser json;
+		this->graph = json.ParseData("../data/matrix10");
 	}
 
 	void TearDown() override {}
 };
 
-TEST_F(ACOTest, ColonySolveTest) {
-	time_t t;
-	srand(time(&t));
+TEST_F(ACOTest, AntColonyTest) {
+	// Save cout's buffer
+	std::streambuf *sbuf = std::cout.rdbuf();
+	std::stringstream buffer;
 
-	// Colony colony(this->allVertices, this->costMatrix);
+	// Redirect cout to stringstream buffer
+	std::cout.rdbuf(buffer.rdbuf());
 
-	// int colonies = 10;
-	// colony.antCount = 20;
-	// colony.iterations = 50;
-	// colony.costConstraint = 4000.0;
+	// remove colors from output
+	termcolor::setEnabled(false);
 
-	// aco::Solution solution = colony.Solve(colonies);
+	int test_argc = 10;
+	char *test_argv[] = {
+		const_cast<char *>("routeplanner"), const_cast<char *>("aco"),
+		const_cast<char *>("--ants"),       const_cast<char *>("20"),
+		const_cast<char *>("--iterations"), const_cast<char *>("50"),
+		const_cast<char *>("--colonies"),   const_cast<char *>("10"),
+		const_cast<char *>("--cost"),       const_cast<char *>("4000")};
 
-	// std::cout << solution;
+	utils::ArgumentParser args(test_argc, test_argv);
 
-	// ASSERT_EQ(8, solution.route.size() - 1);
-	ASSERT_EQ(true, true);
+	AntColony::run(&this->graph, &args);
+
+	// redirect cout to its old self
+	std::cout.rdbuf(sbuf);
+
+	std::vector<std::string> content;
+	for (std::string line; std::getline(buffer, line);) {
+		content.push_back(line);
+		std::cout << line << std::endl;
+	}
+
+	std::string result = content[2];
+
+	ASSERT_EQ("( 3550, 8 )", result);
+}
+
+TEST_F(ACOTest, ColonyTest) {
+	int colonies = 10;
+	Parameters params;
+	params.antCount = 20;
+	params.iterations = 50;
+	params.costConstraint = 4000.0;
+
+	Colony colony(&this->graph, params);
+
+	Solution solution = colony.Solve(colonies);
+
+	std::cout << solution;
+
+	ASSERT_EQ(8, solution.score);
+}
+
+TEST_F(ACOTest, AntTest) {
+	Parameters params;
+	MatrixData matrixData(&this->graph, &params);
+
+	std::vector<int> allVertices;
+	size_t size = this->graph.nodelist.size();
+	for (int i = 0; i < size; i++) {
+		allVertices.push_back(i);
+	}
+
+	Ant ant(allVertices, 0, &params, &matrixData);
+
+	// start timer
+	auto start = std::chrono::high_resolution_clock::now();
+
+	ant.Run();
+
+	// stop timer
+	auto stop = std::chrono::high_resolution_clock::now();
+
+	bool result = ant.isComplete();
+	bool expected = true;
+
+	// calculate and print runtime
+	auto duration =
+		std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+	std::cout << (double)duration.count() / 1000 << " ms" << std::endl;
+
+	std::cout << ant.solution();
+
+	ASSERT_EQ(expected, result);
+}
+
+TEST_F(ACOTest, MatrixDataTest) {
+	Parameters params;
+	params.evaporation = 0.5;
+
+	MatrixData matrixData(&this->graph, &params);
+
+	int fromIndex = 0;
+	int toIndex = 1;
+	double heuristic =
+		std::pow(1.0 / matrixData.Cost(fromIndex, toIndex), params.beta);
+
+	double probBefore = matrixData.Probability(fromIndex, toIndex);
+	double expectedBefore = std::pow(1.0, params.alpha) * heuristic;
+
+	matrixData.EvaporatePheromone();
+
+	double probAfter = matrixData.Probability(fromIndex, toIndex);
+	double expectedAfter = std::pow(0.5, params.alpha) * heuristic;
+
+	ASSERT_EQ(true,
+			  (probBefore == expectedBefore) && (probAfter == expectedAfter));
+}
+
+TEST_F(ACOTest, SolutionTest) {
+	Solution solution(3550, {0, 3, 8, 9, 6, 2, 1, 4, 0});
+
+	int expected = 8;
+	int result = solution.score;
+
+	ASSERT_EQ(expected, result);
 }
