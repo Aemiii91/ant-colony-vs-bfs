@@ -5,24 +5,31 @@ Smac scripts for running aco, very minimal working example only varying one vari
 import logging
 import subprocess
 import os
+import io
+from ast import literal_eval as make_tuple
  
 from smac.facade.func_facade import fmin_smac
  
 def acorunner(x):
     #print(x)
-    upperScore = 100
-    staticparams = 'aco --data "matrix500.json" --colonies 3 --smac_mode '
+    staticConstraint = 30000
+    upperScore = 500
+    staticparams = 'aco --data "matrix500.json" --colonies 3'
     dynamicEvaporation = '--evaporation ' + str(x[0]) 
     dynamicAntCount = '--ants ' + str(x[1])
     dynamicIterations = '--iterations ' + str(x[2])
     dynamicParams = dynamicEvaporation + dynamicAntCount + dynamicIterations
     cmd = "./routeplanner "
     stdoutdata = subprocess.getoutput(cmd + staticparams + dynamicParams)
-    #print('stdoutdata := ' + stdoutdata)
-    #print('params := '+ dynamicParams)
-    return upperScore - int(stdoutdata)
+    stdoutio = io.StringIO(stdoutdata)
+    lines = stdoutio.readlines()
+    cost, score = make_tuple(lines[-2])
+    result = upperScore - calc_result(score, cost, staticConstraint)
+    return result
  
- 
+def calc_result(score: int, cost: float, constraint: float):
+    return score + (1 - cost / constraint)
+
 # debug output
 #logging.basicConfig(level=20)
 #logger = logging.getLogger("Optimizer")  # Enable to show Debug outputs
