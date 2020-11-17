@@ -1,4 +1,7 @@
+#ifndef NODE_H
+#define NODE_H
 #pragma once
+
 #include <bits/stdc++.h>
 #include <iostream>
 #include <string>
@@ -31,3 +34,5 @@ class Node {
 		return out;
 	};
 };
+
+#endif

@@ -1,35 +1,49 @@
-#include "jsonparser.h"
-#include "ownAlgorithm/baseAlgorithm.h"
-#include "ownAlgorithm/depthFirstAlgorithm.h"
-#include "ownAlgorithm/naiveAlgorithm.h"
+// std
 #include <ctime>
 #include <iostream>
 #include <random>
-
-using namespace std;
+// include
+#include <termcolor/termcolor.hpp>
+// submodules
+#include <aco/AntColony.hpp>
+#include <ownAlgorithm/depthFirstAlgorithm.h>
+#include <ownAlgorithm/naiveAlgorithm.h>
+#include <utils/ArgumentParser.hpp>
+// local
+#include "jsonparser.h"
 
 int main(int argc, char **argv) {
+	utils::ArgumentParser args(argc, argv);
+
+	// enable/disable output colors
+	termcolor::setEnabled(args.Exists("--colors"));
+
+	// default dataset path
+	std::string path = "../data/matrix500.json";
+	// get inputted dataset path
+	args.Get("--data", &path);
+
+	// load the graph
 	JsonParser parser;
-	Graph graph = parser.ParseData("matrix500.json");
-	int interval = 50000;
+	Graph graph = parser.ParseData(path);
 
-	DFSAlgorithm Alg(interval, graph);
-	vector<Node> resAlg = Alg.SecondDraft();
+	if (argc <= 1) {
+		std::cout << "No subprogram specified." << std::endl;
+		return 0;
+	}
 
-	NaiveAlgorithm Naive(interval, graph);
-	vector<Node> resNaive = Naive.FirstDraftAlgo();
-	cout << endl;
-	cout << endl;
+	// first argument represents the name of a subprogram
+	std::string subprogram = argv[1];
 
-	cout << "Interval: " << interval << endl;
-	cout << "Graph: matrix500.json" << endl;
-	cout << endl;
+	if (subprogram == "aco") {
+		aco::AntColony::run(&graph, &args);
+	} else if (subprogram == "naive") {
+		// run naive algorithm
+		std::cout << "Not implemented." << std::endl;
+	} else {
+		std::cout << termcolor::red << "Error: " << termcolor::reset;
+		std::cout << "Subprogram not recognized." << std::endl;
+	}
 
-	cout << "NaiveAlgorithm: RESULTS" << endl;
-	Naive.PathPrinter();
-	cout << endl;
-
-	cout << "DFSAlgorithm: RESULTS" << endl;
-	Alg.PathPrinter();
-	cout << endl;
+	return 0;
 }

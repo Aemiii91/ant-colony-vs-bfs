@@ -1,3 +1,7 @@
+#ifndef EDGE_H
+#define EDGE_H
+#pragma once
+
 #include <iomanip>
 #include <iostream>
 
@@ -23,3 +27,5 @@ class Edge {
 		return out;
 	}
 };
+
+#endif

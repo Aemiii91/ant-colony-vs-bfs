@@ -1,4 +1,7 @@
+#ifndef GRAPH_H
+#define GRAPH_H
 #pragma once
+
 #include <iostream>
 #include <vector>
 
@@ -6,7 +9,7 @@
 class Graph {
   public:
 	std::vector<Node> nodelist;
-	std::vector<Edge> edgeList;
+	// std::vector<Edge> edgeList;
 	/**
 	 * As obvious as the name is: get size of graph
 	 *
@@ -29,3 +32,5 @@ class Graph {
 	 */
 	void Print();
 };
+
+#endif

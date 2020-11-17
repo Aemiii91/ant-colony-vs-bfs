@@ -6,17 +6,15 @@ set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
-file(GLOB SOURCES
-    "src/*.cpp"
-    "src/graph/*.cpp"
-    "src/ownAlgorithm/*.cpp")
+include_directories(include)
+
+file(GLOB SOURCES "src/*.cpp" "src/graph/*.cpp" "src/aco/*.cpp" "src/utils/*.cpp" "src/ownAlgorithm/*.cpp")
 message("${SOURCES}")
 list(REMOVE_ITEM SOURCES "${CMAKE_SOURCE_DIR}/src/main.cpp" )
 file(GLOB TEST_SOURCES "tests/*.cpp")
 
 include_directories(${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-include_directories("/src")
-include_directories(graph)
+include_directories("src")
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)

@@ -1,8 +1,11 @@
 #pragma once
+
 #include "graph/graph.h"
-#include "rapidjson.h"
 #include <fstream>
 #include <iostream>
+#include <rapidjson/document.h>
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/writer.h>
 #include <sstream>
 #include <string>
 
