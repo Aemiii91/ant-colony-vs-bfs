@@ -2,3 +2,6 @@
 [submodule "cpp/googletest"]
 	path = cpp/googletest
 	url = https://github.com/google/googletest
+[submodule "openrouteservice"]
+	path = openrouteservice
+	url = https://github.com/mholdg16/openrouteservice.git
