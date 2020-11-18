@@ -1,3 +1,1 @@
-evaporation real [0.01,0.99] [0.4]
-numAnt integer [10,2500] [10]
-iterations integer [5,1000] [50]
+evaporationRate real [0.01,0.99] [0.4745167804981315]
