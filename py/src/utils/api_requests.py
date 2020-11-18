@@ -22,7 +22,7 @@ class ApiRequests:
         self.__is_online = False
 
 
-    def get(self, endpoint: str, args: dict = None, headers=None, nocache: bool = False) -> dict:
+    def get(self, endpoint: str, args: dict = None, headers=None, nocache: bool = False, ignorestatus=None) -> dict:
         """Performs a GET request to the desired endpoint.
         
         Endpoint is the part of the URL that's not in the base URL.
@@ -40,7 +40,7 @@ class ApiRequests:
         except ConnErr:
             return None
 
-        data = _validate_response(response)
+        data = response.text
 
         save_cache(data, { "url": url }, cancel=nocache)
 
@@ -64,7 +64,7 @@ class ApiRequests:
         except ConnErr:
             return None
 
-        data = _validate_response(response)
+        data = response.text
 
         save_cache(data, payload, cancel=nocache)
 
@@ -95,10 +95,3 @@ class ApiRequests:
         """Returns a bool indicating whether the online endpoint is in use."""
         return self.__is_online
 
-
-def _validate_response(response: requests.Response) -> str:
-    if response.status_code != 200:
-        print(response.status_code, response.reason)
-        print(response.text)
-        return None
-    return response.text
