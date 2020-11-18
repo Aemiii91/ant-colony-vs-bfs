@@ -72,6 +72,7 @@ vector<Node> DFSAlgorithm::SecondDraft() {
 			currentTime.emplace_back(TravelTime(&currentNode, &secondNode) +
 									 timeSpent);
 			timeSpent = currentTime.back();
+            cout << timeSpent << endl; //Apparently couting timeSpent fixes the SmallPathLimitedTime test in Release
 			currentNode = GetSecondBestNode(currentPath, &currentNode);
 
 			currentPath.emplace_back(currentNode);
