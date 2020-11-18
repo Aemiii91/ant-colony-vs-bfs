@@ -3,6 +3,7 @@ Smac scripts for running aco, very minimal working example only varying one vari
 """
  
 import logging
+import time
 import subprocess
 import os
 import io
@@ -18,11 +19,15 @@ def acorunner(x):
     dynamicIterations = ' --iterations ' + str(x[0])
     dynamicParams = dynamicIterations 
     cmd = "./routeplanner "
+
+    start = time.time()
     stdoutdata = subprocess.getoutput(cmd + staticparams + dynamicParams)
+    end = time.time()
+    timeSpent = (end - start)
     stdoutio = io.StringIO(stdoutdata)
     lines = stdoutio.readlines()
     cost, score = make_tuple(lines[-2])
-    result = upperScore - calc_result(score, cost, staticConstraint)
+    result = timeSpent / calc_result(score, cost, staticConstraint)
     return result
  
 def calc_result(score: int, cost: float, constraint: float):
