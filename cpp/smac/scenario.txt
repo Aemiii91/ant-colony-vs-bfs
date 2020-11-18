@@ -1,5 +1,5 @@
 algo = python wrapper.py 
 paramfile = param_config_space.pcs
 deterministic = 1
-runcount_limit = 25000 
+runcount_limit = 1000
 run_obj = quality

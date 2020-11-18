@@ -3,30 +3,36 @@ Smac scripts for running aco, very minimal working example only varying one vari
 """
  
 import logging
+import time
 import subprocess
 import os
+import io
+from ast import literal_eval as make_tuple
  
 from smac.facade.func_facade import fmin_smac
  
 def acorunner(x):
     #print(x)
-    upperScore = 100
-    staticparams = 'aco --data "matrix500.json" --colonies 1 --smac_mode '
-    dynamicAlpha = '--alpha ' + str(x[0])
-    dynamicBeta  = '--beta ' + str(x[1])
-    dynamicEvaporation = '--evaporation ' + str(x[2]) 
-    dynamicPheromone = '--pheromone ' + str(x[3])
-    dynamicBestAntLimit = '--best_ants ' + str(x[4])
-    dynamicAntCount = '--ants ' + str(x[5])
-    dynamicIterations = '--iterations ' + str(x[6])
-    dynamicParams = dynamicAlpha + dynamicBeta + dynamicEvaporation + dynamicPheromone + dynamicBestAntLimit + dynamicAntCount + dynamicIterations
+    staticConstraint = 30000
+    upperScore = 500
+    staticparams = 'aco --data "matrix500.json" --colonies 3 --ants 409 --alpha 0.31384557309187927 --beta 10.426963486712044 --evaporation 0.4745167804981315'
+    dynamicIterations = ' --iterations ' + str(x[0])
+    dynamicParams = dynamicIterations 
     cmd = "./routeplanner "
+
+    start = time.time()
     stdoutdata = subprocess.getoutput(cmd + staticparams + dynamicParams)
-    #print('stdoutdata := ' + stdoutdata)
-    #print('params := '+ dynamicParams)
-    return upperScore - int(stdoutdata)
+    end = time.time()
+    timeSpent = (end - start)
+    stdoutio = io.StringIO(stdoutdata)
+    lines = stdoutio.readlines()
+    cost, score = make_tuple(lines[-2])
+    result = timeSpent / calc_result(score, cost, staticConstraint)
+    return result
  
- 
+def calc_result(score: int, cost: float, constraint: float):
+    return score + (1 - cost / constraint)
+
 # debug output
 #logging.basicConfig(level=20)
 #logger = logging.getLogger("Optimizer")  # Enable to show Debug outputs
