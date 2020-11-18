@@ -10,6 +10,7 @@ def main():
     parser.add_argument('--online', help='Ping online endpoint', action='store_true')
     args = parser.parse_args()
 
+    openroute.api.go_online()
     openroute.api.toggle_online(args.online)
     is_ready = False
 
