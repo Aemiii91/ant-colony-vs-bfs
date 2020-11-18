@@ -14,9 +14,9 @@ def acorunner(x):
     #print(x)
     staticConstraint = 30000
     upperScore = 500
-    staticparams = 'aco --data "matrix500.json" --colonies 3 --ants 409 --iterations 100 --alpha 0.31384557309187927 --beta 10.426963486712044'
-    dynamicEvaporationRate = ' --evaporation ' + str(x[0])
-    dynamicParams = dynamicEvaporationRate
+    staticparams = 'aco --data "matrix500.json" --colonies 3 --ants 409 --alpha 0.31384557309187927 --beta 10.426963486712044 --evaporation 0.4745167804981315'
+    dynamicIterations = ' --iterations ' + str(x[0])
+    dynamicParams = dynamicIterations 
     cmd = "./routeplanner "
     stdoutdata = subprocess.getoutput(cmd + staticparams + dynamicParams)
     stdoutio = io.StringIO(stdoutdata)
