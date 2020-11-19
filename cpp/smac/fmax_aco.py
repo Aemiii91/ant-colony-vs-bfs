@@ -15,19 +15,17 @@ def acorunner(x):
     #print(x)
     staticConstraint = 30000
     upperScore = 500
-    staticparams = 'aco --data "matrix500.json" --colonies 3 --ants 409 --alpha 0.31384557309187927 --beta 10.426963486712044 --evaporation 0.4745167804981315'
-    dynamicIterations = ' --iterations ' + str(x[0])
-    dynamicParams = dynamicIterations 
+    staticparams = 'aco --data "hamburg.json" --colonies 1 --ants 409 '
+    dynamicAlpha = ' --alpha ' + str(x[0])
+    dynamicBeta = ' --beta ' + str(x[1])
+    dynamicParams = dynamicAlpha + dynamicBeta 
     cmd = "./routeplanner "
 
-    start = time.time()
     stdoutdata = subprocess.getoutput(cmd + staticparams + dynamicParams)
-    end = time.time()
-    timeSpent = (end - start)
     stdoutio = io.StringIO(stdoutdata)
     lines = stdoutio.readlines()
     cost, score = make_tuple(lines[-2])
-    result = timeSpent / calc_result(score, cost, staticConstraint)
+    result = upperScore - calc_result(score, cost, staticConstraint)
     return result
  
 def calc_result(score: int, cost: float, constraint: float):
