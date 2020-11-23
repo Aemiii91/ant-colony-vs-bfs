@@ -1,1 +1,2 @@
-iterations integer [50,300] [50]
+alpha real [0, 20] [5]
+beta real [1, 100] [56]
