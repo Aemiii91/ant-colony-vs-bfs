@@ -17,6 +17,9 @@
 #include "MatrixData.hpp"
 #include "Parameters.hpp"
 #include "Solution.hpp"
+#include <chrono>
+#include <iostream>
+typedef std::chrono::high_resolution_clock Clock;
 
 namespace aco {
 /**
@@ -143,6 +146,14 @@ class Colony {
 	 * Adds 1 to the `progressCount`, and calls the `progressHandler`.
 	 */
 	void _progressTick();
+	/**
+	 * Checks if there is time left in respect to the timelimit.
+	 * Always return true if timelimit = 0
+	 *
+	 * @param start initial timer 
+	 * @param current current time spent
+	*/
+	bool _canRunInTime(auto start, auto current);
 };
 } // namespace aco
 

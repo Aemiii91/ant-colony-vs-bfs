@@ -15,12 +15,14 @@ void AntColony::run(Graph *graph, utils::ArgumentParser *args) {
 	args->Get("--ants", &params.antCount);
 	args->Get("--iterations", &params.iterations);
 	args->Get("--best_ants", &params.bestAntLimit);
-    bool smacMode = args->Exists("--smac_mode");
+	args->Get("--time", &params.timeAvailable);
+	bool smacMode = args->Exists("--smac_mode");
 	params.returnHome = !args->Exists("--noreturn");
 	params.threading = !args->Exists("--nothreading");
 	bool showProgress = args->Exists("--progress");
 
-	if(!smacMode) _printParameters(colonyCount, params);
+	if (!smacMode)
+		_printParameters(colonyCount, params);
 	// print all parameters
 
 	// spawn the colony
@@ -74,21 +76,20 @@ void AntColony::run(Graph *graph, utils::ArgumentParser *args) {
 		_progressBarTick(&bar, totalCycles, totalCycles, currentStatus);
 	}
 
-
-    if(smacMode) {
-        std::cout << bestSolution.score;
-    }
+	if (smacMode) {
+		std::cout << bestSolution.score;
+	}
 	// calculate and print runtime
-    else {
-	auto duration =
-		std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-	char s[20];
-	snprintf(s, 20, "%.3fs\n", (double)duration.count() / 1000000);
-	std::cout << termcolor::yellow << s << termcolor::reset;
+	else {
+		auto duration =
+			std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+		char s[20];
+		snprintf(s, 20, "%.3fs\n", (double)duration.count() / 1000000);
+		std::cout << termcolor::yellow << s << termcolor::reset;
 
-	// print the solution
-	std::cout << bestSolution;
-    }
+		// print the solution
+		std::cout << bestSolution;
+	}
 }
 
 void AntColony::_printParameters(int colonyCount, Parameters params) {
@@ -111,6 +112,7 @@ void AntColony::_printParameters(int colonyCount, Parameters params) {
 	if (params.costConstraint != 0) {
 		std::cout << ", cost=" << params.costConstraint;
 	}
+	std::cout << ", time limit=" << params.timeAvailable << " sec";
 	std::cout << " ]" << termcolor::reset << std::endl;
 }
 

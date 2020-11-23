@@ -4,25 +4,48 @@ using namespace aco;
 
 Solution Colony::Solve(int colonyCount) {
 	// if only one colony, run this one
+	bool run = true;
+
 	if (colonyCount == 1) {
 		_solve();
 	} else {
-		_progressTotal = colonyCount * _params.iterations * _params.antCount;
-		auto progressHandler = [this](int n, int total) { _progressTick(); };
-
-		// clone the amount of colonies needed, and solve each of them
-		for (int colonyID = 0; colonyID < colonyCount; colonyID++) {
-			Colony clone(*this);
-			clone.progressHandler = progressHandler;
-			clone.solutionHandler =
-				[this, &clone, colonyID](double, int, int iteration, int) {
+		while (run) {
+			_progressTotal =
+				colonyCount * _params.iterations * _params.antCount;
+			auto progressHandler = [this](int n, int total) {
+				_progressTick();
+			};
+			auto start = Clock::now();
+			// clone the amount of colonies needed, and solve each of them
+			for (int colonyID = 0; colonyID < colonyCount; colonyID++) {
+				Colony clone(*this);
+				clone.progressHandler = progressHandler;
+				clone.solutionHandler = [this, &clone, colonyID](
+											double, int, int iteration, int) {
 					_assessSolution(clone._bestInColony, iteration, colonyID);
 				};
-			clone._solve();
+				clone._solve();
+				auto current = Clock::now();
+				if (!this->_canRunInTime(start, current)) {
+					run = false;
+					break;
+				}
+			}
+			break;
 		}
 	}
 
 	return _exportSolution(_bestInColony);
+}
+
+bool Colony::_canRunInTime(auto start, auto current) {
+	if (this->_params.timeAvailable == 0) return true;
+
+	else if (chrono::duration_cast<std::chrono::seconds>(current - start).count() < this->_params.timeAvailable)
+		return true;
+
+	else
+		return false;
 }
 
 void Colony::_solve() {

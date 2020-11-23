@@ -9,3 +9,28 @@ Entry 0 {
     [0, 3, 8, 10, 16, 14, 15, 13, 6, 2, 1, 4, 12, 22, 25, 19, 18, 20, 23, 21, 36, 43, 39, 44, 54, 57, 69, 96, 108, 130, 132, 131, 133, 135, 137, 151, 147, 146, 145, 139, 141, 144, 155, 165, 182, 191, 193, 202, 188, 197, 209, 205, 166, 149, 134, 140, 138, 121, 117, 112, 109, 95, 84, 82, 81, 78, 80, 66, 61, 49, 47, 40, 32, 33, 31, 27, 26, 35, 37, 34, 28, 17, 0]
 
 }
+
+Entry 1 {
+    munchen.json dataset
+    ./routeplanner aco --data "munchen.json" --alpha 0.1667991348632522 --beta 5.120041393363314 --evaporation 0.4745167804981315 --colonies 100 --ants 409 --iterations 90
+    153.378s
+    ( 29860, 71 )
+    [0, 1, 2, 3, 5, 13, 14, 21, 22, 31, 30, 44, 46, 40, 41, 55, 47, 43, 51, 69, 75, 77, 81, 83, 93, 92, 87, 88, 86, 79, 78, 76, 70, 64, 58, 57, 59, 56, 52, 49, 48, 50, 54, 62, 63, 67, 72, 90, 95, 97, 103, 108, 110, 105, 107, 102, 91, 94, 84, 80, 65, 39, 34, 33, 27, 18, 29, 26, 15, 9, 8, 0]
+    }
+
+New values for munchen
+INFO:   ##########################################################
+INFO:   Statistics:
+INFO:   #Incumbent changed: 8
+INFO:   #Submitted target algorithm runs: 500 / 500.0
+INFO:   #Finished target algorithm runs: 500 / 500.0
+INFO:   #Configurations: 500
+INFO:   Used wallclock time: 2844.30 / inf sec
+INFO:   Used target algorithm runtime: 0.00 / inf sec
+INFO:   ##########################################################
+INFO:   Final Incumbent: Configuration:
+  alpha, Value: 0.2923580028024308
+  beta, Value: 7.772789874202959
+  evaporation, Value: 0.020759917620860692
+
+INFO:   Estimated cost of incumbent: 429.985900

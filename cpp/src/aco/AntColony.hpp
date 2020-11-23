@@ -4,6 +4,7 @@
 // std
 #include <chrono>
 #include <ctime>
+#include <cstdio>
 #include <iostream>
 // include
 #include <indicators/progress_bar.hpp>
