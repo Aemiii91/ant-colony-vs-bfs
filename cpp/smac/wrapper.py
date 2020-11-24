@@ -5,7 +5,7 @@ import logging
 import sys
 import subprocess
 
-from fmax_aco import acorunner
+from fmax_aco_optimized_variables import acorunner
 
 if __name__ == '__main__':
     seed = sys.argv[5]
