@@ -1,10 +1,13 @@
 #include "Colony.hpp"
-
+bool acorunnerbool;
+double timeSpent;
 using namespace aco;
 
 Solution Colony::Solve(int colonyCount) {
 	// if only one colony, run this one
 	bool run = true;
+	acorunnerbool = true;
+	timeSpent = 0;
 
 	if (colonyCount == 1) {
 		_solve();
@@ -15,9 +18,10 @@ Solution Colony::Solve(int colonyCount) {
 			auto progressHandler = [this](int n, int total) {
 				_progressTick();
 			};
-			auto start = Clock::now();
+			
 			// clone the amount of colonies needed, and solve each of them
 			for (int colonyID = 0; colonyID < colonyCount; colonyID++) {
+				if(acorunnerbool) {	
 				Colony clone(*this);
 				clone.progressHandler = progressHandler;
 				clone.solutionHandler = [this, &clone, colonyID](
@@ -25,11 +29,11 @@ Solution Colony::Solve(int colonyCount) {
 					_assessSolution(clone._bestInColony, iteration, colonyID);
 				};
 				clone._solve();
-				auto current = Clock::now();
-				if (!this->_canRunInTime(start, current)) {
+				if (!acorunnerbool) {
 					run = false;
 					break;
 				}
+			}
 			}
 			break;
 		}
@@ -38,25 +42,31 @@ Solution Colony::Solve(int colonyCount) {
 	return _exportSolution(_bestInColony);
 }
 
-bool Colony::_canRunInTime(auto start, auto current) {
+bool Colony::_canRunInTime() {
+	std::chrono::seconds s (this->_params.timeAvailable);
+	std::chrono::nanoseconds timeAvailableNS = std::chrono::duration_cast<std::chrono::nanoseconds> (s);
 	if (this->_params.timeAvailable == 0) return true;
 
-	else if (chrono::duration_cast<std::chrono::seconds>(current - start).count() < this->_params.timeAvailable)
-		return true;
+	else if (timeSpent >= timeAvailableNS.count()) {
+		acorunnerbool = false;
+		return false;
+	}
 
 	else
-		return false;
+		return true;
 }
 
 void Colony::_solve() {
 	// initialize ants
 	std::vector<Ant> ants;
 	_initAnts(&ants);
-
 	// set total progress (number of cycles)
 	_progressTotal = _params.iterations * _params.antCount;
+	
 
 	for (int iteration = 0; iteration < _params.iterations; iteration++) {
+		if(acorunnerbool) {
+		auto start = Clock::now();
 		_runAnts(&ants);
 
 		_matrixData.EvaporatePheromone();
@@ -67,6 +77,10 @@ void Colony::_solve() {
 		}
 
 		_resetAnts(&ants);
+		auto stop = Clock::now();
+		timeSpent += chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count();
+		this->_canRunInTime();
+	}
 	}
 }
 

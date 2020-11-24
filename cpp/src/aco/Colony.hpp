@@ -153,7 +153,7 @@ class Colony {
 	 * @param start initial timer 
 	 * @param current current time spent
 	*/
-	bool _canRunInTime(auto start, auto current);
+	bool _canRunInTime();
 };
 } // namespace aco
 
