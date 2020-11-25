@@ -13,6 +13,8 @@ class Node {
 	Node() {}
 	Node(int id) : ID(id) {} // Give node identifier
 	int ID; // used as identifier ( TODO: should be set to the same as POI)
+	bool firstReached = false;
+	bool secondReached = false;
 	bool childrensChecked = false; // used to identify a fully checked node in
 								   // second draft algorithm.
 

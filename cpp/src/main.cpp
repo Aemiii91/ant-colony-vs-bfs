@@ -5,6 +5,8 @@
 // include
 #include <termcolor/termcolor.hpp>
 // submodules
+#include "ownAlgorithm/baseAlgorithm.h"
+#include "ownAlgorithm/threeBranchAlgorithm.h"
 #include <aco/AntColony.hpp>
 #include <ownAlgorithm/depthFirstAlgorithm.h>
 #include <ownAlgorithm/naiveAlgorithm.h>
@@ -13,6 +15,37 @@
 #include "jsonparser.h"
 
 int main(int argc, char **argv) {
+	JsonParser parser;
+	Graph graph = parser.ParseData("berlin.json");
+	int interval = 30000;
+
+	DFSAlgorithm Alg(interval, graph);
+	vector<Node> resAlg = Alg.SecondDraft();
+
+	NaiveAlgorithm Naive(interval, graph);
+	vector<Node> resNaive = Naive.FirstDraftAlgo();
+
+	ThreeBranchAlgorithm Three(interval, graph);
+	vector<Node> resThree = Three.ThirdDraft();
+	cout << endl;
+	cout << endl;
+
+	cout << "Interval: " << interval << endl;
+	cout << "Graph: matrix500.json" << endl;
+	cout << endl;
+
+	cout << "NaiveAlgorithm: RESULTS" << endl;
+	Naive.PathPrinter();
+	cout << endl;
+
+	cout << "DFSAlgorithm: RESULTS" << endl;
+	Alg.PathPrinter();
+	cout << endl;
+
+	cout << "ThreeBranchAlgorithm: RESULTS" << endl;
+	Three.PathPrinter();
+	cout << endl;
+
 	utils::ArgumentParser args(argc, argv);
 
 	// enable/disable output colors
@@ -24,8 +57,7 @@ int main(int argc, char **argv) {
 	args.Get("--data", &path);
 
 	// load the graph
-	JsonParser parser;
-	Graph graph = parser.ParseData(path);
+	graph = parser.ParseData(path);
 
 	if (argc <= 1) {
 		std::cout << "No subprogram specified." << std::endl;
