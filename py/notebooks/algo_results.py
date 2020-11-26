@@ -73,69 +73,69 @@ def style_function(color):
     return lambda feature: dict(color=color, weight=3, opacity=1)
 
 
-def create_legend(location: list, html: str):
-    return folium.Marker(
-        location=location,
-        z_index_offset=1000,
-        icon=folium.features.DivIcon(html=f"""
-            <style>
-            .legend {{
-                width: 280px;
-                background: white;
-                border: 1px solid #ddd;
-                padding: 12px 16px;
-                font-size: 16px;
-                box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
-            }}
-            .marker-description {{
-                text-align: center;
-                margin-top: 4px;
-            }}
-            .marker-description span {{
-                font-size: .85em;
-                font-weight: bold;
-                margin-right: 8px;
-                padding-left: 12px;
-                position: relative;
-            }}
-            .marker-description span:before {{
-                content: "";
-                display: inline-block;
-                border: 2px solid;
-                width: 8px;
-                height: 8px;
-                border-radius: 50%;
-                position: absolute;
-                left: 0;
-                top: 3px;
-            }}
-            .marker-description span.start:before {{ border-color: #41a6b5; background-color: #41a6b57F; }}
-            .marker-description span.last:before {{ border-color: #9d7cd8; background-color: #9d7cd87F; }}
-            .color-palette {{
-                width: 100%;
-                height: 8px;
-                margin: 8px 0;
-            }}
-            .color-palette td {{
-                font-size: 0px;
-                background-color: currentColor;
-            }}
-            .color-palette div {{
-                position: relative;
-            }}
-            .color-palette td:not(:last-child) div:after {{
-                content: "";
-                position: absolute;
-                height: 0;
-                width: 0;
-                left: 100%;
-                top: -4px;
-                border: 4px solid transparent;
-                border-left: 4px solid currentColor;
-            }}
-            </style>
-            <div class="legend">
-                {html}
-            </div>
-        """)
-    )
+def create_legend(html: str):
+    return folium.Element(f"""
+        <style>
+        .legend {{
+            width: 280px;
+            background: white;
+            border: 1px solid #ddd;
+            padding: 12px 16px;
+            font-size: 16px;
+            box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 10000;
+        }}
+        .marker-description {{
+            text-align: center;
+            margin-top: 4px;
+        }}
+        .marker-description span {{
+            font-size: .85em;
+            font-weight: bold;
+            margin-right: 8px;
+            padding-left: 12px;
+            position: relative;
+        }}
+        .marker-description span:before {{
+            content: "";
+            display: inline-block;
+            border: 2px solid;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            position: absolute;
+            left: 0;
+            top: 3px;
+        }}
+        .marker-description span.start:before {{ border-color: #41a6b5; background-color: #41a6b57F; }}
+        .marker-description span.last:before {{ border-color: #9d7cd8; background-color: #9d7cd87F; }}
+        .color-palette {{
+            width: 100%;
+            height: 8px;
+            margin: 8px 0;
+        }}
+        .color-palette td {{
+            font-size: 0px;
+            background-color: currentColor;
+        }}
+        .color-palette div {{
+            position: relative;
+        }}
+        .color-palette td:not(:last-child) div:after {{
+            content: "";
+            position: absolute;
+            height: 0;
+            width: 0;
+            left: 100%;
+            top: -4px;
+            border: 4px solid transparent;
+            border-left: 4px solid currentColor;
+        }}
+        </style>
+        <div class="legend">
+            {html}
+        </div>
+    """)

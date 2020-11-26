@@ -10,7 +10,7 @@ BASE_URL = "https://www.opencaching.de/okapi/"
 CONSUMER_KEY = "ya8Hd2vV4PLX22h28t4z"
 
 
-def search(latitude: float = 52.518848, longitude: float = 13.399411, count: int = 100, types: str = "-Multi|Quiz|Moving"):
+def search(latitude: float = 52.518848, longitude: float = 13.399411, count: int = 500, types: str = "-Multi|Quiz|Moving", radius: float = 50000):
     """
     Search for geocaches near a point, and return results as str
     """
@@ -18,13 +18,14 @@ def search(latitude: float = 52.518848, longitude: float = 13.399411, count: int
         "search_method": "services/caches/search/nearest",
         "search_params": json.dumps({
             "center": f"{latitude}|{longitude}",
+            "radius": radius/1000,
             "type": types,
             "status": "Available",
             "limit": count
         }),
         "retr_method": "services/caches/geocaches",
         "retr_params": json.dumps({
-            "fields": "location|type"
+            "fields": "location|type|difficulty|terrain"
         }),
         "wrap": "true",
         "consumer_key": CONSUMER_KEY
@@ -60,6 +61,8 @@ def format_result(cache_code: str, item: dict):
     return {
         "code": cache_code,
         "type": item["type"],
+        "difficulty": item["difficulty"],
+        "terrain": item["terrain"],
         "latitude": float(location[0]),
         "longitude": float(location[1])
     }

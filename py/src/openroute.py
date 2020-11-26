@@ -34,13 +34,18 @@ def check_status() -> bool:
     return False
 
 
-api.go_offline()
-local_ready = check_status()
+def auto_switch() -> bool:
+    api.go_offline()
+    local_ready = check_status()
+    print("[{}] localhost".format(' OK ' if local_ready else 'FAIL'))
 
-api.go_online()
-azure_ready = check_status()
+    api.go_online()
+    azure_ready = check_status()
+    print("[{}] azure".format(' OK ' if azure_ready else 'FAIL'))
 
-api.toggle_online(not local_ready)
+    api.toggle_online(not local_ready)
+
+    return local_ready or azure_ready
 
 
 def request_directions(data: dict, format_out: str = '',
@@ -196,11 +201,11 @@ def matrix_builder_dir(data: list, profile: str = 'foot-walking', nocache: bool 
     }, profile, nocache=True)
 
     if 'error' in result:
-        print(result)
-        return None
+        return result
 
     result['durations'] = matrix_helpers.init_matrix(matrix_size)
     result['distances'] = matrix_helpers.init_matrix(matrix_size)
+    result['sources'] = []
 
     steps = []
     for fromIndex in range(matrix_size):
@@ -237,11 +242,12 @@ def _get_directions(fromNode: list, toNode: list) -> (float, float):
         'instructions': False
     })
 
-    if 'error' in directions:
-        print(directions)
-    elif 'routes' in directions and len(directions['routes']) > 0: 
-        duration = directions['routes'][0]['summary']['duration']
-        distance = directions['routes'][0]['summary']['distance']
+    if 'routes' in directions and len(directions['routes']) > 0:
+        try:
+            duration = directions['routes'][0]['summary']['duration']
+            distance = directions['routes'][0]['summary']['distance']
+        except:
+            pass
 
     return (duration, distance)
 

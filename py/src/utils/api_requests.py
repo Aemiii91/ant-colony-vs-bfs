@@ -42,7 +42,8 @@ class ApiRequests:
 
         data = response.text
 
-        save_cache(data, { "url": url }, cancel=nocache)
+        if response.status_code == 200:
+            save_cache(data, { "url": url }, cancel=nocache)
 
         return data
 
@@ -66,7 +67,8 @@ class ApiRequests:
 
         data = response.text
 
-        save_cache(data, payload, cancel=nocache)
+        if response.status_code == 200:
+            save_cache(data, payload, cancel=nocache)
 
         return data
 
@@ -85,7 +87,7 @@ class ApiRequests:
 
     def toggle_online(self, value: bool = None):
         """Toggle online/offline base URLs."""
-        if (not value is None and value) or not self.__is_online:
+        if value or not self.__is_online:
             self.go_online()
         else:
             self.go_offline()
