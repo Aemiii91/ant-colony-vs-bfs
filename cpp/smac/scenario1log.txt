@@ -1,0 +1,26 @@
+/usr/lib/python3.8/site-packages/pyparsing.py:3190: FutureWarning: Possible set intersection at position 3
+  self.re = re.compile(self.reString)
+INFO:smac.smac_cli.SMACCLI:SMAC call: smacc --scenario scenario.txt
+INFO:smac.utils.io.cmd_reader.CMDReader:Output to smac3-output_2020-11-26_11:57:05_794941
+INFO:	Output to smac3-output_2020-11-26_11:57:05_794941
+INFO:	Running initial design for 1 configurations
+INFO:	Running initial design
+INFO:	First run, no incumbent provided; challenger is assumed to be the incumbent
+WARNING:	Target algorithm crashed. Last 5 lines of stdout and stderr
+WARNING:	
+WARNING:	    res = acorunner((x1, x2))
+  File "/home/simon/Documents/repos/P5-Kode/cpp/smac/fmax_aco_optimized_variables.py", line 27, in acorunner
+    cost1, score1 = make_tuple(lines1[-2])
+IndexError: list index out of range
+
+INFO:	##########################################################
+INFO:	Statistics:
+INFO:	#Incumbent changed: -1
+INFO:	#Submitted target algorithm runs: 1 / 5.0
+INFO:	#Finished target algorithm runs: 1 / 5.0
+INFO:	#Configurations: 1
+INFO:	Used wallclock time: 1.05 / inf sec 
+INFO:	Used target algorithm runtime: 1234567890.00 / inf sec
+INFO:	##########################################################
+INFO:	Final Incumbent: None
+ERROR:	First run crashed, abort. Please check your setup -- we assume that your default configuration does not crashes. (To deactivate this exception, use the SMAC scenario option 'abort_on_first_run_crash'). Additional run info: {}
