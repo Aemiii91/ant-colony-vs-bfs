@@ -1,7 +1,9 @@
+import argparse
+import ast
 import json
 
 
-def analyze_path(dataset: str, path: list):
+def analyze_path(dataset: str, path: list) -> list:
     cost_matrix = get_cost_matrix(dataset)
     visited = []
     path_knum = []
@@ -16,7 +18,7 @@ def analyze_path(dataset: str, path: list):
 
         visited.append(fromIndex)
 
-    print(path_knum)
+    return path_knum
 
 
 def get_cost_matrix(dataset: str) -> list:
@@ -44,9 +46,18 @@ def get_node_edges(nodeIndex: int, cost_matrix: list) -> list:
 
 
 def main():
-    path = [77, 75, 76, 78, 79, 70, 64, 58, 57, 59, 56, 52, 49, 48, 50, 54, 62, 63, 67, 72, 55, 47, 43, 51, 69, 45, 37, 32, 22, 21, 14, 13, 17, 30, 31, 41, 40, 46, 44, 39, 33, 34, 27, 18, 29, 26, 42, 53, 71, 65, 80, 84, 94, 91, 102, 107, 114, 118, 110, 105, 90, 95, 97, 108, 103, 86, 88, 87, 92, 93, 83, 81, 77]
+    dataset = 'munchen'
+    path = '[77, 75, 76, 78, 79, 70, 64, 58, 57, 59, 56, 52, 49, 48, 50, 54, 62, 63, 67, 72, 55, 47, 43, 51, 69, 45, 37, 32, 22, 21, 14, 13, 17, 30, 31, 41, 40, 46, 44, 39, 33, 34, 27, 18, 29, 26, 42, 53, 71, 65, 80, 84, 94, 91, 102, 107, 114, 118, 110, 105, 90, 95, 97, 108, 103, 86, 88, 87, 92, 93, 83, 81, 77]'
 
-    analyze_path('munchen', path)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--dataset', default=dataset)
+    parser.add_argument('--path', default=path)
+    args = parser.parse_args()
+
+    path_knum = analyze_path(args.dataset, ast.literal_eval(args.path))
+
+    print(path_knum)
+    print('max(k) =', max(path_knum))
 
 
 if __name__ == "__main__":
