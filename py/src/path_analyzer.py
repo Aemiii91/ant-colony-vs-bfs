@@ -9,14 +9,14 @@ def analyze_path(dataset: str, path: list) -> list:
     path_knum = []
 
     for i in range(len(path)-2):
-        fromIndex = path[i]
-        toIndex = path[i+1]
-        closest = get_closest_nodes_not_visited(fromIndex, cost_matrix, visited)
+        source_node = path[i]
+        destination_node = path[i+1]
+        closest = get_closest_nodes_not_visited(source_node, cost_matrix, visited)
 
-        knum = closest.index(toIndex) + 1
+        knum = closest.index(destination_node) + 1
         path_knum.append(knum)
 
-        visited.append(fromIndex)
+        visited.append(source_node)
 
     return path_knum
 
@@ -28,20 +28,20 @@ def get_cost_matrix(dataset: str) -> list:
     return data['durations'] if 'durations' in data else []
 
 
-def get_closest_nodes_not_visited(nodeIndex: int, cost_matrix: list, visited: list) -> list:
-    closest = get_closest_nodes(nodeIndex, cost_matrix)
+def get_closest_nodes_not_visited(source_node: int, cost_matrix: list, visited: list) -> list:
+    closest = get_closest_nodes(source_node, cost_matrix)
     return list(filter(lambda x: not x in visited, closest))
 
 
-def get_closest_nodes(nodeIndex: int, cost_matrix: list) -> list:
-    closest = get_node_edges(nodeIndex, cost_matrix)
+def get_closest_nodes(source_node: int, cost_matrix: list) -> list:
+    closest = get_node_edges(source_node, cost_matrix)
     closest.sort(key=lambda x: x[1])
     return [x[0] for x in closest]
 
 
-def get_node_edges(nodeIndex: int, cost_matrix: list) -> list:
-    edges = [(index, cost) for (index, cost) in enumerate(cost_matrix[nodeIndex])]
-    del edges[nodeIndex]    
+def get_node_edges(source_node: int, cost_matrix: list) -> list:
+    edges = [(index, cost) for (index, cost) in enumerate(cost_matrix[source_node])]
+    del edges[source_node]    
     return edges
 
 
