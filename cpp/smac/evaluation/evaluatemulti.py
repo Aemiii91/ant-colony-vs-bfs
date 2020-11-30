@@ -28,7 +28,7 @@ class AcoMultEval:
         splitTimes = times.split()
         citysplit = city.split()
         csvRow = splitTimes[1] + "," + paramset[0] + "," + paramset[1] + "," + paramset[2] + "," + citysplit[1] + "," + citysplit[3] + "," + str(points) + "," + str(cost) + "," + "{:.4f}".format(score) + "\n"
-        with open("multiconfres.txt","a") as myFile:
+        with open("multiconfres.csv","a") as myFile:
             myFile.write(csvRow)
 
     def EvaluateAll(self):
@@ -45,7 +45,7 @@ class AcoMultEval:
 
     def PrintCSVHeader(self):
         header = "Time,Alpha,Beta,Ants,City,StartingPoint,Points,TimeSpent,Score\n"
-        with open("multiconfres.txt","a") as output:
+        with open("multiconfres.csv","a") as output:
             output.write(header)
 
 
