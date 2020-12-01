@@ -1,0 +1,40 @@
+Executing Berlin time = 1 stating point= --start 99
+409 ants, 500000 iterations [ alpha=19.1147, beta=14.5498, evaporation=0.04, pheromone=100, start=99, cost=30000, time limit=1 sec ]
+1.011s
+( 29614, 50 )
+[99, 109, 121, 141, 150, 139, 118, 113, 107, 100, 123, 129, 131, 127, 133, 142, 138, 108, 97, 92, 94, 85, 81, 78, 75, 77, 64, 62, 61, 58, 60, 47, 38, 36, 32, 24, 25, 21, 23, 29, 27, 20, 13, 10, 14, 15, 19, 16, 18, 28, 99]
+Executing Berlin time = 10 stating point= --start 99
+409 ants, 500000 iterations [ alpha=2.904, beta=7.3131, evaporation=0.04, pheromone=100, start=99, cost=30000, time limit=10 sec ]
+10.020s
+( 29893, 50 )
+[99, 109, 121, 141, 150, 139, 118, 113, 107, 100, 94, 81, 85, 78, 75, 62, 64, 61, 58, 60, 54, 46, 32, 24, 25, 23, 21, 29, 27, 20, 13, 10, 14, 15, 19, 16, 18, 28, 17, 5, 2, 1, 0, 3, 7, 8, 12, 11, 22, 41, 99]
+Executing Berlin time = 30 stating point= --start 99
+409 ants, 500000 iterations [ alpha=3.811, beta=6.3181, evaporation=0.04, pheromone=100, start=99, cost=30000, time limit=30 sec ]
+30.013s
+( 29531, 50 )
+[99, 70, 57, 51, 53, 33, 31, 43, 42, 34, 26, 20, 27, 29, 21, 23, 24, 25, 32, 37, 35, 40, 48, 63, 59, 54, 46, 47, 38, 36, 13, 10, 14, 15, 19, 16, 18, 28, 17, 5, 2, 1, 0, 3, 7, 8, 12, 11, 22, 41, 99]
+Executing Berlin time = 60 stating point= --start 99
+409 ants, 500000 iterations [ alpha=1.7969, beta=3.3543, evaporation=0.04, pheromone=100, start=99, cost=30000, time limit=60 sec ]
+60.016s
+( 29881, 51 )
+[99, 70, 57, 51, 53, 43, 42, 34, 26, 20, 27, 29, 23, 21, 24, 25, 32, 35, 37, 46, 47, 38, 36, 13, 10, 19, 15, 14, 16, 18, 31, 33, 28, 17, 5, 2, 1, 0, 4, 9, 6, 3, 7, 8, 12, 11, 22, 41, 65, 80, 104, 99]
+Executing Berlin time = 1 stating point= --start 99
+50 ants, 500000 iterations [ alpha=8.3969, beta=9.4168, evaporation=0.04, pheromone=100, start=99, cost=30000, time limit=1 sec ]
+1.002s
+( 28426, 48 )
+[99, 70, 57, 51, 53, 43, 42, 34, 26, 20, 27, 29, 23, 21, 24, 25, 32, 35, 37, 46, 47, 38, 36, 13, 10, 15, 14, 16, 18, 19, 31, 33, 28, 17, 5, 2, 1, 0, 3, 7, 8, 12, 11, 22, 41, 65, 80, 104, 99]
+Executing Berlin time = 10 stating point= --start 99
+50 ants, 500000 iterations [ alpha=0.6138, beta=3.4614, evaporation=0.04, pheromone=100, start=99, cost=30000, time limit=10 sec ]
+10.003s
+( 29704, 50 )
+[99, 70, 57, 51, 53, 43, 42, 34, 26, 20, 27, 29, 23, 21, 24, 25, 32, 35, 40, 37, 46, 47, 38, 36, 13, 10, 19, 15, 14, 16, 18, 31, 33, 28, 17, 5, 2, 1, 0, 3, 7, 8, 12, 4, 6, 9, 30, 11, 22, 41, 99]
+Executing Berlin time = 30 stating point= --start 99
+50 ants, 500000 iterations [ alpha=0.6775, beta=4.6347, evaporation=0.04, pheromone=100, start=99, cost=30000, time limit=30 sec ]
+30.004s
+( 29931, 51 )
+[99, 70, 57, 51, 53, 43, 42, 34, 26, 20, 27, 29, 36, 38, 47, 46, 37, 35, 40, 25, 24, 32, 23, 21, 13, 10, 15, 14, 16, 18, 19, 31, 33, 28, 17, 5, 2, 1, 0, 4, 9, 6, 3, 7, 8, 12, 11, 22, 41, 65, 80, 99]
+Executing Berlin time = 60 stating point= --start 99
+50 ants, 500000 iterations [ alpha=0.4627, beta=9.1549, evaporation=0.04, pheromone=100, start=99, cost=30000, time limit=60 sec ]
+60.006s
+( 29574, 52 )
+[99, 109, 121, 141, 150, 139, 118, 113, 107, 100, 94, 85, 81, 78, 75, 64, 62, 61, 58, 60, 47, 38, 36, 32, 24, 25, 21, 23, 20, 27, 29, 26, 13, 10, 14, 15, 19, 16, 18, 28, 17, 5, 2, 1, 0, 3, 7, 8, 12, 11, 22, 41, 99]
