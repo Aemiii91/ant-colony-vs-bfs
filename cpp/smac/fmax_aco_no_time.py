@@ -15,9 +15,9 @@ def acorunner(x):
     #print(x)
     staticConstraint = 30000
     upperScore = 500
-    staticparams1 = 'aco --data "munchen.json" --colonies 1 --iterations 500000000 --time 30 --ants 409 '
-    staticparams2 = 'aco --data "berlin.json" --colonies 1 --iterations 500000000 --time 30 --ants 409 '
-    staticparams3 = 'aco --data "hamburg.json" --colonies 1 --iterations 500000000 --time 30 --ants 409 '
+    staticparams1 = 'aco --data "munchen.json" --colonies 1 --iterations 500000000 --time 60 --ants 409 '
+    staticparams2 = 'aco --data "berlin.json" --colonies 1 --iterations 500000000 --time 60 --ants 409 '
+    staticparams3 = 'aco --data "hamburg.json" --colonies 1 --iterations 500000000 --time 60 --ants 409 '
     dynamicAlpha = ' --alpha ' + str(x[0])
     dynamicBeta = ' --beta ' + str(x[1])
     dynamicParams = dynamicAlpha + dynamicBeta 

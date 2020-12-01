@@ -7,15 +7,15 @@ import re
 class AcoMultEval:
     cmd = "./routeplanner "
     paramlist = []
-    paramlist.append(" --alpha 10.446 --beta 11.112 ") #t1 
-    paramlist.append(" --alpha 4.4733 --beta 7.1462 ") #t10
-    paramlist.append(" --alpha 0.345 --beta 8.7237 ") #t30
-    paramlist.append(" --alpha 0.3257 --beta 9.6128 ") #t60
-    paramlist.append(" --ants 409 --alpha 10.7714 --beta 10.8111 ") #t1
-    paramlist.append(" --ants 409 --alpha 1.4475 --beta 7.4313 ") #t10
-    paramlist.append(" --ants 409 --alpha 5.3434 --beta 8.5993 ") #t30
-    paramlist.append(" --ants 409 --alpha 1.2404 --beta 7.7788 ") #t60
-    citylist = [' --data "berlin.json" --start 98',' --data "hamburg.json" --start 65',' --data "munchen.json" --start 12']
+    paramlist.append(" --alpha 3.7332 --beta 18.1784 ") #t1 
+    paramlist.append(" --alpha 5.4488 --beta 28.0673 ") #t10
+    paramlist.append(" --alpha 11.1573 --beta 16.1648 ") #t30
+    paramlist.append(" --alpha 9.8187 --beta 20.7056 ") #t60
+    paramlist.append(" --ants 409 --alpha 19.8319 --beta 16.7198 ") #t1
+    paramlist.append(" --ants 409 --alpha 8.1972 --beta 8.409 ") #t10
+    paramlist.append(" --ants 409 --alpha 0.3462 --beta 7.0424 ") #t30
+    paramlist.append(" --ants 409 --alpha 18.7078 --beta 11.3746 ") #t60
+    citylist = ['--data "munchen.json" --start 12']
     cmd = "./routeplanner aco --iterations 500000 "
     times = [" --time 1"," --time 10"," --time 30"," --time 60"]
 
@@ -28,7 +28,7 @@ class AcoMultEval:
         splitTimes = times.split()
         citysplit = city.split()
         csvRow = splitTimes[1] + "," + paramset[0] + "," + paramset[1] + "," + paramset[2] + "," + citysplit[1] + "," + citysplit[3] + "," + str(points) + "," + str(cost) + "," + "{:.4f}".format(score) + "\n"
-        with open("multiconfres.csv","a") as myFile:
+        with open("redomunchen.csv","a") as myFile:
             myFile.write(csvRow)
 
     def EvaluateAll(self):
@@ -45,7 +45,7 @@ class AcoMultEval:
 
     def PrintCSVHeader(self):
         header = "Time,Alpha,Beta,Ants,City,StartingPoint,Points,TimeSpent,Score\n"
-        with open("multiconfres.csv","a") as output:
+        with open("redomunchen.csv","a") as output:
             output.write(header)
 
 
