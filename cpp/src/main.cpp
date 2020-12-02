@@ -25,7 +25,11 @@ int main(int argc, char **argv) {
 	int start = std::stoi(argv[4]);
 	DFSBranchLimitAlgorithm wow(30000,graph,time,start);
 	vector<Node> reswow = wow.FourthDraft(k);
-	wow.PathPrinter();
-	std::cout << "kekw" << std::endl;
+	vector<int> result;
+	for(auto &iterator : reswow) {
+		result.push_back(iterator.ID);
+	}
+	aco::Solution solution(wow._pathCost,result);
+	std::cout << solution;
 	return 0;
 }

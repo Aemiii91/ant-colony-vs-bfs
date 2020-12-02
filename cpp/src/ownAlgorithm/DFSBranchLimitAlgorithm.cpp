@@ -105,8 +105,9 @@ vector<Node> DFSBranchLimitAlgorithm::FourthDraft(int branchLimit) {
 						  bestTime.back());
 	bestPath.emplace_back(root);
 	this->_path = bestPath;
-	cout << "DFSL Path cost: " << bestTime.back() << endl;
-	cout << "Best route found at iteration: " << bestCount << endl;
+	//cout << "DFSL Path cost: " << bestTime.back() << endl;
+	//cout << "Best route found at iteration: " << bestCount << endl;
+	this->_pathCost = bestTime.back();
 	return this->_path;
 }
 
@@ -167,3 +168,4 @@ Node DFSBranchLimitAlgorithm::_getNodeFromGraph(int id) {
 	}
 	return this->_graph.nodelist[index-1];
 }
+
