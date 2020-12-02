@@ -15,10 +15,11 @@ def acorunner(x):
     #print(x)
     staticConstraint = 30000
     upperScore = 500
-    staticparams1 = 'aco --data "berlin.json" --colonies 1 --iterations 50000000 --time 30 '
-    dynamicAlpha = ' --alpha ' + str(x[0])
-    dynamicBeta = ' --beta ' + str(x[1])
-    dynamicParams = dynamicAlpha + dynamicBeta 
+    staticparams1 = 'aco --data "berlin.json" --colonies 1 - --iterations 500000 -time 10 '
+    dynamicAlpha = ' --alpha 1.204 ' 
+    dynamicBeta = ' --beta 7.204 '
+    dynamicAnts = ' --ants ' + str(x)
+    dynamicParams = dynamicAlpha + dynamicBeta + dynamicAnts
     cmd = "./routeplanner "
 
     stdoutdata1 = subprocess.getoutput(cmd + staticparams1 + dynamicParams)

@@ -15,9 +15,10 @@ def acorunner(x):
     dynamictime = " --time 10"
     staticparams1 = ' aco --data "munchen.json" --iterations 500000'
     dynamicAnts = ' --ants ' + str(x[0])
-    dynamicParams = alphabeta + dynamictime + dynamicAnts
-    cmd = "./routeplanner "
-    stdoutdata = subprocess.getoutput(cmd + staticparams1 + dynamicParams + " --time 10")
+    dynamicParams = dynamicAnts + dynamictime + alphabeta
+    cmd = './routeplanner aco --data "munchen.json" --iterations 500000'
+    stdoutdata = subprocess.getoutput(cmd + dynamicParams)
+    print(cmd + dynamicParams)
     stdoutio = io.StringIO(stdoutdata)
     lines = stdoutio.readlines()
     cost, score = make_tuple(lines[-2])
