@@ -1,5 +1,5 @@
 algo = python antcountwrapper.py
-paramfile = antcount.pcs
+paramfile = param_config_space.pcs
 deterministic = 0
 runcount_limit = 250
 run_obj = quality

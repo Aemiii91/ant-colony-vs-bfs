@@ -5,6 +5,7 @@ double BaseAlgorithm::TravelTime(Node *n1, Node *n2) {
 	for (auto edge : n1->edgeList) {
 		if (edge.dist == n2->ID) {
 			cost = edge.weight;
+			break;
 		}
 	}
 	return cost;
@@ -46,6 +47,7 @@ Node BaseAlgorithm::GetNodeFromID(int nodeID) {
 	for (auto node : this->_graph.nodelist) {
 		if (node.ID == nodeID) {
 			res = node;
+			break;
 		}
 	}
 	return res;

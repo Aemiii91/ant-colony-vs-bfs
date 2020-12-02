@@ -2,3 +2,4 @@ alpha integer [1,25] [1]
 beta integer [1,25] [20] 
 evaporation real [0.0055,1] [0.04]
 f_antcount integer [50,250] [50]
+

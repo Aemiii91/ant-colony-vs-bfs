@@ -23,7 +23,6 @@ void AntColony::run(Graph *graph, utils::ArgumentParser *args) {
 
 	if (!smacMode)
 		_printParameters(colonyCount, params);
-	// print all parameters
 
 	// spawn the colony
 	Colony colony(graph, params);
@@ -113,6 +112,7 @@ void AntColony::_printParameters(int colonyCount, Parameters params) {
 		std::cout << ", cost=" << params.costConstraint;
 	}
 	std::cout << ", time limit=" << params.timeAvailable << " sec";
+
 	std::cout << " ]" << termcolor::reset << std::endl;
 }
 
