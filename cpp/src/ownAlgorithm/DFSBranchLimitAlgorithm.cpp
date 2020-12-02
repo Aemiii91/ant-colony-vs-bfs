@@ -10,6 +10,7 @@ vector<Node> DFSBranchLimitAlgorithm::FourthDraft(int branchLimit) {
 	int iteratorCount = 0;
 	int bestCount;
 	double timeSpent = 0;
+	double timeRan = 0;
 
 	// Prerequisite variable assignment
 	Node root = this->_graph.nodelist.front();
@@ -25,7 +26,7 @@ vector<Node> DFSBranchLimitAlgorithm::FourthDraft(int branchLimit) {
 	currentTime.emplace_back(0);
 
 	while (travel) {
-
+		auto start = Clock::now();
 		while (TravelTime(&currentNode, &nextNode) +
 					   TravelTime(&nextNode, &root) + timeSpent <=
 				   this->_timeInterval &&
@@ -59,8 +60,8 @@ vector<Node> DFSBranchLimitAlgorithm::FourthDraft(int branchLimit) {
 			if (currentPath.size() > bestPath.size()) {
 				bestPath = currentPath;
 				bestTime = currentTime;
-				cout << "Better path found at iteration: " << iteratorCount
-					 << endl;
+				//cout << "Better path found at iteration: " << iteratorCount
+				//	 << endl;
 				bestCount = iteratorCount;
 			}
 		}
@@ -84,15 +85,21 @@ vector<Node> DFSBranchLimitAlgorithm::FourthDraft(int branchLimit) {
 		if (currentNode.ID == root.ID && currentNode.childrensChecked == true) {
 			travel = false;
 		}
-		if (iteratorCount == 20000) {
+//		if (iteratorCount == 20000) {
+//			travel = false;
+//		}
+//		if (travel == false) {
+//			break;
+//		}
+		auto stop = Clock::now();
+		timeRan += chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count();
+		if(!this->_canRunInTime(timeRan)) {
 			travel = false;
-		}
-		if (travel == false) {
 			break;
 		}
 		iteratorCount++;
-		cout << "Count: " << iteratorCount << "  BestCount:" << bestCount
-			 << endl;
+		//cout << "Count: " << iteratorCount << "  BestCount:" << bestCount
+		//	 << endl;
 	}
 	bestTime.emplace_back(TravelTime(&bestPath.front(), &bestPath.back()) +
 						  bestTime.back());
@@ -134,4 +141,18 @@ bool DFSBranchLimitAlgorithm::IsInPath(std::vector<Node> currentPath,
 		}
 	}
 	return false;
+}
+
+bool DFSBranchLimitAlgorithm::_canRunInTime(double timeSpent) {
+	std::chrono::seconds s (this->_timeAvailable);
+	std::chrono::nanoseconds timeAvailableNS = std::chrono::duration_cast<std::chrono::nanoseconds> (s);
+	if (this->_timeAvailable == 0) return true;
+
+	else if (timeSpent >= timeAvailableNS.count()) {
+		return false;
+	}
+
+	else
+		return true;
+
 }
