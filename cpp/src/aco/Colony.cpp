@@ -1,6 +1,7 @@
 #include "Colony.hpp"
 bool acorunnerbool;
 double timeSpent;
+
 using namespace aco;
 
 Solution Colony::Solve(int colonyCount) {
@@ -38,7 +39,6 @@ Solution Colony::Solve(int colonyCount) {
 			break;
 		}
 	}
-
 	return _exportSolution(_bestInColony);
 }
 

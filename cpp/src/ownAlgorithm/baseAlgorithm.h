@@ -1,5 +1,6 @@
 #pragma once
 #include "../graph/graph.h"
+#include <bits/stdc++.h>
 #include <climits>
 #include <exception>
 #include <iostream>

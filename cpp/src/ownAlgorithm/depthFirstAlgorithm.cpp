@@ -15,12 +15,14 @@ vector<Node> DFSAlgorithm::SecondDraft() {
 
 	bool travel = true;
 	int iteratorCount = 0;
+	int bestCount;
 	double timeSpent = 0;
 	while (travel) {
 		while (TravelTime(&currentNode, &nextNode) +
 					   TravelTime(&nextNode, &root) + timeSpent <=
 				   this->_timeInterval &&
-			   currentNode.GetEdgeListSize() > 1) {
+			   currentNode.GetEdgeListSize() > 1 &&
+			   currentNode.childrensChecked == false) {
 			currentTime.emplace_back(TravelTime(&currentNode, &nextNode) +
 									 timeSpent);
 			timeSpent = currentTime.back();
@@ -32,6 +34,8 @@ vector<Node> DFSAlgorithm::SecondDraft() {
 		if (currentPath.size() > bestPath.size()) {
 			bestPath = currentPath;
 			bestTime = currentTime;
+			cout << "Better path found at iteration: " << iteratorCount << endl;
+			bestCount = iteratorCount;
 		}
 
 		currentPath.pop_back();
@@ -50,7 +54,7 @@ vector<Node> DFSAlgorithm::SecondDraft() {
 			currentTime.pop_back();
 			timeSpent = currentTime.back();
 		}
-		if (iteratorCount == 100) {
+		if (iteratorCount == 500) {
 			travel = false;
 		}
 
@@ -82,13 +86,14 @@ vector<Node> DFSAlgorithm::SecondDraft() {
 			currentPath.emplace_back(currentNode);
 		}
 		iteratorCount++;
-		cout << iteratorCount << endl;
+		cout << "Count: " << iteratorCount << endl;
 	}
 	bestTime.emplace_back(TravelTime(&bestPath.front(), &bestPath.back()) +
 						  bestTime.back());
 	bestPath.emplace_back(root);
 	this->_path = bestPath;
 	cout << "DFS Path cost: " << bestTime.back() << endl;
+	cout << "Best route found at iteration: " << bestCount << endl;
 	return this->_path;
 }
 
@@ -99,17 +104,23 @@ Node DFSAlgorithm::GetSecondBestNode(std::vector<Node> currentPath,
 	Edge lowestEdge;
 	Edge secondLowestEdge;
 	Node res;
+	vector<Edge> sortedPath = currentNode->edgeList;
+	sort(sortedPath.begin(), sortedPath.end(),
+		 [](const Edge &e1, const Edge &e2) -> bool {
+			 return e1.weight < e2.weight;
+		 });
 
-	for (auto edge : currentNode->edgeList) {
-		if (edge.weight < lowestCost && !IsInPath(currentPath, edge.dist)) {
-			secondLowestCost = lowestCost;
-			secondLowestEdge = lowestEdge;
-			lowestCost = edge.weight;
+	for (Edge edge : sortedPath) {
+		if (!IsInPath(currentPath, edge.dist)) {
 			lowestEdge = edge;
-		} else if (edge.weight < secondLowestCost &&
-				   !IsInPath(currentPath, edge.dist)) {
-			secondLowestCost = edge.weight;
+			break;
+		}
+	}
+	for (Edge edge : sortedPath) {
+		if (!IsInPath(currentPath, edge.dist) &&
+			edge.weight > lowestEdge.weight) {
 			secondLowestEdge = edge;
+			break;
 		}
 	}
 	res = GetNodeFromID(secondLowestEdge.dist);
@@ -126,13 +137,18 @@ bool DFSAlgorithm::IsInPath(std::vector<Node> currentPath, int nextNode) {
 }
 
 Node DFSAlgorithm::GetClosestNode(vector<Node> currentPath, Node currentNode) {
-	double lowestCost = LONG_MAX;
+	double lowestCost;
 	Node res;
 	Edge lowestEdge;
-	for (Edge edge : currentNode.edgeList) {
-		if (edge.weight < lowestCost && !IsInPath(currentPath, edge.dist)) {
-			lowestCost = edge.weight;
+	vector<Edge> sortedPath = currentNode.edgeList;
+	sort(sortedPath.begin(), sortedPath.end(),
+		 [](const Edge &e1, const Edge &e2) -> bool {
+			 return e1.weight < e2.weight;
+		 });
+	for (Edge edge : sortedPath) {
+		if (!IsInPath(currentPath, edge.dist)) {
 			lowestEdge = edge;
+			break;
 		}
 	}
 	res = GetNodeFromID(lowestEdge.dist);
