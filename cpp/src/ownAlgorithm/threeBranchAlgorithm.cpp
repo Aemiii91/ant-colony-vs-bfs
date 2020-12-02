@@ -142,7 +142,7 @@ vector<Node> ThreeBranchAlgorithm::ThirdDraft() {
 		if (currentNode.ID == root.ID && currentNode.childrensChecked == true) {
 			travel = false;
 		}
-		if (iteratorCount == 1500) {
+		if (iteratorCount == 500) {
 			travel = false;
 		}
 		if (!travel) {

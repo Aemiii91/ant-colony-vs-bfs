@@ -17,6 +17,7 @@ class Node {
 	bool secondReached = false;
 	bool childrensChecked = false; // used to identify a fully checked node in
 								   // second draft algorithm.
+	vector<Node> childrenNodes;
 
 	void AddEdge(Edge e); // Add an edge to edgeList ( TODO Maybe initialize
 						  // Edge in the function for better error handling )

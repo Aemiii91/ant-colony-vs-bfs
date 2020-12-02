@@ -5,6 +5,7 @@
 // include
 #include <termcolor/termcolor.hpp>
 // submodules
+#include "ownAlgorithm/DFSBranchLimitAlgorithm.h"
 #include "ownAlgorithm/baseAlgorithm.h"
 #include "ownAlgorithm/threeBranchAlgorithm.h"
 #include <aco/AntColony.hpp>
@@ -27,6 +28,9 @@ int main(int argc, char **argv) {
 
 	ThreeBranchAlgorithm Three(interval, graph);
 	vector<Node> resThree = Three.ThirdDraft();
+
+	DFSBranchLimitAlgorithm Four(interval, graph);
+	vector<Node> resFour = Four.FourthDraft(3);
 	cout << endl;
 	cout << endl;
 
@@ -44,6 +48,10 @@ int main(int argc, char **argv) {
 
 	cout << "ThreeBranchAlgorithm: RESULTS" << endl;
 	Three.PathPrinter();
+	cout << endl;
+
+	cout << "DFSBranchLimitAlgorithm: RESULTS" << endl;
+	Four.PathPrinter();
 	cout << endl;
 
 	utils::ArgumentParser args(argc, argv);

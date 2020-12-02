@@ -54,7 +54,7 @@ vector<Node> DFSAlgorithm::SecondDraft() {
 			currentTime.pop_back();
 			timeSpent = currentTime.back();
 		}
-		if (iteratorCount == 1500) {
+		if (iteratorCount == 500) {
 			travel = false;
 		}
 

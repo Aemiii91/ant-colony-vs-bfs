@@ -87,4 +87,5 @@ TEST_F(ThreeBranchAlgorithmTest, SmallPathUnlimitedTime) {
 	} else {
 		identical = false;
 	}
+	ASSERT_TRUE(identical);
 }
