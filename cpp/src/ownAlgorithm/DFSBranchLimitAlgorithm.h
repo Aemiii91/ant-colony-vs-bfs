@@ -6,10 +6,11 @@ class DFSBranchLimitAlgorithm : public BaseAlgorithm {
   public:
 	vector<Node> FourthDraft(int branchLimit);
 
-	DFSBranchLimitAlgorithm(double timeInterval, Graph graph, int timeAvailable) {
+	DFSBranchLimitAlgorithm(double timeInterval, Graph graph, int timeAvailable, int startingPoint) {
 		this->_timeInterval = timeInterval;
 		this->_graph = graph;
 		this->_timeAvailable = timeAvailable;
+		this->_startingPoint = startingPoint;
 	}
 	DFSBranchLimitAlgorithm(double timeInterval, Graph graph) {
 		this->_timeInterval = timeInterval;
@@ -26,4 +27,6 @@ class DFSBranchLimitAlgorithm : public BaseAlgorithm {
 	// 	bool IsInPath(std::vector<Node> currentPath, int nextNode);
 	int _timeAvailable;
 	bool _canRunInTime(double timeSpent);
+	int _startingPoint;
+	Node _getNodeFromGraph(int id);
 };

@@ -22,7 +22,8 @@ int main(int argc, char **argv) {
 	Graph graph = parser.ParseData(argv[1]);
 	int k = std::stoi(argv[2]);
 	int time = std::stoi(argv[3]);
-	DFSBranchLimitAlgorithm wow(30000,graph,time);
+	int start = std::stoi(argv[4]);
+	DFSBranchLimitAlgorithm wow(30000,graph,time,start);
 	vector<Node> reswow = wow.FourthDraft(k);
 	wow.PathPrinter();
 	std::cout << "kekw" << std::endl;

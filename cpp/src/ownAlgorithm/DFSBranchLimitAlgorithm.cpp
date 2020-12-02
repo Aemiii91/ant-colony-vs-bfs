@@ -13,7 +13,7 @@ vector<Node> DFSBranchLimitAlgorithm::FourthDraft(int branchLimit) {
 	double timeRan = 0;
 
 	// Prerequisite variable assignment
-	Node root = this->_graph.nodelist.front();
+	Node root = this->_getNodeFromGraph(this->_startingPoint);
 	Node currentNode = root;
 	currentPath.emplace_back(root);
 
@@ -155,4 +155,15 @@ bool DFSBranchLimitAlgorithm::_canRunInTime(double timeSpent) {
 	else
 		return true;
 
+}
+
+Node DFSBranchLimitAlgorithm::_getNodeFromGraph(int id) {
+	int index = 0;
+	for (auto &iterator : this->_graph.nodelist) {
+		index++;
+		if(iterator.ID == id) {
+			break;
+		}
+	}
+	return this->_graph.nodelist[index-1];
 }
