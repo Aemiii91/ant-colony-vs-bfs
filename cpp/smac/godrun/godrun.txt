@@ -1,0 +1,5 @@
+algo = python godrunwrapper.py
+paramfile = godparams.pcs
+run_count = 570
+run_obj = quality
+deterministic = 0

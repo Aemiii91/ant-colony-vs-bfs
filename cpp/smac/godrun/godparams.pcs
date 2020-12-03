@@ -1,0 +1,4 @@
+alpha integer [0,100] [1]
+beta integer [0,100] [1]
+evaporation real [0,1] [0.04]
+f_antcount integer [1,1000] [50]
