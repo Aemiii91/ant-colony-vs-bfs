@@ -8,7 +8,7 @@ class StrongWrapper:
     processAlive = True
     staticConstraint = 30000
     wallClockLimit = 3.0
-    lowerboundScore = 51.0
+    lowerboundScore = 30
     bestScore = 0.0
     cmd = ""
     def __init__(self,cmd,x,wallClockLimit):
@@ -33,6 +33,7 @@ class StrongWrapper:
             retcode = proc.poll()
             t.start()
             line = proc.stdout.readline()
+            print(line)
             time.sleep(0.05)
             t.cancel()
             if self.processAlive:
