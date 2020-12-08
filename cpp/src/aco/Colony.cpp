@@ -19,22 +19,24 @@ Solution Colony::Solve(int colonyCount) {
 			auto progressHandler = [this](int n, int total) {
 				_progressTick();
 			};
-			
+
 			// clone the amount of colonies needed, and solve each of them
 			for (int colonyID = 0; colonyID < colonyCount; colonyID++) {
-				if(acorunnerbool) {	
-				Colony clone(*this);
-				clone.progressHandler = progressHandler;
-				clone.solutionHandler = [this, &clone, colonyID](
-											double, int, int iteration, int) {
-					_assessSolution(clone._bestInColony, iteration, colonyID);
-				};
-				clone._solve();
-				if (!acorunnerbool) {
-					run = false;
-					break;
+				if (acorunnerbool) {
+					Colony clone(*this);
+					clone.progressHandler = progressHandler;
+					clone.solutionHandler = [this, &clone,
+											 colonyID](double, int,
+													   int iteration, int) {
+						_assessSolution(clone._bestInColony, iteration,
+										colonyID);
+					};
+					clone._solve();
+					if (!acorunnerbool) {
+						run = false;
+						break;
+					}
 				}
-			}
 			}
 			break;
 		}
@@ -43,9 +45,11 @@ Solution Colony::Solve(int colonyCount) {
 }
 
 bool Colony::_canRunInTime() {
-	std::chrono::seconds s (this->_params.timeAvailable);
-	std::chrono::nanoseconds timeAvailableNS = std::chrono::duration_cast<std::chrono::nanoseconds> (s);
-	if (this->_params.timeAvailable == 0) return true;
+	std::chrono::seconds s(this->_params.timeAvailable);
+	std::chrono::nanoseconds timeAvailableNS =
+		std::chrono::duration_cast<std::chrono::nanoseconds>(s);
+	if (this->_params.timeAvailable == 0)
+		return true;
 
 	else if (timeSpent >= timeAvailableNS.count()) {
 		acorunnerbool = false;
@@ -62,25 +66,26 @@ void Colony::_solve() {
 	_initAnts(&ants);
 	// set total progress (number of cycles)
 	_progressTotal = _params.iterations * _params.antCount;
-	
 
 	for (int iteration = 0; iteration < _params.iterations; iteration++) {
-		if(acorunnerbool) {
-		auto start = Clock::now();
-		_runAnts(&ants);
+		if (acorunnerbool) {
+			auto start = Clock::now();
+			_runAnts(&ants);
 
-		_matrixData.EvaporatePheromone();
+			_matrixData.EvaporatePheromone();
 
-		for (Solution bestInIteration : _pickBestAnts(&ants)) {
-			_depositPheromone(bestInIteration);
-			_assessSolution(bestInIteration, iteration);
+			for (Solution bestInIteration : _pickBestAnts(&ants)) {
+				_depositPheromone(bestInIteration);
+				_assessSolution(bestInIteration, iteration);
+			}
+
+			_resetAnts(&ants);
+			auto stop = Clock::now();
+			timeSpent +=
+				chrono::duration_cast<std::chrono::nanoseconds>(stop - start)
+					.count();
+			this->_canRunInTime();
 		}
-
-		_resetAnts(&ants);
-		auto stop = Clock::now();
-		timeSpent += chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count();
-		this->_canRunInTime();
-	}
 	}
 }
 

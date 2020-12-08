@@ -20,9 +20,10 @@ void AntColony::run(Graph *graph, utils::ArgumentParser *args) {
 	params.returnHome = !args->Exists("--noreturn");
 	params.threading = !args->Exists("--nothreading");
 	bool showProgress = args->Exists("--progress");
+	bool showProgress2 = args->Exists(("--progress2"));
 
-	if (!smacMode)
-		_printParameters(colonyCount, params);
+	//if (!smacMode && !showProgress2)
+	//	_printParameters(colonyCount, params);
 
 	// spawn the colony
 	Colony colony(graph, params);
@@ -60,6 +61,13 @@ void AntColony::run(Graph *graph, utils::ArgumentParser *args) {
 			_progressBarTick(&bar, n, total, currentStatus);
 		};
 	}
+	if (showProgress2) {
+        colony.solutionHandler = [&currentStatus,
+            &params](double cost, int score,
+                     int iteration, int colonyID) {
+			std::cout << std::floor(cost) << ", " << score << std::endl;
+		};
+	}
 
 	// start timer
 	auto start = std::chrono::high_resolution_clock::now();
@@ -77,6 +85,10 @@ void AntColony::run(Graph *graph, utils::ArgumentParser *args) {
 
 	if (smacMode) {
 		std::cout << bestSolution.score;
+	}
+
+	if (showProgress2) {
+		std::cout << std::floor(bestSolution.cost) << ", " << bestSolution.score << std::endl;
 	}
 	// calculate and print runtime
 	else {
