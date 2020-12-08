@@ -7,17 +7,25 @@ import time
 class StrongWrapper:
     processAlive = True
     staticConstraint = 30000
-    wallClockLimit = 3.0
-    lowerboundScore = 53.0
+    wallClockLimit = 30.0
+    lowerboundScore = 51.0
     bestScore = 0.0
+    cmd = ""
+    def __init__(self,cmd,x):
+        self.commandBuilder(cmd,x)
 
     def kill(self, pid):
         os.killpg(os.getpgid(pid), signal.SIGTERM)
         self.processAlive = False
         print("Terminated due to runclock limitations")
 
-    def run(self, cmd, x):
-        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, bufsize=1
+    def commandBuilder(self,cmd,x):
+        self.cmd = cmd + " --alpha " + str(x[0]) + " --beta " + str(x[1]) + " --evaporation " + str(x[2]) + " --ants " + str(x[3])
+        print(self.cmd)
+
+    def run(self):
+        currentScore = 0
+        proc = subprocess.Popen(self.cmd, stdout=subprocess.PIPE, shell=True, bufsize=1
                                 , universal_newlines=True, preexec_fn=os.setsid)
         while True:
             t = threading.Timer(self.wallClockLimit, self.kill, [proc.pid])
@@ -28,20 +36,25 @@ class StrongWrapper:
             t.cancel()
             if self.processAlive:
                 currentScore = self.getScore(line)
+                self.bestScore = currentScore
                 if (currentScore <= self.lowerboundScore):
                     self.kill(proc.pid)
-                    print("killed process early")
+                    print("killed process early due to lowerbound")
                     break
             else:
                 break
             if retcode is not None:
+                print("finished naturally")
                 break
         self.bestScore = currentScore
 
     def getScore(self,line):
-        combine = line.split(",")
-        cost = float(combine[0])
-        score = float(combine[1])
-        return score + (1 - cost / self.staticConstraint)
+        if(len(line) > 1):
+            combine = line.split(",")
+            cost = float(combine[0])
+            score = float(combine[1])
+            return score + (1 - cost / self.staticConstraint)
+        else:
+            return self.bestScore
 
 
