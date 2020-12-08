@@ -7,11 +7,12 @@ import time
 class StrongWrapper:
     processAlive = True
     staticConstraint = 30000
-    wallClockLimit = 30.0
+    wallClockLimit = 3.0
     lowerboundScore = 51.0
     bestScore = 0.0
     cmd = ""
-    def __init__(self,cmd,x):
+    def __init__(self,cmd,x,wallClockLimit):
+        self.wallClockLimit = wallClockLimit
         self.commandBuilder(cmd,x)
 
     def kill(self, pid):
