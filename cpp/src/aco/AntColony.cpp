@@ -2,31 +2,47 @@
 
 using namespace aco;
 
-void AntColony::run(Graph *graph, utils::ArgumentParser *args) {
-	int colonyCount = 1;
-	Parameters params;
-	args->Get("--colonies", &colonyCount);
-	args->Get("--alpha", &params.alpha);
-	args->Get("--beta", &params.beta);
-	args->Get("--evaporation", &params.evaporation);
-	args->Get("--pheromone", &params.pheromoneConstant);
-	args->Get("--cost", &params.costConstraint);
-	args->Get("--start", &params.startVertex);
-	args->Get("--ants", &params.antCount);
-	args->Get("--iterations", &params.iterations);
-	args->Get("--best_ants", &params.bestAntLimit);
-	params.returnHome = !args->Exists("--noreturn");
-	params.threading = !args->Exists("--nothreading");
-	bool showProgress = args->Exists("--progress");
+void AntColony::AddArguments(argparse::ArgumentParser *args) {
+	args->add_argument("--colonies").default_value(1);
+	args->add_argument("--alpha").default_value(_params.alpha);
+	args->add_argument("--beta").default_value(_params.beta);
+	args->add_argument("--evaporation").default_value(_params.evaporation);
+	args->add_argument("--pheromone").default_value(_params.pheromoneConstant);
+	// args->add_argument("--cost").default_value(_params.costConstraint);
+	// args->add_argument("--start").default_value(_params.startVertex);
+	args->add_argument("--ants").default_value(_params.antCount);
+	// args->add_argument("--iterations").default_value(_params.iterations);
+	args->add_argument("--best_ants").default_value(_params.bestAntLimit);
+	args->add_argument("--noreturn").default_value(false).implicit_value(true);
+	args->add_argument("--nothreading")
+		.default_value(false)
+		.implicit_value(true);
+	args->add_argument("--progress").default_value(false).implicit_value(true);
+}
+
+void AntColony::Run(argparse::ArgumentParser *args) {
+	_params.costConstraint = this->costConstraint;
+	_params.startVertex = this->startVertex;
+	_params.iterations = this->iterationLimit;
+	_params.alpha = args->get<double>("--alpha");
+	_params.beta = args->get<double>("--beta");
+	_params.evaporation = args->get<double>("--evaporation");
+	_params.pheromoneConstant = args->get<double>("--pheromone");
+	_params.antCount = args->get<int>("--ants");
+	_params.bestAntLimit = args->get<int>("--best_ants");
+	_params.returnHome = !args->get<bool>("--noreturn");
+	_params.threading = !args->get<bool>("--nothreading");
+	int colonyCount = args->get<int>("--colonies");
+	bool showProgress = args->get<bool>("--progress");
 
 	// print all parameters
-	_printParameters(colonyCount, params);
+	_printParameters(colonyCount);
 
 	// spawn the colony
-	Colony colony(graph, params);
+	Colony colony(&this->graph, _params);
 
 	// initialize progress bar
-	int totalCycles = colonyCount * params.antCount * params.iterations;
+	int totalCycles = colonyCount * _params.antCount * _params.iterations;
 	indicators::ProgressBar bar = _createProgressBar(totalCycles);
 	std::string currentStatus = "";
 	int currentIterations = 0;
@@ -40,13 +56,13 @@ void AntColony::run(Graph *graph, utils::ArgumentParser *args) {
 
 		// set solution handler (it's called whenever a better solution is
 		// found)
-		colony.solutionHandler = [&currentStatus,
-								  &params](double cost, int score,
-										   int iteration, int colonyID) {
+		colony.solutionHandler = [&currentStatus, this](double cost, int score,
+														int iteration,
+														int colonyID) {
 			// set status to current best solution
 			std::stringstream s;
 			s << "( " << std::floor(cost) << ", " << score << " ) @ "
-			  << (iteration + 1) << "/" << params.iterations;
+			  << (iteration + 1) << "/" << this->_params.iterations;
 			if (colonyID >= 0) {
 				s << " (" << (colonyID + 1) << ")";
 			}
@@ -54,7 +70,8 @@ void AntColony::run(Graph *graph, utils::ArgumentParser *args) {
 		};
 
 		// set progress handler (to update the progress bar)
-		colony.progressHandler = [&bar, &currentStatus](int n, int total) {
+		colony.progressHandler = [&bar, &currentStatus, this](int n,
+															  int total) {
 			_progressBarTick(&bar, n, total, currentStatus);
 		};
 	}
@@ -84,25 +101,25 @@ void AntColony::run(Graph *graph, utils::ArgumentParser *args) {
 	std::cout << bestSolution;
 }
 
-void AntColony::_printParameters(int colonyCount, Parameters params) {
+void AntColony::_printParameters(int colonyCount) {
 	if (colonyCount > 1) {
 		std::cout << colonyCount << " colonies, ";
 	}
-	std::cout << params.antCount << " ants, ";
-	std::cout << params.iterations << " iterations";
+	std::cout << _params.antCount << " ants, ";
+	std::cout << _params.iterations << " iterations";
 
 	std::cout << termcolor::grey;
-	std::cout << " [ alpha=" << params.alpha << ", beta=" << params.beta
-			  << ", evaporation=" << params.evaporation
-			  << ", pheromone=" << params.pheromoneConstant;
-	if (params.bestAntLimit != 1) {
-		std::cout << ", best_ants=" << params.bestAntLimit;
+	std::cout << " [ alpha=" << _params.alpha << ", beta=" << _params.beta
+			  << ", evaporation=" << _params.evaporation
+			  << ", pheromone=" << _params.pheromoneConstant;
+	if (_params.bestAntLimit != 1) {
+		std::cout << ", best_ants=" << _params.bestAntLimit;
 	}
-	if (params.startVertex != 0) {
-		std::cout << ", start=" << params.startVertex;
+	if (_params.startVertex != 0) {
+		std::cout << ", start=" << _params.startVertex;
 	}
-	if (params.costConstraint != 0) {
-		std::cout << ", cost=" << params.costConstraint;
+	if (_params.costConstraint != 0) {
+		std::cout << ", cost=" << _params.costConstraint;
 	}
 	std::cout << " ]" << termcolor::reset << std::endl;
 }

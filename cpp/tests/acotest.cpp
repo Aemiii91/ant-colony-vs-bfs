@@ -27,42 +27,42 @@ class ACOTest : public ::testing::Test {
 	void TearDown() override {}
 };
 
-TEST_F(ACOTest, AntColonyTest) {
-	// Save cout's buffer
-	std::streambuf *sbuf = std::cout.rdbuf();
-	std::stringstream buffer;
+// TEST_F(ACOTest, AntColonyTest) {
+// 	// Save cout's buffer
+// 	std::streambuf *sbuf = std::cout.rdbuf();
+// 	std::stringstream buffer;
 
-	// Redirect cout to stringstream buffer
-	std::cout.rdbuf(buffer.rdbuf());
+// 	// Redirect cout to stringstream buffer
+// 	std::cout.rdbuf(buffer.rdbuf());
 
-	// remove colors from output
-	termcolor::setEnabled(false);
+// 	// remove colors from output
+// 	termcolor::setEnabled(false);
 
-	int test_argc = 10;
-	char *test_argv[] = {
-		const_cast<char *>("routeplanner"), const_cast<char *>("aco"),
-		const_cast<char *>("--ants"),       const_cast<char *>("20"),
-		const_cast<char *>("--iterations"), const_cast<char *>("50"),
-		const_cast<char *>("--colonies"),   const_cast<char *>("10"),
-		const_cast<char *>("--cost"),       const_cast<char *>("4000")};
+// 	int test_argc = 10;
+// 	char *test_argv[] = {
+// 		const_cast<char *>("routeplanner"), const_cast<char *>("aco"),
+// 		const_cast<char *>("--ants"),       const_cast<char *>("20"),
+// 		const_cast<char *>("--iterations"), const_cast<char *>("50"),
+// 		const_cast<char *>("--colonies"),   const_cast<char *>("10"),
+// 		const_cast<char *>("--cost"),       const_cast<char *>("4000")};
 
-	utils::ArgumentParser args(test_argc, test_argv);
+// 	utils::ArgumentParser args(test_argc, test_argv);
 
-	AntColony::run(&this->graph, &args);
+// 	AntColony::run(&this->graph, &args);
 
-	// redirect cout to its old self
-	std::cout.rdbuf(sbuf);
+// 	// redirect cout to its old self
+// 	std::cout.rdbuf(sbuf);
 
-	std::vector<std::string> content;
-	for (std::string line; std::getline(buffer, line);) {
-		content.push_back(line);
-		std::cout << line << std::endl;
-	}
+// 	std::vector<std::string> content;
+// 	for (std::string line; std::getline(buffer, line);) {
+// 		content.push_back(line);
+// 		std::cout << line << std::endl;
+// 	}
 
-	std::string result = content[2];
+// 	std::string result = content[2];
 
-	ASSERT_EQ("( 3550, 8 )", result);
-}
+// 	ASSERT_EQ("( 3550, 8 )", result);
+// }
 
 TEST_F(ACOTest, ColonyTest) {
 	int colonies = 10;
