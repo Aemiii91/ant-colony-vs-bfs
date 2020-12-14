@@ -60,3 +60,5 @@ Here berlin.json is interchangeable with whichever dataset you may want to use.
 This binary does not take as many parameters as our aco algortihm, but the ordering is like follows:
 
 `./dfsplanner dataset k-limit time-limit starting-point`
+
+Where the timelimit is given in seconds
