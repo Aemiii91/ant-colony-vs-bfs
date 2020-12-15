@@ -135,6 +135,8 @@ class Colony {
 	 * @param antSolution The ant's solution.
 	 */
 	void _depositPheromone(Solution antSolution);
+
+	void _log(std::string data);
 	/**
 	 * Converts the solution's indexes to IDs.
 	 *
@@ -150,9 +152,9 @@ class Colony {
 	 * Checks if there is time left in respect to the timelimit.
 	 * Always return true if timelimit = 0
 	 *
-	 * @param start initial timer 
+	 * @param start initial timer
 	 * @param current current time spent
-	*/
+	 */
 	bool _canRunInTime();
 };
 } // namespace aco
