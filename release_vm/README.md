@@ -44,12 +44,24 @@ The following flags are available for our ACO:
 - --cost
 - --colonies
 - --nothreading
+- --best_ants
 - --noreturn
 - --progress
 - --progress2 (mode used internally for SMAC)
 - --smac_mode (depricated mode used for SMAC, but still useful)
 - --start (starting point)
 
+The default configuration for ACO is as follows:
+- Alpha: 1
+- Beta: 20
+- Evaporation: 0.04
+- PheromoneConstant: 100
+- antCount: 50
+- iterations 80
+- bestAntLimit 1
+
+The best ant limit can be changed to use different implementations of ACO, this is up to you.
+All experiments and findings in the report have been done with bestAntLimit = 1
 ## Branch limited DFS
 The kdfsplanner contains our implementation of our Branch limited DFS algortihm
 This algortihm can be invoked with the following command
