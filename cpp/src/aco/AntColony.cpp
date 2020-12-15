@@ -80,7 +80,7 @@ void AntColony::run(Graph *graph, utils::ArgumentParser *args) {
 
 	if (showProgress) {
 		// update the progress bar to 100%
-		_progressBarTick(&bar, totalCycles, totalCycles, currentStatus);
+		//_progressBarTick(&bar, totalCycles, totalCycles, currentStatus);
 	}
 
 	if (smacMode) {
