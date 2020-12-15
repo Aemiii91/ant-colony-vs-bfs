@@ -1,0 +1,5 @@
+algo = python main.py 
+paramfile = params.pcs
+deterministic = 0
+runcount_limit = 5
+run_obj = quality
