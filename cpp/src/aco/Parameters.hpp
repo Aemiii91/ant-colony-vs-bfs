@@ -30,8 +30,10 @@ struct Parameters {
 	/// Turn multi-threading on or off.
 	bool threading = true;
 
-	int timeAvailable = 0;
+	bool logging = false;
+	std::string logPath = "";
 
+	int timeAvailable = 0;
 };
 } // namespace aco
 

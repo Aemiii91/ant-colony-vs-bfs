@@ -19,10 +19,14 @@ void AntColony::run(Graph *graph, utils::ArgumentParser *args) {
 	bool smacMode = args->Exists("--smac_mode");
 	params.returnHome = !args->Exists("--noreturn");
 	params.threading = !args->Exists("--nothreading");
+
 	bool showProgress = args->Exists("--progress");
 	bool showProgress2 = args->Exists(("--progress2"));
 
-	//if (!smacMode && !showProgress2)
+	params.logging = args->Exists("--log");
+	args->Get("--log", &params.logPath);
+
+	// if (!smacMode && !showProgress2)
 	//	_printParameters(colonyCount, params);
 
 	// spawn the colony
@@ -62,9 +66,9 @@ void AntColony::run(Graph *graph, utils::ArgumentParser *args) {
 		};
 	}
 	if (showProgress2) {
-        colony.solutionHandler = [&currentStatus,
-            &params](double cost, int score,
-                     int iteration, int colonyID) {
+		colony.solutionHandler = [&currentStatus,
+								  &params](double cost, int score,
+										   int iteration, int colonyID) {
 			std::cout << std::floor(cost) << ", " << score << std::endl;
 		};
 	}
@@ -88,7 +92,8 @@ void AntColony::run(Graph *graph, utils::ArgumentParser *args) {
 	}
 
 	if (showProgress2) {
-		std::cout << std::floor(bestSolution.cost) << ", " << bestSolution.score << std::endl;
+		std::cout << std::floor(bestSolution.cost) << ", " << bestSolution.score
+				  << std::endl;
 	}
 	// calculate and print runtime
 	else {

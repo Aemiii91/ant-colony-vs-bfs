@@ -77,6 +77,19 @@ class MatrixData {
 		}
 	}
 
+	void PrintCostMatrix(std::ostream &out) {
+		_printMatrix(out, _costMatrix);
+	}
+	void PrintPheromoneMatrix(std::ostream &out) {
+		_printMatrix(out, _pheromoneMatrix);
+	}
+	void PrintHeuristicMatrix(std::ostream &out) {
+		_printMatrix(out, _heuristicMatrix);
+	}
+	void PrintProbabilityMatrix(std::ostream &out) {
+		_printMatrix(out, _probabilityMatrix);
+	}
+
   private:
 	size_t _size;
 	/// Importance of pheromone level.
@@ -152,6 +165,39 @@ class MatrixData {
 		double heuristic = _heuristicMatrix[fromIndex][toIndex];
 		_probabilityMatrix[fromIndex][toIndex] =
 			std::pow(pheromone, alpha) * heuristic;
+	}
+
+	void _printMatrix(std::ostream &stream,
+					  std::vector<std::vector<double>> matrix) {
+		bool first_row = true;
+
+		stream << "[";
+
+		for (std::vector<double> row : matrix) {
+			if (!first_row) {
+				stream << ",";
+			}
+
+			bool first_col = true;
+
+			stream << "[";
+
+			for (double value : row) {
+				if (!first_col) {
+					stream << ",";
+				}
+
+				stream << value;
+
+				first_col = false;
+			}
+
+			stream << "]";
+
+			first_row = false;
+		}
+
+		stream << "]";
 	}
 };
 } // namespace aco

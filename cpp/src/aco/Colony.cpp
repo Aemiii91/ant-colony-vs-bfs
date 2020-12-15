@@ -67,6 +67,16 @@ void Colony::_solve() {
 	// set total progress (number of cycles)
 	_progressTotal = _params.iterations * _params.antCount;
 
+	if (_params.logging) {
+		std::stringstream logmessage;
+		logmessage << "{";
+		logmessage << "\"type\": \"init\"";
+		// logmessage << ", \"cost\": ";
+		// _matrixData.PrintCostMatrix(logmessage);
+		logmessage << "}";
+		_log(logmessage.str());
+	}
+
 	for (int iteration = 0; iteration < _params.iterations; iteration++) {
 		if (acorunnerbool) {
 			auto start = Clock::now();
@@ -80,10 +90,28 @@ void Colony::_solve() {
 			}
 
 			_resetAnts(&ants);
+
 			auto stop = Clock::now();
-			timeSpent +=
+			int t =
 				chrono::duration_cast<std::chrono::nanoseconds>(stop - start)
 					.count();
+			timeSpent += t;
+
+			if (_params.logging) {
+				std::stringstream logmessage;
+				logmessage << "{";
+				logmessage << "\"type\": \"entry\"";
+				logmessage << ", \"score\": \""
+						   << _bestInColony.score +
+								  (1 -
+								   _bestInColony.cost / _params.costConstraint);
+				logmessage << ", \"runtime\": " << timeSpent;
+				// logmessage << ", \"pheromone\": ";
+				// _matrixData.PrintPheromoneMatrix(logmessage);
+				logmessage << "}";
+				_log(logmessage.str());
+			}
+
 			this->_canRunInTime();
 		}
 	}
@@ -174,6 +202,15 @@ void Colony::_depositPheromone(Solution antSolution) {
 		int fromIndex = antSolution.route[i];
 		int toIndex = antSolution.route[i + 1];
 		_matrixData.DepositPheromone(fromIndex, toIndex, deposit);
+	}
+}
+
+void Colony::_log(std::string data) {
+	if (_params.logging && _params.logPath.length() > 0) {
+		std::ofstream logfile;
+		logfile.open(_params.logPath, std::ios_base::app);
+		logfile << data;
+		logfile.close();
 	}
 }
 
