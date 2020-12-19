@@ -1,5 +1,11 @@
+// clang-format off
 #include "DFSBranchLimitAlgorithm.h"
 #include <iostream>
+#define CANTRAVELHOME TravelTime(&currentNode, &nextNode) +\
+	TravelTime(&nextNode, &root) + timeSpent <= \
+	this->_timeInterval && \
+	nextNode.GetEdgeListSize() >= 1 && \
+	currentNode.childrenNodes.size() >= 1
 
 vector<Node> DFSBranchLimitAlgorithm::FourthDraft(int branchLimit) {
 	Node nextNode;
@@ -11,7 +17,6 @@ vector<Node> DFSBranchLimitAlgorithm::FourthDraft(int branchLimit) {
 	int bestCount;
 	double timeSpent = 0;
 
-	// Prerequisite variable assignment
 	Node root = this->_graph.nodelist.front();
 	Node currentNode = root;
 	currentPath.emplace_back(root);
@@ -26,11 +31,7 @@ vector<Node> DFSBranchLimitAlgorithm::FourthDraft(int branchLimit) {
 
 	while (travel) {
 
-		while (TravelTime(&currentNode, &nextNode) +
-					   TravelTime(&nextNode, &root) + timeSpent <=
-				   this->_timeInterval &&
-			   nextNode.GetEdgeListSize() >= 1 &&
-			   currentNode.childrenNodes.size() >= 1) {
+		while (CANTRAVELHOME) {
 			currentTime.emplace_back(TravelTime(&currentNode, &nextNode) +
 									 timeSpent);
 			timeSpent = currentTime.back();
@@ -43,10 +44,7 @@ vector<Node> DFSBranchLimitAlgorithm::FourthDraft(int branchLimit) {
 				currentNode.childrensChecked = true;
 				currentPath.emplace_back(currentNode);
 			}
-
-			// TODO add if statement that checks if the nextNode has already
-			// been visited in prev iteration here. Add pruning that results in
-			// backtracking
+	
 			currentNode = nextNode;
 			currentNode.childrenNodes =
 				GenerateChildren(currentNode, currentPath, branchLimit);
@@ -59,8 +57,6 @@ vector<Node> DFSBranchLimitAlgorithm::FourthDraft(int branchLimit) {
 			if (currentPath.size() > bestPath.size()) {
 				bestPath = currentPath;
 				bestTime = currentTime;
-				cout << "Better path found at iteration: " << iteratorCount
-					 << endl;
 				bestCount = iteratorCount;
 			}
 		}
@@ -68,8 +64,8 @@ vector<Node> DFSBranchLimitAlgorithm::FourthDraft(int branchLimit) {
 		currentNode.childrenNodes.clear();
 		currentNode.childrensChecked = true;
 
-		while (currentNode.childrensChecked == true &&
-			   currentNode.ID != root.ID) {
+		while (currentNode.childrensChecked == true
+				&& currentNode.ID != root.ID) {
 			currentPath.pop_back();
 			currentNode = currentPath.back();
 
@@ -81,25 +77,18 @@ vector<Node> DFSBranchLimitAlgorithm::FourthDraft(int branchLimit) {
 			timeSpent = currentTime.back();
 		}
 
-		if (currentNode.ID == root.ID && currentNode.childrensChecked == true) {
+		if (currentNode.ID == root.ID
+			&& currentNode.childrensChecked == true || iteratorCount == 20000) {
 			travel = false;
-		}
-		if (iteratorCount == 20000) {
-			travel = false;
-		}
-		if (travel == false) {
 			break;
 		}
+
 		iteratorCount++;
-		cout << "Count: " << iteratorCount << "  BestCount:" << bestCount
-			 << endl;
 	}
 	bestTime.emplace_back(TravelTime(&bestPath.front(), &bestPath.back()) +
 						  bestTime.back());
 	bestPath.emplace_back(root);
 	this->_path = bestPath;
-	cout << "DFSL Path cost: " << bestTime.back() << endl;
-	cout << "Best route found at iteration: " << bestCount << endl;
 	return this->_path;
 }
 
@@ -135,3 +124,4 @@ bool DFSBranchLimitAlgorithm::IsInPath(std::vector<Node> currentPath,
 	}
 	return false;
 }
+// clang-format on
