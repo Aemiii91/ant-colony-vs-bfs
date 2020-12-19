@@ -58,6 +58,10 @@ vector<Node> DFSBranchLimitAlgorithm::FourthDraft(int branchLimit) {
 				bestPath = currentPath;
 				bestTime = currentTime;
 				bestCount = iteratorCount;
+			} else if (currentPath.size() == bestPath.size() && currentTime.back() < bestTime.back()){
+				bestPath = currentPath;
+				bestTime = currentTime;
+				bestCount = iteratorCount;
 			}
 		}
 
