@@ -12,14 +12,14 @@ class Node {
   public:
 	Node() {}
 	Node(int id) : ID(id) {} // Give node identifier
-	int ID; // used as identifier 
+	int ID;                  // used as identifier
 	bool firstReached = false;
 	bool secondReached = false;
 	bool childrensChecked = false; // used to identify a fully checked node in
 								   // second draft algorithm.
 	vector<Node> childrenNodes;
 
-	void AddEdge(Edge e); // Add an edge to edgeList 
+	void AddEdge(Edge e); // Add an edge to edgeList
 	Edge GetEdge(int ID); // get an edge at index
 	size_t GetEdgeListSize();
 	std::vector<Edge> edgeList;

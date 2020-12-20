@@ -46,14 +46,14 @@ int main(int argc, char **argv) {
 	} else if (subprogram == "kdfs") {
 		int interval = 30000;
 		int kLimit = 1;
-		args.Get("--cost",&interval);
-		args.Get("-k",&kLimit);
+		args.Get("--cost", &interval);
+		args.Get("-k", &kLimit);
 		DFSBranchLimitAlgorithm Four(interval, graph);
 		vector<Node> resFour = Four.FourthDraft(kLimit);
 		cout << "DFSBranchLimitAlgorithm: RESULTS" << endl;
 		Four.PathPrinter();
 		cout << endl;
-	}else {
+	} else {
 		std::cout << termcolor::red << "Error: " << termcolor::reset;
 		std::cout << "Subprogram not recognized." << std::endl;
 	}

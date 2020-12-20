@@ -1,8 +1,7 @@
 #include "naiveAlgorithm.h"
 
 vector<Node> NaiveAlgorithm::FirstDraftAlgo() {
-	Node currentNode =
-		this->_graph.nodelist.front(); 
+	Node currentNode = this->_graph.nodelist.front();
 	Node nextNode;
 	this->_path.push_back(currentNode);
 
