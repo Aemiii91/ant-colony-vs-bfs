@@ -1,5 +1,5 @@
 # Virtual box
-A virtual machine was created were both the binaries and datasets used can be found.
+A virtual machine was created were both algorithms and all datasets used can be found.
 This virtual machine serves as a sandbox created for the sole purpose of trying and playing with our project.
 The virtual machine is running Manjaro 20.2 Nibia with no desktop environment, just the tty
 
