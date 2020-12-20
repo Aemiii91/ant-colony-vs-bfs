@@ -3,9 +3,9 @@ A virtual machine was created were both the binaries and datasets used can be fo
 This virtual machine serves as a sandbox created for the sole purpose of trying and playing with our project.
 The virtual machine is running Manjaro 20.2 Nibia with no desktop environment, just the tty
 
-```username: p5```
+`username: p5`
 
-```passwd: 123```
+`passwd: 123`
 
 The root password is the same as the user password
 
@@ -21,16 +21,15 @@ Download link for the virtual box image: https://drive.google.com/drive/folders/
 
 To use our algorithms please go to ~/projectbinaries
 
-Here you will find two binaries and three datasets.
+Here you will find a binary and three datasets.
 The three datasets are the same datasets as those used in the project report.
-The two binaries each contain one of our two algorithms.
+The binary can invoke both our ACO algorithm and our K-DFS algorithm.
 
-The full source for both of these algortihms can be found in ~/Documents/P5-Kode
+The full source for both of these algorithms can be found in ~/Documents/P5-Kode
 
-## acoplanner
-acoplanner contains our ACO algorithm and can be invoked by the following command
+ACO can be invoked by the following command
 
-```./acoplanner aco --data "berlin.json"```
+`./routeplanner aco --data "berlin.json"`
 
 berlin.json in the above example can be swapped out with whichever dataset you may want to try.
 The following flags are available for our ACO:
@@ -60,17 +59,13 @@ The default configuration for ACO is as follows:
 - iterations 80
 - bestAntLimit 1
 
-The best ant limit can be changed to use different implementations of ACO, this is up to you.
-All experiments and findings in the report have been done with bestAntLimit = 1
-## Branch limited DFS
-The kdfsplanner contains our implementation of our Branch limited DFS algortihm
-This algortihm can be invoked with the following command
+All experiments and findings in the report have been done with bestAntLimit = 1, but keep in mind that changing the bestAntLimit may change the ACO implementation to something other than ant system.
 
-`./dfsplanner berlin.json 5 100 0`
+
+Our K-DFS algorithm can be invoked with the following command
+
+`./routeplanner --data "berlin.json" -k 2 --cost 500`
 
 Here berlin.json is interchangeable with whichever dataset you may want to use.
-This binary does not take as many parameters as our aco algortihm, but the ordering is like follows:
-
-`./dfsplanner dataset k-limit time-limit starting-point`
-
-Where the timelimit is given in seconds
+This algorithm does not take as many parameters as our aco algortihm, but the ordering is like follows, however you may tune the k-limit and time constraint to your liking.
+Both of these are given as integers and the time constraint is given in seconds.
