@@ -14,3 +14,5 @@ This is the C++ part of our project.
 - Global constants are ALL CAPS.
 - Global variables are not allowed.
 - If the main responsibility of a file is to implement a particular class, then the name of the file should match that class
+
+ownAlgorithm/DFSBranchLimitAlgorithm files contain the K-DFS algorithm

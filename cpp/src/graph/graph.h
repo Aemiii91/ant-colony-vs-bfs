@@ -24,10 +24,6 @@ class Graph {
 	 */
 	void AddNode(Node n);
 	/**
-	 * Test method for initialized a graph, mostly for fun
-	 */
-	void ImFastLetMeShowYou();
-	/**
 	 * Prints the graph in a human-readable way
 	 */
 	void Print();

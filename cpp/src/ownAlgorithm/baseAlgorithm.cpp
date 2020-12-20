@@ -13,7 +13,7 @@ double BaseAlgorithm::TravelTime(Node *n1, Node *n2) {
 
 Node BaseAlgorithm::GetClosestNode(Node currentNode, vector<Node> visited) {
 	bool depletedGraph = true;
-	double lowestCost = LONG_MAX;
+	double lowestCost = DBL_MAX;
 	Node res;
 	Edge lowestEdge;
 	for (auto edge : currentNode.edgeList) {

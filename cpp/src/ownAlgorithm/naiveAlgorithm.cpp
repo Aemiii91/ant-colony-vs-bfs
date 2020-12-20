@@ -2,7 +2,7 @@
 
 vector<Node> NaiveAlgorithm::FirstDraftAlgo() {
 	Node currentNode =
-		this->_graph.nodelist.front(); // nextNode = g.nodelist[0];
+		this->_graph.nodelist.front(); 
 	Node nextNode;
 	this->_path.push_back(currentNode);
 

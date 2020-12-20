@@ -17,42 +17,7 @@
 
 int main(int argc, char **argv) {
 	JsonParser parser;
-	Graph graph = parser.ParseData("berlin.json");
-	int interval = 30000;
-
-	DFSAlgorithm Alg(interval, graph);
-	vector<Node> resAlg = Alg.SecondDraft();
-
-	NaiveAlgorithm Naive(interval, graph);
-	vector<Node> resNaive = Naive.FirstDraftAlgo();
-
-	ThreeBranchAlgorithm Three(interval, graph);
-	vector<Node> resThree = Three.ThirdDraft();
-
-	DFSBranchLimitAlgorithm Four(interval, graph);
-	vector<Node> resFour = Four.FourthDraft(3);
-	cout << endl;
-	cout << endl;
-
-	cout << "Interval: " << interval << endl;
-	cout << "Graph: matrix500.json" << endl;
-	cout << endl;
-
-	cout << "NaiveAlgorithm: RESULTS" << endl;
-	Naive.PathPrinter();
-	cout << endl;
-
-	cout << "DFSAlgorithm: RESULTS" << endl;
-	Alg.PathPrinter();
-	cout << endl;
-
-	cout << "ThreeBranchAlgorithm: RESULTS" << endl;
-	Three.PathPrinter();
-	cout << endl;
-
-	cout << "DFSBranchLimitAlgorithm: RESULTS" << endl;
-	Four.PathPrinter();
-	cout << endl;
+	Graph graph;
 
 	utils::ArgumentParser args(argc, argv);
 
@@ -60,7 +25,7 @@ int main(int argc, char **argv) {
 	termcolor::setEnabled(args.Exists("--colors"));
 
 	// default dataset path
-	std::string path = "../data/matrix500.json";
+	std::string path = "berlin.json";
 	// get inputted dataset path
 	args.Get("--data", &path);
 
@@ -77,10 +42,18 @@ int main(int argc, char **argv) {
 
 	if (subprogram == "aco") {
 		aco::AntColony::run(&graph, &args);
-	} else if (subprogram == "naive") {
-		// run naive algorithm
-		std::cout << "Not implemented." << std::endl;
-	} else {
+
+	} else if (subprogram == "kdfs") {
+		int interval = 30000;
+		int kLimit = 1;
+		args.Get("--cost",&interval);
+		args.Get("-k",&kLimit);
+		DFSBranchLimitAlgorithm Four(interval, graph);
+		vector<Node> resFour = Four.FourthDraft(kLimit);
+		cout << "DFSBranchLimitAlgorithm: RESULTS" << endl;
+		Four.PathPrinter();
+		cout << endl;
+	}else {
 		std::cout << termcolor::red << "Error: " << termcolor::reset;
 		std::cout << "Subprogram not recognized." << std::endl;
 	}
