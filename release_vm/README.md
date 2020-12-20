@@ -46,8 +46,6 @@ The following flags are available for our ACO:
 - --best_ants
 - --noreturn
 - --progress
-- --progress2 (mode used internally for SMAC)
-- --smac_mode (depricated mode used for SMAC, but still useful)
 - --start (starting point)
 
 The default configuration for ACO is as follows:
