@@ -5,6 +5,7 @@
 #include <exception>
 #include <iostream>
 #include <stdexcept>
+#include <termcolor/termcolor.hpp>
 
 /**
  * Base algorithm class, used as super class for other algorithms
@@ -77,6 +78,7 @@ class BaseAlgorithm {
 	Graph _graph;
 	// the resulting path which will be returned to the user
 	std::vector<Node> _path;
+	double _pathCost = 0;
 };
 
 /**

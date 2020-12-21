@@ -54,8 +54,27 @@ Node BaseAlgorithm::GetNodeFromID(int nodeID) {
 }
 
 void BaseAlgorithm::PathPrinter() {
-	cout << "Number of POI: " << this->_path.size() - 2 << endl;
+	int startID = this->_path.front().ID;
+	int endID = this->_path.back().ID;
+	int score = this->_path.size() - (startID == endID ? 1 : 0);
+	int cost = this->_pathCost;
+	cout << "( " << termcolor::reset;
+	cout << termcolor::bold << termcolor::blue << std::floor(cost)
+		 << termcolor::reset;
+	cout << ", ";
+	cout << termcolor::bold << termcolor::magenta << score << termcolor::reset;
+	cout << " ) ";
+
+	cout << termcolor::bold << termcolor::grey << "[";
+	bool firstPrint = true;
 	for (auto node : this->_path) {
-		std::cout << node.ID << " ---> ";
+		if (!firstPrint) {
+			cout << ", ";
+		}
+		cout << node.ID;
+		firstPrint = false;
 	}
+	cout << "]";
+	cout << termcolor::reset;
+	cout << endl;
 }

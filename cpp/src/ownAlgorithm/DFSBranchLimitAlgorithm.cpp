@@ -60,9 +60,10 @@ vector<Node> DFSBranchLimitAlgorithm::FourthDraft(int branchLimit) {
 			if (currentPath.size() > bestPath.size()) {
 				bestPath = currentPath;
 				bestTime = currentTime;
-				//cout << "Better path found at iteration: " << iteratorCount
-				//	 << endl;
 				bestCount = iteratorCount;
+				this->_path = bestPath;
+				this->_pathCost = bestTime.back();
+				this->PathPrinter();
 			}
 		}
 
@@ -85,28 +86,29 @@ vector<Node> DFSBranchLimitAlgorithm::FourthDraft(int branchLimit) {
 		if (currentNode.ID == root.ID && currentNode.childrensChecked == true) {
 			travel = false;
 		}
-//		if (iteratorCount == 20000) {
-//			travel = false;
-//		}
-//		if (travel == false) {
-//			break;
-//		}
+		//		if (iteratorCount == 20000) {
+		//			travel = false;
+		//		}
+		//		if (travel == false) {
+		//			break;
+		//		}
 		auto stop = Clock::now();
-		timeRan += chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count();
-		if(!this->_canRunInTime(timeRan)) {
+		timeRan += chrono::duration_cast<std::chrono::nanoseconds>(stop - start)
+					   .count();
+		if (!this->_canRunInTime(timeRan)) {
 			travel = false;
 			break;
 		}
 		iteratorCount++;
-		//cout << "Count: " << iteratorCount << "  BestCount:" << bestCount
+		// cout << "Count: " << iteratorCount << "  BestCount:" << bestCount
 		//	 << endl;
 	}
 	bestTime.emplace_back(TravelTime(&bestPath.front(), &bestPath.back()) +
 						  bestTime.back());
 	bestPath.emplace_back(root);
 	this->_path = bestPath;
-	//cout << "DFSL Path cost: " << bestTime.back() << endl;
-	//cout << "Best route found at iteration: " << bestCount << endl;
+	// cout << "DFSL Path cost: " << bestTime.back() << endl;
+	// cout << "Best route found at iteration: " << bestCount << endl;
 	this->_pathCost = bestTime.back();
 	return this->_path;
 }
@@ -145,9 +147,11 @@ bool DFSBranchLimitAlgorithm::IsInPath(std::vector<Node> currentPath,
 }
 
 bool DFSBranchLimitAlgorithm::_canRunInTime(double timeSpent) {
-	std::chrono::seconds s (this->_timeAvailable);
-	std::chrono::nanoseconds timeAvailableNS = std::chrono::duration_cast<std::chrono::nanoseconds> (s);
-	if (this->_timeAvailable == 0) return true;
+	std::chrono::seconds s(this->_timeAvailable);
+	std::chrono::nanoseconds timeAvailableNS =
+		std::chrono::duration_cast<std::chrono::nanoseconds>(s);
+	if (this->_timeAvailable == 0)
+		return true;
 
 	else if (timeSpent >= timeAvailableNS.count()) {
 		return false;
@@ -155,17 +159,15 @@ bool DFSBranchLimitAlgorithm::_canRunInTime(double timeSpent) {
 
 	else
 		return true;
-
 }
 
 Node DFSBranchLimitAlgorithm::_getNodeFromGraph(int id) {
 	int index = 0;
 	for (auto &iterator : this->_graph.nodelist) {
 		index++;
-		if(iterator.ID == id) {
+		if (iterator.ID == id) {
 			break;
 		}
 	}
-	return this->_graph.nodelist[index-1];
+	return this->_graph.nodelist[index - 1];
 }
-

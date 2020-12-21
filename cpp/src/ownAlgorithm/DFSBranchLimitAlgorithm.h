@@ -6,7 +6,8 @@ class DFSBranchLimitAlgorithm : public BaseAlgorithm {
   public:
 	vector<Node> FourthDraft(int branchLimit);
 
-	DFSBranchLimitAlgorithm(double timeInterval, Graph graph, int timeAvailable, int startingPoint) {
+	DFSBranchLimitAlgorithm(double timeInterval, Graph graph, int timeAvailable,
+							int startingPoint) {
 		this->_timeInterval = timeInterval;
 		this->_graph = graph;
 		this->_timeAvailable = timeAvailable;
@@ -16,7 +17,7 @@ class DFSBranchLimitAlgorithm : public BaseAlgorithm {
 		this->_timeInterval = timeInterval;
 		this->_graph = graph;
 	}
-	double _pathCost;
+
   private:
 	vector<Node> GenerateChildren(Node currentNode, vector<Node> currentPath,
 								  int branchLimit);
@@ -29,5 +30,4 @@ class DFSBranchLimitAlgorithm : public BaseAlgorithm {
 	bool _canRunInTime(double timeSpent);
 	int _startingPoint;
 	Node _getNodeFromGraph(int id);
-
 };

@@ -1,68 +1,61 @@
 // std
 #include <ctime>
 #include <iostream>
-#include <random>
 #include <string>
 // include
 #include <termcolor/termcolor.hpp>
 // submodules
 #include "ownAlgorithm/DFSBranchLimitAlgorithm.h"
-#include "ownAlgorithm/baseAlgorithm.h"
-#include "ownAlgorithm/threeBranchAlgorithm.h"
 #include <aco/AntColony.hpp>
-#include <ownAlgorithm/depthFirstAlgorithm.h>
-#include <ownAlgorithm/naiveAlgorithm.h>
 #include <utils/ArgumentParser.hpp>
 // local
 #include "jsonparser.h"
 #include <sstream>
 
 int main(int argc, char **argv) {
-/*	JsonParser parser;
-	Graph graph = parser.ParseData(argv[1]);
-	int k = std::stoi(argv[2]);
-	int time = std::stoi(argv[3]);
-	int start = std::stoi(argv[4]);
-	DFSBranchLimitAlgorithm wow(30000, graph, time, start);
-	vector<Node> reswow = wow.FourthDraft(k);
-	vector<int> result;
-	for (auto &iterator : reswow) {
-		result.push_back(iterator.ID);
+	JsonParser parser;
+	Graph graph;
+
+	utils::ArgumentParser args(argc, argv);
+
+	// default dataset path
+	std::string path = "berlin.json";
+	// get inputted dataset path
+	args.Get("--data", &path);
+
+	// load the graph
+	graph = parser.ParseData(path);
+
+	if (argc <= 1) {
+		std::cout << "No subprogram specified." << std::endl;
+		return 0;
 	}
-	aco::Solution solution(wow._pathCost, result);
-	std::cout << solution; */
 
-    utils::ArgumentParser args(argc, argv);
+	// first argument represents the name of a subprogram
+	std::string subprogram = argv[1];
 
-    // enable/disable output colors
-    termcolor::setEnabled(args.Exists("--colors"));
+	if (subprogram == "aco") {
+		aco::AntColony::run(&graph, &args);
 
-    // default dataset path
-    std::string path = "../data/matrix500.json";
-    // get inputted dataset path
-    args.Get("--data", &path);
+	} else if (subprogram == "kdfs") {
+		int interval = 30000;
+		int kLimit = 1;
+		int runtimeLimit = 30000;
+		int startingPoint = 0;
+		args.Get("--cost", &interval);
+		args.Get("-k", &kLimit);
+		args.Get("--time", &runtimeLimit);
+		args.Get("--start", &startingPoint);
+		DFSBranchLimitAlgorithm kdfs(interval, graph, runtimeLimit,
+									 startingPoint);
+		vector<Node> result = kdfs.FourthDraft(kLimit);
+		kdfs.PathPrinter();
+		std::cout << termcolor::bold << termcolor::green;
+		std::cout << "Done." << termcolor::reset << std::endl;
+	} else {
+		std::cout << termcolor::red << "Error: " << termcolor::reset;
+		std::cout << "Subprogram not recognized." << std::endl;
+	}
 
-    // load the graph
-    JsonParser parser;
-    Graph graph = parser.ParseData(path);
-
-    if (argc <= 1) {
-        std::cout << "No subprogram specified." << std::endl;
-        return 0;
-    }
-
-    // first argument represents the name of a subprogram
-    std::string subprogram = argv[1];
-
-    if (subprogram == "aco") {
-        aco::AntColony::run(&graph, &args);
-    } else if (subprogram == "naive") {
-        // run naive algorithm
-        std::cout << "Not implemented." << std::endl;
-    } else {
-        std::cout << termcolor::red << "Error: " << termcolor::reset;
-        std::cout << "Subprogram not recognized." << std::endl;
-    }
-
-    return 0;
+	return 0;
 }

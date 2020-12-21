@@ -64,7 +64,7 @@ struct Solution {
 			<< termcolor::reset;
 		out << " )" << std::endl;
 
-		out << termcolor::grey << "[";
+		out << termcolor::bold << termcolor::grey << "[";
 
 		for (int i = 0; i < solution.route.size(); i++) {
 			if (i > 0) {
