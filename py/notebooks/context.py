@@ -10,3 +10,5 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../s
 import openroute
 import opencaching
 import utils.matrix as matrix_utils
+import path_analyzer
+import path_statictics

@@ -24,28 +24,22 @@ def create_marker(path: list, coords: (float, float), node_id: int, color: str =
                 .icon {{
                     border: 2px solid currentColor;
                     border-radius: 50%;
+                    background-color: currentColor;
                     margin-top: -2px;
                     margin-left: -2px;
-                }}
-                .icon:before {{
-                    content: "";
-                    position: absolute;
-                    width: 100%;
-                    height: 100%;
-                    background-color: currentColor;
-                    opacity: .5;
-                }}
-                .icon span {{
-                    display: block;
-                    color: white;
-                    font-size: 9px;
-                    position: absolute;
-                    z-index: 1;
-                    width: 100%;
                     text-align: center;
                 }}
+                .icon:after {{
+                    content: attr(data-text);
+                    position: absolute;
+                    display: inline-block;
+                    color: white;
+                    font-size: 11px;
+                    z-index: 1;
+                    transform: translateX(-50%);
+                }}
             </style>
-            <div class="icon" style="color: {color}; width: {2*radius}px; height: {2*radius}px;"><span>{icon_text}</span></div>
+            <div class="icon" style="color: {color}; width: {2*radius}px; height: {2*radius}px;" data-text="{icon_text}"></div>
         """)
     )
 

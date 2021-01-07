@@ -3,8 +3,7 @@ import ast
 import json
 
 
-def analyze_path(dataset: str, path: list) -> list:
-    cost_matrix = get_cost_matrix(dataset)
+def analyze_path(cost_matrix: list, path: list) -> list:
     visited = []
     path_knum = []
 
@@ -54,7 +53,10 @@ def main():
     parser.add_argument('--path', default=path)
     args = parser.parse_args()
 
-    path_knum = analyze_path(args.dataset, ast.literal_eval(args.path))
+    cost_matrix = get_cost_matrix(args.dataset)
+    path = ast.literal_eval(args.path)
+
+    path_knum = analyze_path(cost_matrix, path)
 
     print(path_knum)
     print('max(k) =', max(path_knum))

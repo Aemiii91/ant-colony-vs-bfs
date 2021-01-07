@@ -10,6 +10,7 @@ python = "^3.8"
 requests = "^2.24.0"
 tqdm = "^4.50.2"
 ACO-Pants = "^0.5.2"
+matplotlib2tikz = "^0.7.6"
 
 [tool.poetry.dev-dependencies]
 

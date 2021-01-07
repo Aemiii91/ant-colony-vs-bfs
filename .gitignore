@@ -26,6 +26,8 @@ build/
 __pycache__
 .ipynb_checkpoints/
 poetry.lock
+py/data/
+py/notebooks/tikz/
 
 *.json
 *.jsonl
