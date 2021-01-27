@@ -77,6 +77,7 @@ void Colony::_solve() {
 
 	for (int iteration = 0; iteration < _params.iterations; iteration++) {
 		if (acorunnerbool) {
+			bool newSolution = false;
 			auto start = Clock::now();
 			_runAnts(&ants);
 
@@ -84,7 +85,9 @@ void Colony::_solve() {
 
 			for (Solution bestInIteration : _pickBestAnts(&ants)) {
 				_depositPheromone(bestInIteration);
-				_assessSolution(bestInIteration, iteration);
+				if (_assessSolution(bestInIteration, iteration)) {
+					newSolution = true;
+				}
 			}
 
 			_resetAnts(&ants);
@@ -95,7 +98,7 @@ void Colony::_solve() {
 					.count();
 			timeSpent += t;
 
-			if (_params.logging) {
+			if (_params.logging && newSolution) {
 				int runtime = chrono::duration_cast<std::chrono::milliseconds>(
 								  stop - log_start)
 								  .count();
